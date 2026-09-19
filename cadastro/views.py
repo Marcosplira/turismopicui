@@ -35,6 +35,7 @@ def catalogo(request):
         empreendimentos = empreendimentos.filter(
             Q(nome__icontains=busca)
             | Q(tipo_empreendimento__icontains=busca)
+            | Q(outro_segmento__icontains=busca)
             | Q(bairro_comunidade__icontains=busca)
             | Q(descricao__icontains=busca)
         ).distinct()

@@ -293,7 +293,9 @@
 
                         <label class="flex items-center gap-2 border rounded-lg p-3 hover:bg-green-50 cursor-pointer">
 
-                            <input type="checkbox" name="categorias" value="{{ cat.id }}" class="w-4 h-4">
+                            <input type="checkbox" name="categorias" value="{{ cat.id }}"
+                                class="w-4 h-4 categoria-checkbox"
+                                {% if cat.slug == 'outro' %}id="categoria-outro"{% endif %}>
 
                             <span class="text-sm text-gray-700">
                                 {{ cat.nome }}
@@ -309,6 +311,17 @@
 
                         {% endfor %}
 
+                    </div>
+
+                    <div id="campo-outro-segmento" class="hidden mt-5">
+                        <label for="id_outro_segmento" class="field-label">
+                            Qual é o outro segmento?
+                        </label>
+                        {{ form.outro_segmento }}
+                        <p class="text-sm text-gray-500 mt-2">
+                            Ex.: manicure, pedicure, massagista, eletricista,
+                            cabeleiro ou outro serviço.
+                        </p>
                     </div>
 
                 </section>
@@ -967,6 +980,22 @@
     <!-- ========================================= -->
 
     <script>
+
+        const categoriaOutro = document.getElementById("categoria-outro");
+        const campoOutroSegmento = document.getElementById("campo-outro-segmento");
+
+        function atualizarCampoOutro() {
+            if (categoriaOutro && categoriaOutro.checked) {
+                campoOutroSegmento.classList.remove("hidden");
+            } else if (campoOutroSegmento) {
+                campoOutroSegmento.classList.add("hidden");
+            }
+        }
+
+        if (categoriaOutro) {
+            categoriaOutro.addEventListener("change", atualizarCampoOutro);
+            atualizarCampoOutro();
+        }
 
         document.addEventListener("DOMContentLoaded", function () {
 

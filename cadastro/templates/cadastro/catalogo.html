@@ -62,6 +62,9 @@
                     <p class="text-sm text-green-700 font-semibold">{{ empreendimento.get_zona_display }}</p>
                     <h2 class="text-xl font-bold text-gray-900 mt-1">{{ empreendimento.nome }}</h2>
                     <p class="text-gray-600 text-sm mt-3">{{ empreendimento.descricao|truncatewords:24 }}</p>
+                    {% if empreendimento.outro_segmento %}
+                    <p class="text-sm text-green-700 mt-2">Segmento: {{ empreendimento.outro_segmento }}</p>
+                    {% endif %}
                     <p class="text-sm text-gray-500 mt-3">{{ empreendimento.bairro_comunidade }}</p>
                     <div class="flex flex-wrap gap-2 mt-5">
                         {% if empreendimento.whatsapp_url %}<a href="{{ empreendimento.whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold px-3 py-2 rounded-lg">WhatsApp</a>{% endif %}

@@ -103,6 +103,7 @@ class Empreendimento(models.Model):
     outras_redes = models.CharField(max_length=255, blank=True)
 
     tipo_empreendimento = models.CharField(max_length=255, blank=True)
+    outro_segmento = models.CharField(max_length=255, blank=True)
 
     numero_quartos = models.CharField(max_length=100, blank=True)
     numero_leitos = models.CharField(max_length=100, blank=True)

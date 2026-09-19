@@ -40,6 +40,7 @@ class EmpreendimentoForm(forms.ModelForm):
             "facebook",
             "outras_redes",
             "tipo_empreendimento",
+            "outro_segmento",
             "numero_quartos",
             "numero_leitos",
             "quarto_acessibilidade",
@@ -183,6 +184,13 @@ class EmpreendimentoForm(forms.ModelForm):
             "tipo_empreendimento": forms.TextInput(
                 attrs={
                     "placeholder": "Ex.: pousada, restaurante, artesanato..."
+                }
+            ),
+            "outro_segmento": forms.TextInput(
+                attrs={
+                    "placeholder": (
+                        "Ex.: manicure, pedicure, massagista, eletricista..."
+                    )
                 }
             ),
             "numero_quartos": forms.TextInput(
