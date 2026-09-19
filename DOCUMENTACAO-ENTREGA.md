@@ -1,5 +1,12 @@
 # Documentacao de entrega - Turismo de Picui
 
+## Acesso oficial publicado
+
+- Site: https://turismo-picui.onrender.com/
+- Cadastro: https://turismo-picui.onrender.com/cadastro/
+- Guia publico: https://turismo-picui.onrender.com/guia/
+- Administracao: https://turismo-picui.onrender.com/admin/
+
 ## 1. O que o aplicativo faz
 
 O sistema permite:
@@ -74,11 +81,37 @@ Acesse:
 http://127.0.0.1:8001/admin/
 ```
 
-Para criar o primeiro usuario:
+Para criar o primeiro usuario administrador local:
 
 ```powershell
 .\venv\Scripts\python.exe manage.py createsuperuser
 ```
+
+### Criar o administrador no Render
+
+O login do administrador e diferente do cadastro do cliente. No Render, abra o servico `turismo-picui`, entre em **Shell** e execute:
+
+```text
+python manage.py createsuperuser
+```
+
+Quando aparecerem as perguntas, informe:
+
+```text
+Username: adminturismo
+Email: um e-mail administrativo valido
+Password: uma senha forte, com letras, numeros e simbolos
+```
+
+O valor `admin` e muito fraco e pode ser recusado pelas regras de senha do Django. Nao coloque a senha no GitHub, na documentacao publica ou no codigo.
+
+Se `adminturismo` ja existir e a senha tiver sido esquecida, use o Shell do Render:
+
+```text
+python manage.py changepassword adminturismo
+```
+
+Na tela de login, use `adminturismo` no campo **Usuario**, nao no campo de e-mail. O Django Admin aceita o nome de usuario criado no comando acima.
 
 O cliente nao precisa criar usuario, e-mail ou senha para consultar o cadastro. Depois de enviar o formulario, o sistema abre automaticamente o cadastro recente em `Meus dados` naquele navegador. Por seguranca, essa consulta fica vinculada a sessao do navegador; o administrador continua sendo o responsavel por localizar todos os dados no painel.
 
@@ -100,7 +133,24 @@ Para criar uma copia do SQLite:
 
 O arquivo sera salvo em `backups/`. Em producao PostgreSQL, use `pg_dump` ou o backup automatico do provedor.
 
-## 6. Publicacao recomendada para a entrega
+## 6. Docker
+
+Com o Docker Desktop instalado, na pasta do projeto:
+
+```powershell
+$env:DJANGO_SECRET_KEY = "gere-uma-chave-secreta-e-nao-compartilhe"
+docker compose up --build
+```
+
+Abrir localmente:
+
+```text
+http://127.0.0.1:8000/
+```
+
+O Docker usa Gunicorn, executa a aplicacao na porta 8000 e exige `DJANGO_SECRET_KEY` real no ambiente.
+
+## 7. Publicacao recomendada para a entrega
 
 ### Opcao mais simples: Render
 
@@ -157,7 +207,7 @@ Railway tambem oferece deploy por GitHub, banco PostgreSQL e dominio publico ger
 
 Google Cloud Run e uma opcao profissional, mas exige mais configuracao: projeto, faturamento, Artifact Registry, Cloud Run, Cloud SQL PostgreSQL e Cloud Storage. Para uma entrega urgente, Render ou Railway reduzem o risco operacional.
 
-## 7. Fotos em producao
+## 8. Fotos em producao
 
 A pasta `media/` funciona localmente, mas o disco de muitos servicos de hospedagem pode ser temporario. Antes de divulgar o sistema, configurar um armazenamento permanente, como:
 
@@ -165,7 +215,7 @@ A pasta `media/` funciona localmente, mas o disco de muitos servicos de hospedag
 - Cloudinary;
 - Amazon S3.
 
-## 8. E-mail em producao
+## 9. E-mail em producao
 
 Localmente, o projeto usa o backend de console e mostra a mensagem no terminal. Para envio real, configurar SMTP:
 
@@ -181,10 +231,10 @@ DEFAULT_FROM_EMAIL=Turismo de Picui <noreply@seu-dominio.com>
 
 Nunca colocar senha de e-mail dentro do codigo ou do repositorio.
 
-## 9. Checklist antes de divulgar
+## 10. Checklist antes de divulgar
 
-- [ ] Home abre no endereco publico.
-- [ ] Cadastro abre pelo celular.
+- [x] Home abre no endereco publico.
+- [x] Cadastro abre pelo celular.
 - [ ] Consentimento e aviso de privacidade funcionam.
 - [ ] Upload de JPG e PNG funciona.
 - [ ] Fotos aparecem no armazenamento permanente.
@@ -193,6 +243,6 @@ Nunca colocar senha de e-mail dentro do codigo ou do repositorio.
 - [ ] Empreendimento aprovado aparece em `/guia/`.
 - [ ] WhatsApp abre com o numero correto.
 - [ ] Google Maps abre o endereco correto.
-- [ ] HTTPS esta ativo.
+- [x] HTTPS esta ativo no Render.
 - [ ] Backup foi configurado.
 - [ ] QR Codes foram gerados usando o dominio publico.

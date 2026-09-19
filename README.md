@@ -6,6 +6,8 @@ Aplicativo web em Django para cadastro de empreendimentos turísticos.
 
 Consulte [DOCUMENTACAO-ENTREGA.md](DOCUMENTACAO-ENTREGA.md) para abrir o sistema no computador e no celular, configurar o admin, fazer backup e publicar em um provedor.
 
+Use [SLIDES-APRESENTACAO.md](SLIDES-APRESENTACAO.md) como roteiro para apresentar o aplicativo no Google Slides.
+
 ## Requisitos
 - Python 3.12+
 - pip
