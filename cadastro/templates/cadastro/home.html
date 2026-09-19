@@ -1,0 +1,177 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Turismo de Picuí</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+
+
+<body class="bg-gray-100 min-h-screen text-gray-800">
+
+    <header class="bg-green-700 text-white shadow-md">
+
+        <div class="max-w-6xl mx-auto px-6 py-8">
+
+            <div class="flex flex-col md:flex-row items-center gap-5">
+
+                <div class="flex items-center gap-4">
+
+                    <div class="bg-white rounded-xl p-2 shadow-sm flex-shrink-0">
+                        <img
+                            src="{% static 'cadastro/imagem/logo-picui.png' %}"
+                            alt="Prefeitura Municipal de Picuí"
+                            class="w-24 h-20 object-contain rounded-lg">
+                    </div>
+
+                    <div class="bg-white rounded-xl p-2 shadow-sm flex-shrink-0">
+                        <img
+                            src="{% static 'cadastro/imagem/turismo-picui.png' %}"
+                            alt="Departamento de Turismo e Meio Ambiente de Picuí"
+                            class="w-24 h-20 object-contain rounded-lg">
+                    </div>
+
+                </div>
+
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-bold">
+                        Turismo de Picuí
+                    </h1>
+
+                    <p class="text-green-100 mt-1">
+                        Cadastro de empreendimentos e atrativos turísticos
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 py-12">
+
+        <section class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+
+            <div class="grid md:grid-cols-2 gap-10 items-center">
+
+                <div>
+
+                    <span class="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full mb-4">
+                        Guia Turístico de Picuí
+                    </span>
+
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                        Cadastre seu empreendimento no turismo local
+                    </h2>
+
+                    <p class="text-lg text-gray-600 leading-relaxed mb-8">
+                        Participe do guia turístico da cidade, conecte seu negócio
+                        ao turismo de Picuí e aumente a visibilidade do seu
+                        empreendimento.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+
+                        <a href="{% url 'cadastrar_empreendimento' %}"
+                            class="bg-green-700 hover:bg-green-800 text-white font-bold px-6 py-3 rounded-lg text-center transition">
+                            Fazer cadastro
+                        </a>
+
+                        <a href="{% url 'catalogo_publico' %}"
+                            class="bg-white border border-green-700 hover:bg-green-50 text-green-800 font-bold px-6 py-3 rounded-lg text-center transition">
+                            Ver guia turístico
+                        </a>
+
+                        <a href="{% url 'admin:index' %}"
+                            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-6 py-3 rounded-lg text-center transition">
+                            Área administrativa
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-2xl p-6">
+
+                    <h3 class="text-xl font-bold text-green-800 mb-4">
+                        O que você pode cadastrar
+                    </h3>
+
+                    <ul class="space-y-3 text-gray-700">
+                        <li>• Hotéis, pousadas e hospedagens</li>
+                        <li>• Restaurantes, bares e gastronomia</li>
+                        <li>• Artesanato e produtores culturais</li>
+                        <li>• Atrativos naturais e culturais</li>
+                        <li>• Eventos e serviços turísticos</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="mt-10 border-t border-gray-200 pt-8">
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Acesso rápido pelo celular</h3>
+                    <p class="text-gray-600 mt-2">Aponte a câmera para um dos códigos abaixo.</p>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-6 max-w-xl mx-auto">
+                    <div class="border border-gray-200 rounded-xl p-4 text-center bg-white">
+                        <img src="{% url 'qrcode_acesso' %}?destino=home" alt="QR Code para a página inicial"
+                            class="w-40 h-40 mx-auto mb-3">
+                        <p class="font-bold text-gray-800">Página inicial</p>
+                        <p class="text-sm text-gray-500 mt-1">Conheça o guia turístico</p>
+                    </div>
+
+                    <div class="border border-green-200 rounded-xl p-4 text-center bg-green-50">
+                        <img src="{% url 'qrcode_acesso' %}?destino=cadastro" alt="QR Code para o cadastro"
+                            class="w-40 h-40 mx-auto mb-3">
+                        <p class="font-bold text-green-800">Fazer cadastro</p>
+                        <p class="text-sm text-gray-600 mt-1">Acesse o formulário direto</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="bg-green-800 text-white mt-10">
+
+        <div class="max-w-6xl mx-auto px-4 py-6 text-center text-sm">
+            <p>Turismo de Picuí</p>
+            <p class="text-green-200 mt-1">Prefeitura Municipal de Picuí</p>
+            <div class="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-3 text-green-100">
+                <a href="https://www.picui.pb.gov.br/" target="_blank" rel="noopener noreferrer" class="hover:text-white underline">
+                    Site da Prefeitura
+                </a>
+                <a href="https://www.instagram.com/prefeituradepicuioficial/" target="_blank" rel="noopener noreferrer" class="hover:text-white underline">
+                    Instagram oficial
+                </a>
+                <a href="https://heyzine.com/flip-book/e975954570.html" target="_blank" rel="noopener noreferrer" class="hover:text-white underline">
+                    Revista turística
+                </a>
+                <a href="{% url 'privacidade' %}" class="hover:text-white underline">
+                    Aviso de privacidade
+                </a>
+            </div>
+        </div>
+
+    </footer>
+
+</body>
+
+</html>

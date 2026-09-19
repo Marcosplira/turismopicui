@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    container_name: turismo-picui
+    ports:
+      - "8000:8000"
+    environment:
+      DEBUG: "False"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?Defina DJANGO_SECRET_KEY antes de iniciar o Docker}"
+    volumes:
+      - .:/app
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2
