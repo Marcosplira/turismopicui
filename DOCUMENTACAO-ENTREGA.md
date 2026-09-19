@@ -125,7 +125,7 @@ Passos gerais:
 6. Configurar:
 
 ```text
-Build Command: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+Build Command: bash build.sh
 Start Command: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
 ```
 
