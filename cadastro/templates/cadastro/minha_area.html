@@ -10,7 +10,10 @@
     <main class="max-w-4xl mx-auto px-6 py-10">
         <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
             <div><p class="text-green-700 font-semibold">Turismo de Picuí</p><h1 class="text-3xl font-bold">Meus dados</h1></div>
-            <a href="{% url 'sair' %}" class="text-red-700 underline">Sair</a>
+            <div class="flex items-center gap-4">
+                <a href="{% url 'home' %}" class="text-green-700 underline">Página inicial</a>
+                <a href="{% url 'sair' %}" class="text-red-700 underline">Sair</a>
+            </div>
         </div>
         {% for empreendimento in empreendimentos %}
         <article class="bg-white rounded-2xl shadow-sm p-6 mb-5">
