@@ -31,6 +31,7 @@ class EmpreendimentoAdmin(admin.ModelAdmin):
     search_fields = (
         'nome',
         'responsavel',
+        'proprietario__email',
         'cpf_responsavel',
         'cnpj',
         'bairro_comunidade',
@@ -47,30 +48,38 @@ class EmpreendimentoAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Identificação', {
             'fields': (
-                'nome', 'responsavel', 'categorias', 'cpf_responsavel', 'cnpj'
+                'nome', 'responsavel', 'proprietario', 'categorias',
+                'cpf_responsavel', 'cnpj'
             ),
         }),
         ('Localização e contato', {
             'fields': (
-                'zona', 'endereco', 'bairro_comunidade', 'ponto_referencia',
+                'zona', 'endereco', 'numero', 'bairro_comunidade',
+                'ponto_referencia',
                 'telefone', 'whatsapp', 'email'
             ),
         }),
         ('Informações turísticas', {
             'fields': (
-                'descricao', 'historia', 'dias_funcionamento',
+                'tipo_empreendimento', 'descricao', 'historia',
+                'numero_quartos', 'numero_leitos', 'quarto_acessibilidade',
+                'cafe_incluso', 'possui_garagem', 'valor_diarias',
+                'dias_funcionamento',
                 'horario_funcionamento', 'possui_cadastur', 'numero_cadastur'
             ),
         }),
         ('Cultura e acessibilidade', {
             'fields': (
+                'possui_sicab', 'possui_caf', 'possui_estacionamento',
                 'atende_agendamento', 'valoriza_cultura_local',
-                'como_valoriza_cultura', 'sustentabilidade', 'acessibilidade'
+                'como_valoriza_cultura', 'sustentabilidade', 'acessibilidade',
+                'praticas_sustentabilidade',
             ),
         }),
         ('Moderação', {
             'fields': (
-                'status', 'observacoes', 'data_cadastro', 'data_atualizacao'
+                'deseja_selo_turismo', 'autoriza_divulgacao', 'status',
+                'observacoes', 'data_cadastro', 'data_atualizacao'
             ),
         }),
     )

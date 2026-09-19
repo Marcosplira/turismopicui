@@ -3,8 +3,12 @@ from urllib.parse import quote_plus
 
 import qrcode
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
@@ -32,8 +36,11 @@ def catalogo(request):
 
     if busca:
         empreendimentos = empreendimentos.filter(
-            nome__icontains=busca
-        )
+            Q(nome__icontains=busca)
+            | Q(tipo_empreendimento__icontains=busca)
+            | Q(bairro_comunidade__icontains=busca)
+            | Q(descricao__icontains=busca)
+        ).distinct()
     if categoria:
         empreendimentos = empreendimentos.filter(categorias__slug=categoria)
     if zona:
@@ -125,10 +132,28 @@ def cadastrar_empreendimento(request):
 
             try:
 
+                email = form.cleaned_data["email"].lower()
+                if User.objects.filter(username=email).exists():
+                    form.add_error(
+                        "email",
+                        "Este e-mail já possui acesso. Use outro e-mail "
+                        "ou entre no painel.",
+                    )
+                    raise ValueError("E-mail já cadastrado")
+
                 with transaction.atomic():
+
+                    usuario = User.objects.create_user(
+                        username=email,
+                        email=email,
+                        password=form.cleaned_data["senha_acesso"],
+                        first_name=form.cleaned_data["responsavel"],
+                    )
 
                     # Salva o empreendimento
                     empreendimento = form.save()
+                    empreendimento.proprietario = usuario
+                    empreendimento.save(update_fields=["proprietario"])
 
                     # Salva cada foto
                     for foto in fotos:
@@ -160,6 +185,10 @@ def cadastrar_empreendimento(request):
 
                 return redirect("cadastro_sucesso")
 
+            except ValueError:
+
+                messages.error(request, "Confira o e-mail informado.")
+
             except Exception:
 
                 messages.error(
@@ -190,3 +219,32 @@ def cadastrar_empreendimento(request):
 def cadastro_sucesso(request):
 
     return render(request, "cadastro/sucesso.html")
+
+
+def entrar(request):
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip().lower()
+        senha = request.POST.get("senha", "")
+        usuario = authenticate(request, username=email, password=senha)
+        if usuario is not None:
+            login(request, usuario)
+            return redirect("minha_area")
+        messages.error(request, "E-mail ou senha inválidos.")
+    return render(request, "cadastro/entrar.html")
+
+
+def sair(request):
+    logout(request)
+    return redirect("entrar")
+
+
+@login_required
+def minha_area(request):
+    empreendimentos = request.user.empreendimentos.prefetch_related(
+        "categorias", "fotos"
+    )
+    return render(
+        request,
+        "cadastro/minha_area.html",
+        {"empreendimentos": empreendimentos},
+    )

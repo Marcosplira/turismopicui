@@ -3,6 +3,17 @@ from .models import Empreendimento
 
 
 class EmpreendimentoForm(forms.ModelForm):
+    senha_acesso = forms.CharField(
+        required=True,
+        label="Senha para acompanhar seu cadastro",
+        min_length=8,
+        widget=forms.PasswordInput,
+    )
+    confirmar_senha = forms.CharField(
+        required=True,
+        label="Confirme a senha",
+        widget=forms.PasswordInput,
+    )
     consentimento = forms.BooleanField(
         required=True,
         label="Aceito o uso dos dados para análise do cadastro.",
@@ -26,8 +37,11 @@ class EmpreendimentoForm(forms.ModelForm):
             "cnpj",
             "possui_cadastur",
             "numero_cadastur",
+            "possui_sicab",
+            "possui_caf",
             "zona",
             "endereco",
+            "numero",
             "bairro_comunidade",
             "ponto_referencia",
             "telefone",
@@ -36,15 +50,26 @@ class EmpreendimentoForm(forms.ModelForm):
             "instagram",
             "facebook",
             "outras_redes",
+            "tipo_empreendimento",
+            "numero_quartos",
+            "numero_leitos",
+            "quarto_acessibilidade",
+            "cafe_incluso",
+            "possui_garagem",
+            "valor_diarias",
             "descricao",
             "historia",
             "dias_funcionamento",
             "horario_funcionamento",
             "atende_agendamento",
+            "possui_estacionamento",
             "valoriza_cultura_local",
             "como_valoriza_cultura",
             "sustentabilidade",
             "acessibilidade",
+            "praticas_sustentabilidade",
+            "deseja_selo_turismo",
+            "autoriza_divulgacao",
         ]
 
         widgets = {
@@ -96,6 +121,12 @@ class EmpreendimentoForm(forms.ModelForm):
                     "class": "w-full border border-gray-300 rounded-lg p-3",
                 }
             ),
+            "possui_sicab": forms.RadioSelect(
+                choices=[(True, "Sim"), (False, "Não")]
+            ),
+            "possui_caf": forms.RadioSelect(
+                choices=[(True, "Sim"), (False, "Não")]
+            ),
             # ==============================
             # LOCALIZAÇÃO
             # ==============================
@@ -108,6 +139,7 @@ class EmpreendimentoForm(forms.ModelForm):
                     "class": "w-full border border-gray-300 rounded-lg p-3",
                 }
             ),
+            "numero": forms.TextInput(attrs={"placeholder": "Número"}),
             "bairro_comunidade": forms.TextInput(
                 attrs={
                     "placeholder": "Digite bairro / comunidade...",
@@ -159,6 +191,32 @@ class EmpreendimentoForm(forms.ModelForm):
                     "class": "w-full border border-gray-300 rounded-lg p-3",
                 }
             ),
+            "tipo_empreendimento": forms.TextInput(
+                attrs={
+                    "placeholder": "Ex.: pousada, restaurante, artesanato..."
+                }
+            ),
+            "numero_quartos": forms.TextInput(
+                attrs={"placeholder": "Ex.: 2 casal, 1 solteiro"}
+            ),
+            "numero_leitos": forms.TextInput(
+                attrs={"placeholder": "Quantidade de leitos"}
+            ),
+            "quarto_acessibilidade": forms.RadioSelect(
+                choices=[(True, "Sim"), (False, "Não")]
+            ),
+            "cafe_incluso": forms.RadioSelect(
+                choices=[(True, "Sim"), (False, "Não")]
+            ),
+            "possui_garagem": forms.RadioSelect(
+                choices=[(True, "Sim"), (False, "Não")]
+            ),
+            "valor_diarias": forms.Textarea(
+                attrs={
+                    "placeholder": "Informe os valores por tipo de quarto",
+                    "rows": 3,
+                }
+            ),
             # ==============================
             # DESCRIÇÃO
             # ==============================
@@ -187,6 +245,9 @@ class EmpreendimentoForm(forms.ModelForm):
                     "placeholder": "Ex.: 08:00 às 18:00",
                     "class": "w-full border border-gray-300 rounded-lg p-3",
                 }
+            ),
+            "possui_estacionamento": forms.RadioSelect(
+                choices=[(True, "Sim"), (False, "Não")]
             ),
             # ==============================
             # AGENDAMENTO
@@ -233,6 +294,18 @@ class EmpreendimentoForm(forms.ModelForm):
                     "rows": 4,
                 }
             ),
+            "praticas_sustentabilidade": forms.Textarea(
+                attrs={
+                    "placeholder": "Liste as práticas ESG adotadas",
+                    "rows": 4,
+                }
+            ),
+            "deseja_selo_turismo": forms.RadioSelect(
+                choices=[(True, "Sim"), (False, "Não")]
+            ),
+            "autoriza_divulgacao": forms.RadioSelect(
+                choices=[(True, "Autorizo"), (False, "Não autorizo")]
+            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -244,3 +317,16 @@ class EmpreendimentoForm(forms.ModelForm):
             self.fields["possui_cadastur"].initial = None
             self.fields["atende_agendamento"].initial = None
             self.fields["valoriza_cultura_local"].initial = None
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("senha_acesso") != cleaned_data.get(
+            "confirmar_senha"
+        ):
+            self.add_error("confirmar_senha", "As senhas precisam ser iguais.")
+        if not cleaned_data.get("email"):
+            self.add_error(
+                "email",
+                "Informe um e-mail para acessar seus dados depois.",
+            )
+        return cleaned_data

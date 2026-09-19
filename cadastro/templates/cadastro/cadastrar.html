@@ -132,7 +132,7 @@
             </p>
 
             <p class="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3 mb-0">
-                Atenção: todas as informações marcadas com * são obrigatórias.
+                Atenção: preencha as informações com atenção. Os campos essenciais serão indicados no próprio formulário.
             </p>
 
             <!-- MENSAGENS DO DJANGO -->
@@ -182,7 +182,7 @@
                     <div class="mb-5">
 
                         <label for="id_nome" class="field-label">
-                            Nome do empreendimento *
+                            Nome do empreendimento
                         </label>
 
                         <input type="text" name="nome" id="id_nome" value="{{ form.nome.value|default:'' }}" required
@@ -202,7 +202,7 @@
                     <div class="mb-5">
 
                         <label for="id_responsavel" class="field-label">
-                            Nome do responsável *
+                            Nome do responsável
                         </label>
 
                         <input type="text" name="responsavel" id="id_responsavel"
@@ -225,7 +225,7 @@
                         <div>
 
                             <label for="id_cpf_responsavel" class="field-label">
-                                CPF do responsável *
+                                CPF do responsável
                             </label>
 
                             <input type="text" name="cpf_responsavel" id="id_cpf_responsavel"
@@ -249,6 +249,29 @@
 
                     </div>
 
+                </section>
+
+
+                <section class="form-section mb-8">
+                    <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
+                        2. Cadastros e localização
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <p class="field-label">É cadastrado no SICAB?</p>
+                            {{ form.possui_sicab }}
+                        </div>
+                        <div>
+                            <p class="field-label">Possui CAF? (comunidade rural)</p>
+                            {{ form.possui_caf }}
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <label for="id_numero" class="field-label">Número</label>
+                        {{ form.numero }}
+                    </div>
                 </section>
 
 
@@ -308,7 +331,7 @@
                     <div class="mb-5">
 
                         <label for="id_zona" class="field-label">
-                            Zona *
+                            Zona
                         </label>
 
                         <select name="zona" id="id_zona" required
@@ -335,7 +358,7 @@
                     <div class="mb-5">
 
                         <label for="id_endereco" class="field-label">
-                            Endereço *
+                            Endereço
                         </label>
 
                         <input type="text" name="endereco" id="id_endereco" value="{{ form.endereco.value|default:'' }}"
@@ -349,7 +372,7 @@
                     <div class="mb-5">
 
                         <label for="id_bairro_comunidade" class="field-label">
-                            Bairro / Comunidade *
+                            Bairro / Comunidade
                         </label>
 
                         <input type="text" name="bairro_comunidade" id="id_bairro_comunidade"
@@ -394,7 +417,7 @@
                         <div>
 
                             <label for="id_telefone" class="field-label">
-                                Telefone *
+                                Telefone
                             </label>
 
                             <input type="text" name="telefone" id="id_telefone"
@@ -474,8 +497,32 @@
 
                         </div>
 
+                        <div>
+                            <label for="id_tipo_empreendimento" class="field-label">Tipo de empreendimento</label>
+                            {{ form.tipo_empreendimento }}
+                        </div>
+
                     </div>
 
+                </section>
+
+
+                <section class="form-section mb-8">
+                    <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
+                        Informações de hospedagem
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">Preencha esta parte se for hotel, pousada ou hospedagem.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div><label class="field-label">Número e tipos de quartos</label>{{ form.numero_quartos }}</div>
+                        <div><label class="field-label">Número de leitos</label>{{ form.numero_leitos }}</div>
+                        <div><p class="field-label">Quarto com acessibilidade?</p>{{ form.quarto_acessibilidade }}</div>
+                        <div><p class="field-label">Café incluso?</p>{{ form.cafe_incluso }}</div>
+                        <div><p class="field-label">Garagem?</p>{{ form.possui_garagem }}</div>
+                    </div>
+                    <div class="mt-5">
+                        <label class="field-label">Valor das diárias por tipo de quarto</label>
+                        {{ form.valor_diarias }}
+                    </div>
                 </section>
 
 
@@ -494,7 +541,7 @@
                     <div class="mb-5">
 
                         <label for="id_descricao" class="field-label">
-                            Descrição do empreendimento *
+                            Descrição do empreendimento
                         </label>
 
                         <textarea name="descricao" id="id_descricao" rows="5" required
@@ -550,6 +597,11 @@
 
                     </div>
 
+                    <div class="mt-5">
+                        <p class="field-label">O local oferece estacionamento para veículos?</p>
+                        {{ form.possui_estacionamento }}
+                    </div>
+
                 </section>
 
 
@@ -567,7 +619,7 @@
                     <div class="mb-5">
 
                         <p class="block text-sm font-semibold text-gray-700 mb-3">
-                            Possui CADASTUR? *
+                            Possui CADASTUR?
                         </p>
 
                         <div class="flex gap-6">
@@ -607,6 +659,29 @@
 
                     </div>
 
+                    <div class="mt-5">
+                        <label class="field-label">Práticas de sustentabilidade e ESG</label>
+                        {{ form.praticas_sustentabilidade }}
+                    </div>
+
+                </section>
+
+
+                <section class="form-section mb-8">
+                    <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
+                        Selo Municipal e autorização
+                    </h3>
+                    <div class="mb-5">
+                        <p class="field-label">Deseja participar da avaliação para o Selo Municipal do Turismo?</p>
+                        {{ form.deseja_selo_turismo }}
+                    </div>
+                    <div>
+                        <p class="field-label">Autoriza o uso das informações para divulgação institucional?</p>
+                        {{ form.autoriza_divulgacao }}
+                    </div>
+                    <p class="text-sm text-gray-600 mt-4">
+                        O cadastro é gratuito e não garante automaticamente a concessão do selo.
+                    </p>
                 </section>
 
 
@@ -625,7 +700,7 @@
                     <div class="mb-6">
 
                         <p class="block text-sm font-semibold text-gray-700 mb-3">
-                            Atende mediante agendamento? *
+                            Atende mediante agendamento?
                         </p>
 
                         <div class="flex gap-6">
@@ -656,7 +731,7 @@
                     <div class="mb-5">
 
                         <p class="block text-sm font-semibold text-gray-700 mb-3">
-                            Valoriza a cultura local? *
+                            Valoriza a cultura local?
                         </p>
 
                         <div class="flex gap-6">
@@ -787,6 +862,31 @@
                 <!-- ========================================= -->
 
                 <div class="border-t pt-6 mt-8">
+
+                    <div class="form-section mb-6">
+                        <h3 class="text-lg font-bold text-green-700 mb-2">Acesso do responsável</h3>
+                        <p class="text-sm text-gray-600 mb-4">
+                            Use o e-mail e a senha abaixo para acompanhar seus dados depois.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="field-label" for="id_senha_acesso">Senha de acesso</label>
+                                <input type="password" name="senha_acesso" id="id_senha_acesso"
+                                    minlength="8" required class="field-input" autocomplete="new-password">
+                            </div>
+                            <div>
+                                <label class="field-label" for="id_confirmar_senha">Confirme a senha</label>
+                                <input type="password" name="confirmar_senha" id="id_confirmar_senha"
+                                    minlength="8" required class="field-input" autocomplete="new-password">
+                            </div>
+                        </div>
+                        {% if form.senha_acesso.errors %}
+                        <p class="text-red-600 text-sm mt-2">{{ form.senha_acesso.errors.0 }}</p>
+                        {% endif %}
+                        {% if form.confirmar_senha.errors %}
+                        <p class="text-red-600 text-sm mt-2">{{ form.confirmar_senha.errors.0 }}</p>
+                        {% endif %}
+                    </div>
 
                     <label class="flex items-start gap-3 text-sm text-gray-600 mb-5 cursor-pointer">
                         <input type="checkbox" name="consentimento" required class="mt-1 w-4 h-4">
