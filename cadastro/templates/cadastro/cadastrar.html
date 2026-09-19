@@ -252,29 +252,6 @@
                 </section>
 
 
-                <section class="form-section mb-8">
-                    <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
-                        2. Cadastros e localização
-                    </h3>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <p class="field-label">É cadastrado no SICAB?</p>
-                            {{ form.possui_sicab }}
-                        </div>
-                        <div>
-                            <p class="field-label">Possui CAF? (comunidade rural)</p>
-                            {{ form.possui_caf }}
-                        </div>
-                    </div>
-
-                    <div class="mt-5">
-                        <label for="id_numero" class="field-label">Número</label>
-                        {{ form.numero }}
-                    </div>
-                </section>
-
-
                 <!-- ========================================= -->
                 <!-- 2. CATEGORIA -->
                 <!-- ========================================= -->
@@ -314,6 +291,29 @@
 
                     </div>
 
+                </section>
+
+
+                <section class="form-section mb-8">
+                    <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
+                        3. Cadastros e localização
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <p class="field-label">É cadastrado no SICAB?</p>
+                            {{ form.possui_sicab }}
+                        </div>
+                        <div>
+                            <p class="field-label">Possui CAF? (comunidade rural)</p>
+                            {{ form.possui_caf }}
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <label for="id_numero" class="field-label">Número</label>
+                        {{ form.numero }}
+                    </div>
                 </section>
 
 
