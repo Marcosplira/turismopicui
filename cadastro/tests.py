@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
@@ -19,26 +18,20 @@ class CadastroPublicoTests(TestCase):
                 "telefone": "83999999999",
                 "email": "maria@example.com",
                 "descricao": "Hospedagem familiar.",
-                "senha_acesso": "SenhaSegura123",
-                "confirmar_senha": "SenhaSegura123",
                 "consentimento": "on",
                 "autoriza_divulgacao": "True",
             },
         )
 
         self.assertRedirects(resposta, reverse("cadastro_sucesso"))
-        self.assertTrue(
-            User.objects.filter(username="maria@example.com").exists()
-        )
         self.assertEqual(Empreendimento.objects.count(), 1)
+        area = self.client.get(reverse("minha_area"))
+        self.assertContains(area, "Pousada Serra")
 
-    def test_area_privada_exige_login(self):
+    def test_area_privada_nao_exibe_cadastro_de_outro_usuario(self):
         resposta = self.client.get(reverse("minha_area"))
 
-        self.assertRedirects(
-            resposta,
-            f"{reverse('entrar')}?next={reverse('minha_area')}",
-        )
+        self.assertContains(resposta, "Nenhum cadastro recente")
 
     def test_guia_exibe_apenas_aprovados(self):
         Empreendimento.objects.create(

@@ -185,4 +185,3 @@ DEFAULT_FROM_EMAIL = os.environ.get(
     'Turismo de Picuí <noreply@picui.pb.gov.br>',
 )
 
-LOGIN_URL = '/cadastro/entrar/'

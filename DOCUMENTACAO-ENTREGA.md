@@ -80,6 +80,8 @@ Para criar o primeiro usuario:
 .\venv\Scripts\python.exe manage.py createsuperuser
 ```
 
+O cliente nao precisa criar usuario, e-mail ou senha para consultar o cadastro. Depois de enviar o formulario, o sistema abre automaticamente o cadastro recente em `Meus dados` naquele navegador. Por seguranca, essa consulta fica vinculada a sessao do navegador; o administrador continua sendo o responsavel por localizar todos os dados no painel.
+
 No admin:
 
 1. Cadastre as categorias.

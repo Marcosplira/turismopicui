@@ -19,7 +19,11 @@
             <dl class="grid sm:grid-cols-2 gap-3 mt-5 text-sm"><div><dt class="font-bold">Responsável</dt><dd>{{ empreendimento.responsavel }}</dd></div><div><dt class="font-bold">E-mail</dt><dd>{{ empreendimento.email }}</dd></div><div><dt class="font-bold">Telefone</dt><dd>{{ empreendimento.telefone }}</dd></div><div><dt class="font-bold">Localização</dt><dd>{{ empreendimento.endereco }}, {{ empreendimento.bairro_comunidade }}</dd></div></dl>
         </article>
         {% empty %}
-        <div class="bg-white rounded-2xl p-8 text-center">Nenhum cadastro vinculado a este acesso.</div>
+        <div class="bg-white rounded-2xl p-8 text-center">
+            <h2 class="text-xl font-bold">Nenhum cadastro recente neste navegador.</h2>
+            <p class="text-gray-600 mt-2">Envie um cadastro para consultar os dados automaticamente nesta área.</p>
+            <a href="{% url 'cadastrar_empreendimento' %}" class="inline-block mt-5 bg-green-700 text-white font-bold px-5 py-3 rounded-lg">Fazer cadastro</a>
+        </div>
         {% endfor %}
     </main>
 </body>

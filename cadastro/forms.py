@@ -3,17 +3,6 @@ from .models import Empreendimento
 
 
 class EmpreendimentoForm(forms.ModelForm):
-    senha_acesso = forms.CharField(
-        required=True,
-        label="Senha para acompanhar seu cadastro",
-        min_length=8,
-        widget=forms.PasswordInput,
-    )
-    confirmar_senha = forms.CharField(
-        required=True,
-        label="Confirme a senha",
-        widget=forms.PasswordInput,
-    )
     consentimento = forms.BooleanField(
         required=True,
         label="Aceito o uso dos dados para análise do cadastro.",
@@ -318,15 +307,3 @@ class EmpreendimentoForm(forms.ModelForm):
             self.fields["atende_agendamento"].initial = None
             self.fields["valoriza_cultura_local"].initial = None
 
-    def clean(self):
-        cleaned_data = super().clean()
-        if cleaned_data.get("senha_acesso") != cleaned_data.get(
-            "confirmar_senha"
-        ):
-            self.add_error("confirmar_senha", "As senhas precisam ser iguais.")
-        if not cleaned_data.get("email"):
-            self.add_error(
-                "email",
-                "Informe um e-mail para acessar seus dados depois.",
-            )
-        return cleaned_data
