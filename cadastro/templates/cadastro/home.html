@@ -30,15 +30,12 @@
                 <div class="flex items-center gap-4">
 
                     <div class="bg-white rounded-xl p-2 shadow-sm flex-shrink-0">
-                        <img
-                            src="{% static 'cadastro/imagem/logo-picui.png' %}"
-                            alt="Prefeitura Municipal de Picuí"
+                        <img src="{% static 'cadastro/imagem/logo-picui.png' %}" alt="Prefeitura Municipal de Picuí"
                             class="w-24 h-20 object-contain rounded-lg">
                     </div>
 
                     <div class="bg-white rounded-xl p-2 shadow-sm flex-shrink-0">
-                        <img
-                            src="{% static 'cadastro/imagem/turismo-picui.png' %}"
+                        <img src="{% static 'cadastro/imagem/turismo-picui.png' %}"
                             alt="Departamento de Turismo e Meio Ambiente de Picuí"
                             class="w-24 h-20 object-contain rounded-lg">
                     </div>
@@ -69,12 +66,13 @@
 
                 <div>
 
-                    <span class="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full mb-4">
+                    <span
+                        class="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full mb-4">
                         Guia Turístico de Picuí
                     </span>
 
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                        Cadastre seu empreendimento no turismo local
+                        Cadastre seu Empreendimento no Turismo Local
                     </h2>
 
                     <p class="text-lg text-gray-600 leading-relaxed mb-8">
@@ -109,7 +107,7 @@
                     Fazer cadastro
                 </a>
 
-                        <a href="{% url 'minha_area' %}"
+                <a href="{% url 'minha_area' %}"
                     class="min-w-[145px] bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-5 py-3 rounded-lg text-center transition">
                     Meus dados
                 </a>
@@ -126,25 +124,39 @@
             </div>
 
             <section class="mt-10 border-t border-gray-200 pt-8">
+
                 <div class="grid md:grid-cols-5 gap-8 items-center">
+
                     <div class="md:col-span-2 text-center md:text-left">
-                        <img src="{% static 'cadastro/imagem/logo do guia.png' %}"
-                            alt="Logo do Guia Turístico de Picuí"
-                            class="w-48 h-48 object-contain mx-auto md:mx-0 rounded-xl">
-                        <h3 class="text-2xl font-bold text-green-800 mt-5">Conheça o Guia Turístico de Picuí</h3>
+
+                        <img src="{% static 'cadastro/imagem/logo do guia.png' %}" alt="Logo do Guia Turístico de Picuí"
+                            class="w-56 h-56 object-contain mx-auto md:mx-0 rounded-xl">
+
+                        <h3 class="text-2xl font-bold text-green-800 mt-5">
+                            Conheça o Guia Turístico de Picuí
+                        </h3>
+
                         <p class="text-gray-600 mt-2">
                             Serviços, gastronomia, hospedagem e cultura em um só lugar.
                         </p>
+
                     </div>
 
                     <div class="md:col-span-3">
+
                         <video controls preload="metadata" class="w-full rounded-xl shadow-sm bg-gray-900"
                             aria-label="Vídeo de apresentação do Guia Turístico de Picuí">
+
                             <source src="{% static 'cadastro/imagem/video-do-guia.mp4' %}" type="video/mp4">
+
                             Seu navegador não suporta a reprodução de vídeo.
+
                         </video>
+
                     </div>
+
                 </div>
+
             </section>
 
             <div class="mt-10 border-t border-gray-200 pt-8">
@@ -155,10 +167,16 @@
 
                 <div class="grid sm:grid-cols-2 gap-6 max-w-xl mx-auto">
                     <div class="border border-gray-200 rounded-xl p-4 text-center bg-white">
-                        <img src="{% url 'qrcode_acesso' %}?destino=home" alt="QR Code para a página inicial"
-                            class="w-40 h-40 mx-auto mb-3">
-                        <p class="font-bold text-gray-800">Página inicial</p>
-                        <p class="text-sm text-gray-500 mt-1">Conheça o guia turístico</p>
+                        <img src="{% url 'qrcode_acesso' %}?destino=guia"
+                            alt="QR Code para a Guia Turística de Picuí" class="w-40 h-40 mx-auto mb-3">
+
+                        <p class="font-bold text-gray-800">
+                             Guia Turístico
+                        </p>
+
+                        <p class="text-sm text-gray-500 mt-1">
+                             Acesse o Catálogo Digital
+                        </p>
                     </div>
 
                     <div class="border border-green-200 rounded-xl p-4 text-center bg-green-50">
@@ -180,13 +198,16 @@
             <p>Turismo de Picuí</p>
             <p class="text-green-200 mt-1">Prefeitura Municipal de Picuí</p>
             <div class="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-3 text-green-100">
-                <a href="https://www.picui.pb.gov.br/" target="_blank" rel="noopener noreferrer" class="hover:text-white underline">
+                <a href="https://www.picui.pb.gov.br/" target="_blank" rel="noopener noreferrer"
+                    class="hover:text-white underline">
                     Site da Prefeitura
                 </a>
-                <a href="https://www.instagram.com/prefeituradepicuioficial/" target="_blank" rel="noopener noreferrer" class="hover:text-white underline">
+                <a href="https://www.instagram.com/prefeituradepicuioficial/" target="_blank" rel="noopener noreferrer"
+                    class="hover:text-white underline">
                     Instagram oficial
                 </a>
-                <a href="https://heyzine.com/flip-book/e975954570.html" target="_blank" rel="noopener noreferrer" class="hover:text-white underline">
+                <a href="https://heyzine.com/flip-book/e975954570.html" target="_blank" rel="noopener noreferrer"
+                    class="hover:text-white underline">
                     Revista turística
                 </a>
                 <a href="{% url 'privacidade' %}" class="hover:text-white underline">

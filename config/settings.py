@@ -38,7 +38,7 @@ ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get(
         'ALLOWED_HOSTS',
-        'localhost,127.0.0.1,0.0.0.0,192.168.3.17,::1',
+        'localhost,127.0.0.1,0.0.0.0,10.0.0.230,192.168.3.17,::1',
     ).split(',')
     if host.strip()
 ]
@@ -50,9 +50,13 @@ CSRF_TRUSTED_ORIGINS = [
     for origin in os.environ.get(
         'CSRF_TRUSTED_ORIGINS',
         (
-            'http://localhost:8000,http://127.0.0.1:8000,'
-            'http://localhost:8001,http://127.0.0.1:8001,'
-            'http://192.168.3.17:8001,http://192.168.3.17:8002'
+            'http://localhost:8000,'
+            'http://127.0.0.1:8000,'
+            'http://localhost:8001,'
+            'http://127.0.0.1:8001,'
+            'http://10.0.0.230:8001,'
+            'http://192.168.3.17:8001,'
+            'http://192.168.3.17:8002'
         ),
     ).split(',')
     if origin.strip()

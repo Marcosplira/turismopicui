@@ -1,23 +1,13 @@
 from django import forms
+
 from .models import Empreendimento
 
 
 class EmpreendimentoForm(forms.ModelForm):
-    consentimento = forms.BooleanField(
-        required=True,
-        label="Aceito o uso dos dados para análise do cadastro.",
-        error_messages={
-            "required": (
-                "É necessário aceitar o aviso de privacidade "
-                "para enviar o cadastro."
-            )
-        },
-    )
 
     class Meta:
         model = Empreendimento
 
-        # Campos que aparecerão no formulário
         fields = [
             "nome",
             "responsavel",
@@ -26,11 +16,8 @@ class EmpreendimentoForm(forms.ModelForm):
             "cnpj",
             "possui_cadastur",
             "numero_cadastur",
-            "possui_sicab",
-            "possui_caf",
             "zona",
             "endereco",
-            "numero",
             "bairro_comunidade",
             "ponto_referencia",
             "telefone",
@@ -39,66 +26,71 @@ class EmpreendimentoForm(forms.ModelForm):
             "instagram",
             "facebook",
             "outras_redes",
-            "tipo_empreendimento",
-            "outro_segmento",
-            "numero_quartos",
-            "numero_leitos",
-            "quarto_acessibilidade",
-            "cafe_incluso",
-            "possui_garagem",
-            "valor_diarias",
             "descricao",
             "historia",
             "dias_funcionamento",
             "horario_funcionamento",
             "atende_agendamento",
-            "possui_estacionamento",
             "valoriza_cultura_local",
             "como_valoriza_cultura",
             "sustentabilidade",
             "acessibilidade",
-            "praticas_sustentabilidade",
-            "deseja_selo_turismo",
-            "autoriza_divulgacao",
         ]
 
         widgets = {
-            # ==============================
+            # ==================================================
             # IDENTIFICAÇÃO
-            # ==============================
+            # ==================================================
             "nome": forms.TextInput(
                 attrs={
-                    "placeholder": "Digite nome do empreendimento...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "Nome do empreendimento",
                 }
             ),
             "responsavel": forms.TextInput(
                 attrs={
-                    "placeholder": "Digite nome do responsável...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "Nome do responsável",
                 }
             ),
             "categorias": forms.CheckboxSelectMultiple(
-                attrs={"class": "categorias-grid"}
+                attrs={
+                    "class": "space-y-2",
+                }
             ),
-            # ==============================
-            # INFORMAÇÕES
-            # ==============================
             "cpf_responsavel": forms.TextInput(
                 attrs={
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
                     "placeholder": "000.000.000-00",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "maxlength": "14",
                 }
             ),
             "cnpj": forms.TextInput(
                 attrs={
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
                     "placeholder": "00.000.000/0000-00",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "maxlength": "18",
                 }
             ),
-            # ==============================
+            # ==================================================
             # CADASTUR
-            # ==============================
+            # ==================================================
             "possui_cadastur": forms.RadioSelect(
                 choices=[
                     (True, "Sim"),
@@ -107,157 +99,179 @@ class EmpreendimentoForm(forms.ModelForm):
             ),
             "numero_cadastur": forms.TextInput(
                 attrs={
-                    "placeholder": "Digite número do CADASTUR...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "Número do Cadastur",
                 }
             ),
-            "possui_sicab": forms.RadioSelect(
-                choices=[(True, "Sim"), (False, "Não")]
-            ),
-            "possui_caf": forms.RadioSelect(
-                choices=[(True, "Sim"), (False, "Não")]
-            ),
-            # ==============================
+            # ==================================================
             # LOCALIZAÇÃO
-            # ==============================
+            # ==================================================
             "zona": forms.Select(
-                attrs={"class": "w-full border border-gray-300 rounded-lg p-3"}
+                attrs={
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 bg-white focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    )
+                }
             ),
             "endereco": forms.TextInput(
                 attrs={
-                    "placeholder": "Digite endereço completo...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "Rua, número ou localização",
                 }
             ),
-            "numero": forms.TextInput(attrs={"placeholder": "Número"}),
             "bairro_comunidade": forms.TextInput(
                 attrs={
-                    "placeholder": "Digite bairro / comunidade...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "Bairro ou comunidade rural",
                 }
             ),
             "ponto_referencia": forms.TextInput(
                 attrs={
-                    "placeholder": "Digite ponto de referência...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "Ponto de referência",
                 }
             ),
-            # ==============================
-            # CONTATOS
-            # ==============================
+            # ==================================================
+            # CONTATO
+            # ==================================================
             "telefone": forms.TextInput(
                 attrs={
-                    "placeholder": "Digite telefone...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "(83) 00000-0000",
                 }
             ),
             "whatsapp": forms.TextInput(
                 attrs={
-                    "placeholder": "Digite WhatsApp...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "(83) 00000-0000",
                 }
             ),
             "email": forms.EmailInput(
                 attrs={
-                    "placeholder": "Digite e-mail...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "email@exemplo.com",
                 }
             ),
-            "instagram": forms.TextInput(
+            "instagram": forms.URLInput(
                 attrs={
-                    "placeholder": "@seuinstagram",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "https://instagram.com/...",
                 }
             ),
-            "facebook": forms.TextInput(
+            "facebook": forms.URLInput(
                 attrs={
-                    "placeholder": "Digite Facebook...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "https://facebook.com/...",
                 }
             ),
             "outras_redes": forms.TextInput(
                 attrs={
-                    "placeholder": "Digite outras redes sociais...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": "TikTok, YouTube ou outra rede",
                 }
             ),
-            "tipo_empreendimento": forms.TextInput(
-                attrs={
-                    "placeholder": "Ex.: pousada, restaurante, artesanato..."
-                }
-            ),
-            "outro_segmento": forms.TextInput(
-                attrs={
-                    "placeholder": (
-                        "Ex.: manicure, pedicure, massagista, eletricista..."
-                    )
-                }
-            ),
-            "numero_quartos": forms.TextInput(
-                attrs={"placeholder": "Ex.: 2 casal, 1 solteiro"}
-            ),
-            "numero_leitos": forms.TextInput(
-                attrs={"placeholder": "Quantidade de leitos"}
-            ),
-            "quarto_acessibilidade": forms.RadioSelect(
-                choices=[(True, "Sim"), (False, "Não")]
-            ),
-            "cafe_incluso": forms.RadioSelect(
-                choices=[(True, "Sim"), (False, "Não")]
-            ),
-            "possui_garagem": forms.RadioSelect(
-                choices=[(True, "Sim"), (False, "Não")]
-            ),
-            "valor_diarias": forms.Textarea(
-                attrs={
-                    "placeholder": "Informe os valores por tipo de quarto",
-                    "rows": 3,
-                }
-            ),
-            # ==============================
-            # DESCRIÇÃO
-            # ==============================
+            # ==================================================
+            # INFORMAÇÕES DO EMPREENDIMENTO
+            # ==================================================
             "descricao": forms.Textarea(
                 attrs={
-                    "placeholder": "Descreva brevemente o empreendimento...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
-                    "rows": 4,
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "rows": 5,
+                    "placeholder": (
+                        "Descreva o empreendimento, os serviços "
+                        "oferecidos e seus principais diferenciais."
+                    ),
                 }
             ),
             "historia": forms.Textarea(
                 attrs={
-                    "placeholder": "Conte a história do empreendimento...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
-                    "rows": 4,
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "rows": 5,
+                    "placeholder": ("Conte um pouco da história do empreendimento."),
                 }
             ),
             "dias_funcionamento": forms.TextInput(
                 attrs={
-                    "placeholder": "Ex.: Segunda a sábado",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": ("Ex.: Segunda a sábado"),
                 }
             ),
             "horario_funcionamento": forms.TextInput(
                 attrs={
-                    "placeholder": "Ex.: 08:00 às 18:00",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
+                    "placeholder": ("Ex.: 08h às 18h"),
                 }
             ),
-            "possui_estacionamento": forms.RadioSelect(
-                choices=[(True, "Sim"), (False, "Não")]
-            ),
-            # ==============================
+            # ==================================================
             # AGENDAMENTO
-            # ==============================
+            # ==================================================
             "atende_agendamento": forms.RadioSelect(
                 choices=[
                     (True, "Sim"),
                     (False, "Não"),
                 ]
             ),
-            # ==============================
-            # CULTURA
-            # ==============================
+            # ==================================================
+            # CULTURA LOCAL
+            # ==================================================
             "valoriza_cultura_local": forms.RadioSelect(
                 choices=[
                     (True, "Sim"),
@@ -266,52 +280,102 @@ class EmpreendimentoForm(forms.ModelForm):
             ),
             "como_valoriza_cultura": forms.Textarea(
                 attrs={
-                    "placeholder": (
-                        "Explique como o empreendimento valoriza a "
-                        "cultura local..."
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
                     ),
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
                     "rows": 4,
+                    "placeholder": (
+                        "Explique como o empreendimento valoriza " "a cultura local."
+                    ),
                 }
             ),
-            # ==============================
+            # ==================================================
             # SUSTENTABILIDADE
-            # ==============================
+            # ==================================================
             "sustentabilidade": forms.Textarea(
                 attrs={
-                    "placeholder": "Descreva as ações de sustentabilidade...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
                     "rows": 4,
+                    "placeholder": (
+                        "Informe ações de sustentabilidade, "
+                        "preservação ambiental ou uso consciente "
+                        "dos recursos."
+                    ),
                 }
             ),
+            # ==================================================
+            # ACESSIBILIDADE
+            # ==================================================
             "acessibilidade": forms.Textarea(
                 attrs={
-                    "placeholder": "Descreva as ações de acessibilidade...",
-                    "class": "w-full border border-gray-300 rounded-lg p-3",
+                    "class": (
+                        "w-full border border-gray-300 rounded-lg "
+                        "p-3 focus:ring-2 focus:ring-green-600 "
+                        "focus:border-green-600"
+                    ),
                     "rows": 4,
+                    "placeholder": (
+                        "Informe recursos ou condições de "
+                        "acessibilidade disponíveis."
+                    ),
                 }
-            ),
-            "praticas_sustentabilidade": forms.Textarea(
-                attrs={
-                    "placeholder": "Liste as práticas ESG adotadas",
-                    "rows": 4,
-                }
-            ),
-            "deseja_selo_turismo": forms.RadioSelect(
-                choices=[(True, "Sim"), (False, "Não")]
-            ),
-            "autoriza_divulgacao": forms.RadioSelect(
-                choices=[(True, "Autorizo"), (False, "Não autorizo")]
             ),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Deixa SIM/NÃO sem nenhuma opção marcada
-        # quando o formulário é aberto pela primeira vez.
+        # ==================================================
+        # OBRIGA O USUÁRIO A ESCOLHER SIM OU NÃO
+        # ==================================================
+
+        self.fields["possui_cadastur"].required = True
+        self.fields["atende_agendamento"].required = True
+        self.fields["valoriza_cultura_local"].required = True
+
+        # ==================================================
+        # EVITA QUE OS CAMPOS BOOLEANOS VENHAM MARCADOS
+        # AUTOMATICAMENTE COMO "NÃO"
+        # ==================================================
+
         if not self.is_bound:
             self.fields["possui_cadastur"].initial = None
             self.fields["atende_agendamento"].initial = None
             self.fields["valoriza_cultura_local"].initial = None
 
+        # ==================================================
+        # LABELS
+        # ==================================================
+
+        self.fields["nome"].label = "Nome do empreendimento"
+        self.fields["responsavel"].label = "Responsável"
+        self.fields["categorias"].label = "Categoria(s)"
+        self.fields["cpf_responsavel"].label = "CPF do responsável"
+        self.fields["cnpj"].label = "CNPJ"
+        self.fields["possui_cadastur"].label = "Possui Cadastur?"
+        self.fields["numero_cadastur"].label = "Número do Cadastur"
+        self.fields["zona"].label = "Localização"
+        self.fields["endereco"].label = "Endereço"
+        self.fields["bairro_comunidade"].label = "Bairro ou comunidade"
+        self.fields["ponto_referencia"].label = "Ponto de referência"
+        self.fields["telefone"].label = "Telefone"
+        self.fields["whatsapp"].label = "WhatsApp"
+        self.fields["email"].label = "E-mail"
+        self.fields["instagram"].label = "Instagram"
+        self.fields["facebook"].label = "Facebook"
+        self.fields["outras_redes"].label = "Outras redes sociais"
+        self.fields["descricao"].label = "Descrição do empreendimento"
+        self.fields["historia"].label = "História do empreendimento"
+        self.fields["dias_funcionamento"].label = "Dias de funcionamento"
+        self.fields["horario_funcionamento"].label = "Horário de funcionamento"
+        self.fields["atende_agendamento"].label = "Atende mediante agendamento?"
+        self.fields["valoriza_cultura_local"].label = "Valoriza a cultura local?"
+        self.fields["como_valoriza_cultura"].label = "Como valoriza a cultura local?"
+        self.fields["sustentabilidade"].label = "Sustentabilidade"
+        self.fields["acessibilidade"].label = "Acessibilidade"

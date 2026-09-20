@@ -49,9 +49,7 @@ def catalogo(request):
         numeros = "".join(char for char in telefone if char.isdigit())
         if numeros and not numeros.startswith("55"):
             numeros = f"55{numeros}"
-        empreendimento.whatsapp_url = (
-            f"https://wa.me/{numeros}" if numeros else ""
-        )
+        empreendimento.whatsapp_url = f"https://wa.me/{numeros}" if numeros else ""
         endereco = ", ".join(
             part
             for part in (
@@ -62,8 +60,7 @@ def catalogo(request):
             if part
         )
         empreendimento.mapa_url = (
-            "https://www.google.com/maps/search/?api=1&query="
-            f"{quote_plus(endereco)}"
+            "https://www.google.com/maps/search/?api=1&query=" f"{quote_plus(endereco)}"
         )
 
     return render(
@@ -81,10 +78,21 @@ def catalogo(request):
 
 def qrcode_acesso(request):
     destino = request.GET.get("destino", "home")
-    caminho = "/cadastro/" if destino == "cadastro" else "/"
-    url = request.build_absolute_uri(caminho)
+
+    if destino == "revista":
+        # QR Code direto para a Revista Turística
+        url = "https://heyzine.com/flip-book/e975954570.html"
+
+    elif destino == "cadastro":
+        # Endereço do sistema
+        url = "http://10.0.0.230:8001/"
+
+    else:
+        # Página inicial
+        url = request.build_absolute_uri("/cadastro/")
 
     imagem = qrcode.make(url)
+
     arquivo = BytesIO()
     imagem.save(arquivo, format="PNG")
 
