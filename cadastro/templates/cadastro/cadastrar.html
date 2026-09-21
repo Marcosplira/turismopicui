@@ -4,7 +4,9 @@
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Cadastro de Empreendimento - Turismo de Picuí</title>
@@ -17,88 +19,229 @@
         }
 
         .form-section {
-            background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+            background: linear-gradient(180deg,
+                    #f8fafc 0%,
+                    #ffffff 100%);
+
             border: 1px solid #e5e7eb;
+
             border-radius: 1rem;
+
             padding: 1.5rem;
         }
 
         .field-label {
             color: #374151;
+
             font-size: 0.875rem;
+
             font-weight: 700;
+
             margin-bottom: 0.5rem;
+
             display: block;
         }
 
         .field-input {
             width: 100%;
+
             border: 1px solid #d1d5db;
+
             border-radius: 0.75rem;
+
             padding: 0.75rem 0.875rem;
+
             background-color: #ffffff;
+
             transition: all 0.2s ease;
         }
 
         .field-input:focus {
             outline: none;
+
             border-color: #15803d;
-            box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12);
+
+            box-shadow:
+                0 0 0 3px rgba(21, 128, 61, 0.12);
         }
 
         input:focus,
         textarea:focus,
         select:focus {
             outline: none;
+
             border-color: #15803d;
-            box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.15);
+
+            box-shadow:
+                0 0 0 2px rgba(21, 128, 61, 0.15);
+        }
+
+        textarea.field-input {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        select.field-input {
+            cursor: pointer;
         }
 
         .primary-btn {
-            background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+            background: linear-gradient(135deg,
+                    #166534 0%,
+                    #15803d 100%);
+
             color: #fff;
+
             font-weight: 700;
+
             border-radius: 0.75rem;
+
             padding: 0.9rem 1.5rem;
-            transition: transform 0.15s ease, box-shadow 0.2s ease;
-            box-shadow: 0 8px 20px rgba(21, 128, 61, 0.2);
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.2s ease;
+
+            box-shadow:
+                0 8px 20px rgba(21, 128, 61, 0.2);
         }
 
         .primary-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 10px 24px rgba(21, 128, 61, 0.25);
+
+            box-shadow:
+                0 10px 24px rgba(21, 128, 61, 0.25);
+        }
+
+        .primary-btn:disabled {
+            opacity: 0.6;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+        .radio-list {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 1rem;
+        }
+
+        .radio-list ul {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 1.5rem;
+
+            list-style: none;
+
+            padding: 0;
+
+            margin: 0;
+        }
+
+        .radio-list li {
+            display: flex;
+
+            align-items: center;
+
+            gap: 0.5rem;
+        }
+
+        .radio-list label {
+            display: flex;
+
+            align-items: center;
+
+            gap: 0.5rem;
+
+            cursor: pointer;
+        }
+
+        .errorlist {
+            list-style: none;
+
+            padding: 0;
+
+            margin-top: 0.4rem;
+
+            color: #dc2626;
+
+            font-size: 0.875rem;
+        }
+
+        .checkbox-category {
+            transition:
+                background-color 0.15s ease,
+                border-color 0.15s ease;
+        }
+
+        .checkbox-category:hover {
+            border-color: #86efac;
+
+            background-color: #f0fdf4;
         }
     </style>
+
 </head>
 
+
 <body class="bg-gray-100 min-h-screen">
+
+
+    <!-- ================================================== -->
     <!-- CABEÇALHO -->
+    <!-- ================================================== -->
+
     <header class="bg-green-700 text-white">
 
         <div class="max-w-5xl mx-auto px-6 py-6">
 
             <div class="flex items-center gap-5">
 
+
+                <!-- LOGOS -->
+
                 <div class="flex items-center gap-4">
-                    <div class="bg-white rounded-xl p-2 shadow-sm flex-shrink-0">
-                        <img src="{% static 'cadastro/imagem/logo-picui.png' %}" alt="Prefeitura Municipal de Picuí"
-                            class="w-24 h-20 object-contain rounded-lg">
-                    </div>
+
 
                     <div class="bg-white rounded-xl p-2 shadow-sm flex-shrink-0">
-                        <img src="{% static 'cadastro/imagem/turismo-picui.png' %}" alt="Departamento de Turismo e Meio Ambiente de Picuí"
+
+                        <img src="{% static 'cadastro/imagem/logo-picui.png' %}" alt="Prefeitura Municipal de Picuí"
                             class="w-24 h-20 object-contain rounded-lg">
+
                     </div>
+
+
+                    <div class="bg-white rounded-xl p-2 shadow-sm flex-shrink-0">
+
+                        <img src="{% static 'cadastro/imagem/turismo-picui.png' %}"
+                            alt="Departamento de Turismo e Meio Ambiente de Picuí"
+                            class="w-24 h-20 object-contain rounded-lg">
+
+                    </div>
+
                 </div>
+
+
+                <!-- TÍTULO -->
 
                 <div>
 
                     <h1 class="text-3xl font-bold">
+
                         Turismo de Picuí
+
                     </h1>
 
+
                     <p class="mt-2 text-green-100">
+
                         Cadastro de empreendimentos e atrativos turísticos
+
                     </p>
 
                 </div>
@@ -110,66 +253,146 @@
     </header>
 
 
+    <!-- ================================================== -->
     <!-- CONTEÚDO -->
+    <!-- ================================================== -->
+
     <main class="max-w-5xl mx-auto px-6 py-8">
 
-        <a href="{% url 'home' %}" class="inline-flex items-center text-green-700 hover:text-green-900 font-semibold mb-5">
+
+        <!-- VOLTAR -->
+
+        <a href="{% url 'home' %}"
+            class="inline-flex items-center text-green-700 hover:text-green-900 font-semibold mb-5">
+
             ← Voltar para a página inicial
+
         </a>
+
 
         <div class="bg-white rounded-2xl shadow-lg border border-green-100 p-6 md:p-8 mb-8">
 
+
+            <!-- TÍTULO -->
+
             <div class="flex items-center gap-3 mb-4">
+
                 <div class="bg-green-100 text-green-800 rounded-full p-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 3" />
+
                     </svg>
+
                 </div>
+
+
                 <h2 class="text-2xl font-bold text-gray-800">
+
                     Cadastro do empreendimento
+
                 </h2>
+
             </div>
+
 
             <p class="text-gray-600 mt-2 mb-2">
+
                 Preencha as informações abaixo para cadastrar seu empreendimento
                 no <strong>GUIA TURÍSTICO DE PICUÍ</strong>.
+
             </p>
+
+
+            <!-- ================================================== -->
+            <!-- INFORMAÇÕES -->
+            <!-- ================================================== -->
 
             <div class="bg-green-50 border border-green-200 rounded-xl p-5 my-5">
-                <h3 class="text-lg font-bold text-green-800">Guia Turístico de Picuí - PB</h3>
+
+                <h3 class="text-lg font-bold text-green-800">
+
+                    Guia Turístico de Picuí - PB
+
+                </h3>
+
+
                 <p class="text-gray-700 mt-2">
-                    Serviços, gastronomia, hospedagem e cultura em um só lugar.
+
+                    Serviços, gastronomia, hospedagem e cultura
+                    em um só lugar.
+
                 </p>
+
+
                 <p class="text-sm text-gray-600 mt-4">
-                    Este formulário cadastra empreendedores locais para compor o
-                    Catálogo Digital do Guia Turístico de Picuí e fortalecer a
-                    divulgação dos serviços turísticos do município.
+
+                    Este formulário cadastra empreendedores locais
+                    para compor o Catálogo Digital do Guia Turístico
+                    de Picuí e fortalecer a divulgação dos serviços
+                    turísticos do município.
+
                 </p>
+
+
                 <div class="text-sm text-gray-700 mt-4 space-y-1">
-                    <p><strong>Secretário de Agricultura, Turismo e Meio Ambiente:</strong> Robinson Santos</p>
-                    <p><strong>Diretor Municipal de Turismo e Meio Ambiente:</strong> Ismael Moisés</p>
+
+                    <p>
+
+                        <strong>
+                            Secretário de Agricultura, Turismo e Meio Ambiente:
+                        </strong>
+
+                        Robinson Santos
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Diretor Municipal de Turismo e Meio Ambiente:
+                        </strong>
+
+                        Ismael Moisés
+
+                    </p>
+
                 </div>
+
             </div>
 
-            <p class="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3 mb-0">
-                Atenção: preencha as informações com atenção. Os campos essenciais serão indicados no próprio formulário.
+
+            <!-- AVISO -->
+
+            <p class="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3 mb-6">
+
+                Atenção: preencha as informações com atenção.
+                Os campos essenciais serão indicados no próprio formulário.
+
             </p>
 
-            <!-- MENSAGENS DO DJANGO -->
+
+            <!-- ================================================== -->
+            <!-- MENSAGENS -->
+            <!-- ================================================== -->
+
             {% if messages %}
+
             <div class="space-y-3 mb-6">
 
                 {% for message in messages %}
 
                 <div class="p-4 rounded-lg
-                {% if message.tags == 'success' %}
-                    bg-green-100 text-green-800 border border-green-300
-                {% elif message.tags == 'error' %}
-                    bg-red-100 text-red-800 border border-red-300
-                {% else %}
-                    bg-blue-100 text-blue-800 border border-blue-300
-                {% endif %}
-            ">
+                            {% if message.tags == 'success' %}
+                                bg-green-100 text-green-800 border border-green-300
+                            {% elif message.tags == 'error' %}
+                                bg-red-100 text-red-800 border border-red-300
+                            {% else %}
+                                bg-blue-100 text-blue-800 border border-blue-300
+                            {% endif %}">
 
                     {{ message }}
 
@@ -178,79 +401,114 @@
                 {% endfor %}
 
             </div>
+
             {% endif %}
 
 
+            <!-- ================================================== -->
+            <!-- ERROS DO FORMULÁRIO -->
+            <!-- ================================================== -->
+
+            {% if form.errors %}
+
+            <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6">
+
+                <p class="font-bold mb-2">
+
+                    Existem campos que precisam ser corrigidos.
+
+                </p>
+
+                <p class="text-sm">
+
+                    Verifique as informações destacadas abaixo e tente enviar novamente.
+
+                </p>
+
+                {{ form.non_field_errors }}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- ================================================== -->
             <!-- FORMULÁRIO -->
-            <form method="POST" enctype="multipart/form-data" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+            <!-- ================================================== -->
+
+            <form method="POST" enctype="multipart/form-data" class="bg-white rounded-xl shadow-sm">
 
                 {% csrf_token %}
 
 
-                <!-- ========================================= -->
+                <!-- ================================================== -->
                 <!-- 1. IDENTIFICAÇÃO -->
-                <!-- ========================================= -->
+                <!-- ================================================== -->
 
                 <section class="form-section mb-8">
 
                     <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
+
                         1. Identificação do Empreendimento
+
                     </h3>
 
 
-                    <!-- Nome -->
+                    <!-- NOME -->
+
                     <div class="mb-5">
 
                         <label for="id_nome" class="field-label">
-                            Nome do empreendimento
+
+                            Nome do empreendimento *
+
                         </label>
 
-                        <input type="text" name="nome" id="id_nome" value="{{ form.nome.value|default:'' }}" required
-                            maxlength="200" class="field-input"
-                            placeholder="Digite o nome do empreendimento">
 
-                        {% if form.nome.errors %}
-                        <p class="text-red-600 text-sm mt-1">
-                            {{ form.nome.errors.0 }}
-                        </p>
-                        {% endif %}
+                        {{ form.nome }}
+
+
+                        {{ form.nome.errors }}
 
                     </div>
 
 
-                    <!-- Responsável -->
+                    <!-- RESPONSÁVEL -->
+
                     <div class="mb-5">
 
                         <label for="id_responsavel" class="field-label">
-                            Nome do responsável
+
+                            Nome do responsável *
+
                         </label>
 
-                        <input type="text" name="responsavel" id="id_responsavel"
-                            value="{{ form.responsavel.value|default:'' }}" required maxlength="200"
-                            class="field-input"
-                            placeholder="Nome completo do responsável">
 
-                        {% if form.responsavel.errors %}
-                        <p class="text-red-600 text-sm mt-1">
-                            {{ form.responsavel.errors.0 }}
-                        </p>
-                        {% endif %}
+                        {{ form.responsavel }}
+
+
+                        {{ form.responsavel.errors }}
 
                     </div>
 
 
-                    <!-- CPF e CNPJ -->
+                    <!-- CPF / CNPJ -->
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
                         <div>
 
                             <label for="id_cpf_responsavel" class="field-label">
-                                CPF do responsável
+
+                                CPF do responsável *
+
                             </label>
 
-                            <input type="text" name="cpf_responsavel" id="id_cpf_responsavel"
-                                value="{{ form.cpf_responsavel.value|default:'' }}" required maxlength="14"
-                                class="field-input" placeholder="000.000.000-00">
+
+                            {{ form.cpf_responsavel }}
+
+
+                            {{ form.cpf_responsavel.errors }}
 
                         </div>
 
@@ -258,12 +516,16 @@
                         <div>
 
                             <label for="id_cnpj" class="field-label">
+
                                 CNPJ
+
                             </label>
 
-                            <input type="text" name="cnpj" id="id_cnpj" value="{{ form.cnpj.value|default:'' }}"
-                                maxlength="18" class="field-input"
-                                placeholder="00.000.000/0000-00">
+
+                            {{ form.cnpj }}
+
+
+                            {{ form.cnpj.errors }}
 
                         </div>
 
@@ -272,33 +534,42 @@
                 </section>
 
 
-                <!-- ========================================= -->
+                <!-- ================================================== -->
                 <!-- 2. CATEGORIA -->
-                <!-- ========================================= -->
+                <!-- ================================================== -->
 
                 <section class="form-section mb-8">
 
                     <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
+
                         2. Categoria do Empreendimento
+
                     </h3>
 
+
                     <p class="text-sm text-gray-600 mb-4">
-                        Selecione uma ou mais categorias que representam seu empreendimento.
+
+                        Selecione uma ou mais categorias que representam
+                        seu empreendimento.
+
                     </p>
 
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    <!-- CATEGORIAS -->
 
-                        {% for cat in form.categorias.field.queryset %}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3" id="categorias-container">
 
-                        <label class="flex items-center gap-2 border rounded-lg p-3 hover:bg-green-50 cursor-pointer">
+                        {% for checkbox in form.categorias %}
 
-                            <input type="checkbox" name="categorias" value="{{ cat.id }}"
-                                class="w-4 h-4 categoria-checkbox"
-                                {% if cat.slug == 'outro' %}id="categoria-outro"{% endif %}>
+                        <label class="checkbox-category flex items-center gap-2 border rounded-lg p-3 cursor-pointer">
+
+                            {{ checkbox.tag }}
+
 
                             <span class="text-sm text-gray-700">
-                                {{ cat.nome }}
+
+                                {{ checkbox.choice_label }}
+
                             </span>
 
                         </label>
@@ -306,233 +577,364 @@
                         {% empty %}
 
                         <p class="text-gray-500 text-sm">
+
                             Nenhuma categoria cadastrada.
+
                         </p>
 
                         {% endfor %}
 
                     </div>
 
+
+                    {{ form.categorias.errors }}
+
+
+                    <!-- OUTRO SEGMENTO -->
+
                     <div id="campo-outro-segmento" class="hidden mt-5">
+
                         <label for="id_outro_segmento" class="field-label">
                             Qual é o outro segmento?
                         </label>
+
                         {{ form.outro_segmento }}
+
+                        {{ form.outro_segmento.errors }}
+
                         <p class="text-sm text-gray-500 mt-2">
+                            Digite o segmento ou serviço que representa seu empreendimento.
                             Ex.: manicure, pedicure, massagista, eletricista,
-                            cabeleiro ou outro serviço.
+                            cabeleireiro ou outro serviço.
                         </p>
+
                     </div>
 
                 </section>
 
+
+                <!-- ================================================== -->
+                <!-- 3. CADASTROS -->
+                <!-- ================================================== -->
 
                 <section class="form-section mb-8">
+
                     <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
-                        3. Cadastros e localização
+
+                        3. Cadastros e informações
+
                     </h3>
 
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+
+                        <!-- SICAB -->
+
                         <div>
-                            <p class="field-label">É cadastrado no SICAB?</p>
-                            {{ form.possui_sicab }}
+
+                            <p class="field-label">
+
+                                É cadastrado no SICAB?
+
+                            </p>
+
+
+                            <div class="radio-list">
+
+                                {{ form.possui_sicab }}
+
+                            </div>
+
+
+                            {{ form.possui_sicab.errors }}
+
                         </div>
+
+
+                        <!-- CAF -->
+
                         <div>
-                            <p class="field-label">Possui CAF? (comunidade rural)</p>
-                            {{ form.possui_caf }}
+
+                            <p class="field-label">
+
+                                Possui CAF? (comunidade rural)
+
+                            </p>
+
+
+                            <div class="radio-list">
+
+                                {{ form.possui_caf }}
+
+                            </div>
+
+
+                            {{ form.possui_caf.errors }}
+
                         </div>
+
                     </div>
 
+
+                    <!-- NÚMERO -->
+
                     <div class="mt-5">
-                        <label for="id_numero" class="field-label">Número</label>
+
+                        <label for="id_numero" class="field-label">
+
+                            Número
+
+                        </label>
+
+
                         {{ form.numero }}
+
+
+                        {{ form.numero.errors }}
+
                     </div>
+
                 </section>
 
 
-                <!-- ========================================= -->
-                <!-- 3. LOCALIZAÇÃO -->
-                <!-- ========================================= -->
+                <!-- ================================================== -->
+                <!-- 4. LOCALIZAÇÃO -->
+                <!-- ================================================== -->
 
-                <section class="mb-8">
+                <section class="form-section mb-8">
 
                     <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
+
                         4. Localização
+
                     </h3>
 
+
+                    <!-- ZONA -->
 
                     <div class="mb-5">
 
                         <label for="id_zona" class="field-label">
-                            Zona
+
+                            Zona *
+
                         </label>
 
-                        <select name="zona" id="id_zona" required
-                            class="field-input bg-white">
 
-                            <option value="">
-                                Selecione
-                            </option>
+                        {{ form.zona }}
 
-                            <option value="urbana">
-                                Zona Urbana
-                            </option>
 
-                            <option value="rural">
-                                Comunidade Rural
-                            </option>
-
-                        </select>
+                        {{ form.zona.errors }}
 
                     </div>
 
 
-                    <!-- Endereço -->
+                    <!-- ENDEREÇO -->
+
                     <div class="mb-5">
 
                         <label for="id_endereco" class="field-label">
-                            Endereço
+
+                            Endereço *
+
                         </label>
 
-                        <input type="text" name="endereco" id="id_endereco" value="{{ form.endereco.value|default:'' }}"
-                            required maxlength="255" class="field-input"
-                            placeholder="Rua, número, sítio, etc.">
+
+                        {{ form.endereco }}
+
+
+                        {{ form.endereco.errors }}
 
                     </div>
 
 
-                    <!-- Bairro / Comunidade -->
+                    <!-- BAIRRO -->
+
                     <div class="mb-5">
 
                         <label for="id_bairro_comunidade" class="field-label">
-                            Bairro / Comunidade
+
+                            Bairro / Comunidade *
+
                         </label>
 
-                        <input type="text" name="bairro_comunidade" id="id_bairro_comunidade"
-                            value="{{ form.bairro_comunidade.value|default:'' }}" required maxlength="150"
-                            class="field-input"
-                            placeholder="Informe o bairro ou comunidade">
+
+                        {{ form.bairro_comunidade }}
+
+
+                        {{ form.bairro_comunidade.errors }}
 
                     </div>
 
 
-                    <!-- Ponto de referência -->
+                    <!-- REFERÊNCIA -->
+
                     <div>
 
                         <label for="id_ponto_referencia" class="field-label">
+
                             Ponto de referência
+
                         </label>
 
-                        <input type="text" name="ponto_referencia" id="id_ponto_referencia"
-                            value="{{ form.ponto_referencia.value|default:'' }}" maxlength="255"
-                            class="field-input"
-                            placeholder="Ex.: próximo à igreja, praça, escola...">
+
+                        {{ form.ponto_referencia }}
+
+
+                        {{ form.ponto_referencia.errors }}
 
                     </div>
 
                 </section>
 
 
-                <!-- ========================================= -->
-                <!-- 4. CONTATO -->
-                <!-- ========================================= -->
+                <!-- ================================================== -->
+                <!-- 5. CONTATO -->
+                <!-- ================================================== -->
 
                 <section class="form-section mb-8">
 
                     <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
+
                         5. Contato
+
                     </h3>
 
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                        <!-- Telefone -->
+
+                        <!-- TELEFONE -->
+
                         <div>
 
                             <label for="id_telefone" class="field-label">
-                                Telefone
+
+                                Telefone *
+
                             </label>
 
-                            <input type="text" name="telefone" id="id_telefone"
-                                value="{{ form.telefone.value|default:'' }}" required maxlength="20"
-                                class="field-input" placeholder="(83) 99999-9999">
+
+                            {{ form.telefone }}
+
+
+                            {{ form.telefone.errors }}
 
                         </div>
 
 
-                        <!-- WhatsApp -->
+                        <!-- WHATSAPP -->
+
                         <div>
 
                             <label for="id_whatsapp" class="field-label">
+
                                 WhatsApp
+
                             </label>
 
-                            <input type="text" name="whatsapp" id="id_whatsapp"
-                                value="{{ form.whatsapp.value|default:'' }}" maxlength="20"
-                                class="field-input" placeholder="(83) 99999-9999">
+
+                            {{ form.whatsapp }}
+
+
+                            {{ form.whatsapp.errors }}
 
                         </div>
 
 
-                        <!-- E-mail -->
+                        <!-- EMAIL -->
+
                         <div>
 
                             <label for="id_email" class="field-label">
+
                                 E-mail
+
                             </label>
 
-                            <input type="email" name="email" id="id_email" value="{{ form.email.value|default:'' }}"
-                                class="field-input" placeholder="exemplo@email.com">
+
+                            {{ form.email }}
+
+
+                            {{ form.email.errors }}
 
                         </div>
 
 
-                        <!-- Instagram -->
+                        <!-- INSTAGRAM -->
+
                         <div>
 
                             <label for="id_instagram" class="field-label">
+
                                 Instagram
+
                             </label>
 
-                            <input type="text" name="instagram" id="id_instagram"
-                                value="{{ form.instagram.value|default:'' }}" maxlength="255"
-                                class="field-input" placeholder="@seuinstagram">
+
+                            {{ form.instagram }}
+
+
+                            {{ form.instagram.errors }}
 
                         </div>
 
 
-                        <!-- Facebook -->
+                        <!-- FACEBOOK -->
+
                         <div>
 
                             <label for="id_facebook" class="field-label">
+
                                 Facebook
+
                             </label>
 
-                            <input type="text" name="facebook" id="id_facebook"
-                                value="{{ form.facebook.value|default:'' }}" maxlength="255"
-                                class="field-input"
-                                placeholder="facebook.com/seuperfil">
+
+                            {{ form.facebook }}
+
+
+                            {{ form.facebook.errors }}
 
                         </div>
 
 
-                        <!-- Outras redes -->
+                        <!-- OUTRAS REDES -->
+
                         <div>
 
                             <label for="id_outras_redes" class="field-label">
+
                                 Outras redes sociais
+
                             </label>
 
-                            <input type="text" name="outras_redes" id="id_outras_redes"
-                                value="{{ form.outras_redes.value|default:'' }}" maxlength="255"
-                                class="field-input"
-                                placeholder="TikTok, YouTube, site, etc.">
+
+                            {{ form.outras_redes }}
+
+
+                            {{ form.outras_redes.errors }}
 
                         </div>
+
+
+                        <!-- TIPO -->
 
                         <div>
-                            <label for="id_tipo_empreendimento" class="field-label">Tipo de empreendimento</label>
+
+                            <label for="id_tipo_empreendimento" class="field-label">
+
+                                Tipo de empreendimento
+
+                            </label>
+
+
                             {{ form.tipo_empreendimento }}
+
+
+                            {{ form.tipo_empreendimento.errors }}
+
                         </div>
 
                     </div>
@@ -540,326 +942,595 @@
                 </section>
 
 
+                <!-- ================================================== -->
+                <!-- 6. HOSPEDAGEM -->
+                <!-- ================================================== -->
+
                 <section class="form-section mb-8">
+
                     <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
-                        Informações de hospedagem
+
+                        6. Informações de hospedagem
+
                     </h3>
-                    <p class="text-sm text-gray-600 mb-4">Preencha esta parte se for hotel, pousada ou hospedagem.</p>
+
+
+                    <p class="text-sm text-gray-600 mb-4">
+
+                        Preencha esta parte se for hotel,
+                        pousada ou hospedagem.
+
+                    </p>
+
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div><label class="field-label">Número e tipos de quartos</label>{{ form.numero_quartos }}</div>
-                        <div><label class="field-label">Número de leitos</label>{{ form.numero_leitos }}</div>
-                        <div><p class="field-label">Quarto com acessibilidade?</p>{{ form.quarto_acessibilidade }}</div>
-                        <div><p class="field-label">Café incluso?</p>{{ form.cafe_incluso }}</div>
-                        <div><p class="field-label">Garagem?</p>{{ form.possui_garagem }}</div>
+
+
+                        <!-- QUARTOS -->
+
+                        <div>
+
+                            <label for="id_numero_quartos" class="field-label">
+
+                                Número e tipos de quartos
+
+                            </label>
+
+
+                            {{ form.numero_quartos }}
+
+
+                            {{ form.numero_quartos.errors }}
+
+                        </div>
+
+
+                        <!-- LEITOS -->
+
+                        <div>
+
+                            <label for="id_numero_leitos" class="field-label">
+
+                                Número de leitos
+
+                            </label>
+
+
+                            {{ form.numero_leitos }}
+
+
+                            {{ form.numero_leitos.errors }}
+
+                        </div>
+
+
+                        <!-- ACESSIBILIDADE -->
+
+                        <div>
+
+                            <p class="field-label">
+
+                                Quarto com acessibilidade?
+
+                            </p>
+
+
+                            <div class="radio-list">
+
+                                {{ form.quarto_acessibilidade }}
+
+                            </div>
+
+
+                            {{ form.quarto_acessibilidade.errors }}
+
+                        </div>
+
+
+                        <!-- CAFÉ -->
+
+                        <div>
+
+                            <p class="field-label">
+
+                                Café incluso?
+
+                            </p>
+
+
+                            <div class="radio-list">
+
+                                {{ form.cafe_incluso }}
+
+                            </div>
+
+
+                            {{ form.cafe_incluso.errors }}
+
+                        </div>
+
+
+                        <!-- GARAGEM -->
+
+                        <div>
+
+                            <p class="field-label">
+
+                                Possui garagem?
+
+                            </p>
+
+
+                            <div class="radio-list">
+
+                                {{ form.possui_garagem }}
+
+                            </div>
+
+
+                            {{ form.possui_garagem.errors }}
+
+                        </div>
+
                     </div>
+
+
+                    <!-- DIÁRIAS -->
+
                     <div class="mt-5">
-                        <label class="field-label">Valor das diárias por tipo de quarto</label>
+
+                        <label for="id_valor_diarias" class="field-label">
+
+                            Valor das diárias por tipo de quarto
+
+                        </label>
+
+
                         {{ form.valor_diarias }}
+
+
+                        {{ form.valor_diarias.errors }}
+
                     </div>
+
                 </section>
 
 
-                <!-- ========================================= -->
-                <!-- 5. INFORMAÇÕES DO EMPREENDIMENTO -->
-                <!-- ========================================= -->
+                <!-- ================================================== -->
+                <!-- 7. INFORMAÇÕES -->
+                <!-- ================================================== -->
 
                 <section class="form-section mb-8">
 
                     <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
-                        6. Informações do Empreendimento
+
+                        7. Informações do Empreendimento
+
                     </h3>
 
 
-                    <!-- Descrição -->
+                    <!-- DESCRIÇÃO -->
+
                     <div class="mb-5">
 
                         <label for="id_descricao" class="field-label">
-                            Descrição do empreendimento
+
+                            Descrição do empreendimento *
+
                         </label>
 
-                        <textarea name="descricao" id="id_descricao" rows="5" required
-                            class="field-input"
-                            placeholder="Conte um pouco sobre o empreendimento...">{{ form.descricao.value|default:'' }}</textarea>
+
+                        {{ form.descricao }}
+
+
+                        {{ form.descricao.errors }}
 
                     </div>
 
 
-                    <!-- História -->
+                    <!-- HISTÓRIA -->
+
                     <div class="mb-5">
 
                         <label for="id_historia" class="field-label">
+
                             História do empreendimento
+
                         </label>
 
-                        <textarea name="historia" id="id_historia" rows="5"
-                            class="field-input"
-                            placeholder="Conte a história do empreendimento...">{{ form.historia.value|default:'' }}</textarea>
+
+                        {{ form.historia }}
+
+
+                        {{ form.historia.errors }}
 
                     </div>
 
 
-                    <!-- Dias e horário -->
+                    <!-- DIAS / HORÁRIOS -->
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
 
                         <div>
 
                             <label for="id_dias_funcionamento" class="field-label">
+
                                 Dias de funcionamento
+
                             </label>
 
-                            <input type="text" name="dias_funcionamento" id="id_dias_funcionamento"
-                                value="{{ form.dias_funcionamento.value|default:'' }}" maxlength="255"
-                                class="field-input"
-                                placeholder="Ex.: Segunda a sábado">
+
+                            {{ form.dias_funcionamento }}
+
+
+                            {{ form.dias_funcionamento.errors }}
 
                         </div>
 
 
                         <div>
 
-                            <label for="id_horario_funcionamento"
-                                class="field-label">
+                            <label for="id_horario_funcionamento" class="field-label">
+
                                 Horário de funcionamento
+
                             </label>
 
-                            <input type="text" name="horario_funcionamento" id="id_horario_funcionamento"
-                                value="{{ form.horario_funcionamento.value|default:'' }}" maxlength="255"
-                                class="field-input" placeholder="Ex.: 08h às 18h">
+
+                            {{ form.horario_funcionamento }}
+
+
+                            {{ form.horario_funcionamento.errors }}
 
                         </div>
 
                     </div>
 
+
+                    <!-- ESTACIONAMENTO -->
+
                     <div class="mt-5">
-                        <p class="field-label">O local oferece estacionamento para veículos?</p>
-                        {{ form.possui_estacionamento }}
+
+                        <p class="field-label">
+
+                            O local oferece estacionamento para veículos?
+
+                        </p>
+
+
+                        <div class="radio-list">
+
+                            {{ form.possui_estacionamento }}
+
+                        </div>
+
+
+                        {{ form.possui_estacionamento.errors }}
+
                     </div>
 
                 </section>
 
 
-                <!-- ========================================= -->
-                <!-- CADASTUR -->
-                <!-- ========================================= -->
+                <!-- ================================================== -->
+                <!-- 8. CADASTUR -->
+                <!-- ================================================== -->
 
                 <section class="form-section mb-8">
 
                     <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
-                        7. Cadastro no CADASTUR
+
+                        8. Cadastro no CADASTUR
+
                     </h3>
 
 
+                    <!-- POSSUI -->
+
                     <div class="mb-5">
 
-                        <p class="block text-sm font-semibold text-gray-700 mb-3">
+                        <p class="field-label">
+
                             Possui CADASTUR?
+
                         </p>
 
-                        <div class="flex gap-6">
 
-                            <label class="flex items-center gap-2 cursor-pointer">
+                        <div class="radio-list">
 
-                                <input type="radio" name="possui_cadastur" value="True" class="w-4 h-4">
-
-                                <span>Sim</span>
-
-                            </label>
-
-
-                            <label class="flex items-center gap-2 cursor-pointer">
-
-                                <input type="radio" name="possui_cadastur" value="False" class="w-4 h-4">
-
-                                <span>Não</span>
-
-                            </label>
+                            {{ form.possui_cadastur }}
 
                         </div>
+
+
+                        {{ form.possui_cadastur.errors }}
 
                     </div>
 
 
-                    <div>
+                    <!-- NÚMERO -->
+
+                    <div class="mb-5">
 
                         <label for="id_numero_cadastur" class="field-label">
+
                             Número do CADASTUR
+
                         </label>
 
-                        <input type="text" name="numero_cadastur" id="id_numero_cadastur"
-                            value="{{ form.numero_cadastur.value|default:'' }}" maxlength="50"
-                            class="field-input"
-                            placeholder="Informe o número, se possuir">
+
+                        {{ form.numero_cadastur }}
+
+
+                        {{ form.numero_cadastur.errors }}
 
                     </div>
 
-                    <div class="mt-5">
-                        <label class="field-label">Práticas de sustentabilidade e ESG</label>
-                        {{ form.praticas_sustentabilidade }}
-                    </div>
 
-                </section>
+                    <!-- PRÁTICAS -->
 
-
-                <section class="form-section mb-8">
-                    <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
-                        Selo Municipal e autorização
-                    </h3>
-                    <div class="mb-5">
-                        <p class="field-label">Deseja participar da avaliação para o Selo Municipal do Turismo?</p>
-                        {{ form.deseja_selo_turismo }}
-                    </div>
                     <div>
-                        <p class="field-label">Autoriza o uso das informações para divulgação institucional?</p>
-                        {{ form.autoriza_divulgacao }}
+
+                        <label for="id_praticas_sustentabilidade" class="field-label">
+
+                            Práticas de sustentabilidade e ESG
+
+                        </label>
+
+
+                        {{ form.praticas_sustentabilidade }}
+
+
+                        {{ form.praticas_sustentabilidade.errors }}
+
                     </div>
-                    <p class="text-sm text-gray-600 mt-4">
-                        O cadastro é gratuito e não garante automaticamente a concessão do selo.
-                    </p>
+
                 </section>
 
 
-                <!-- ========================================= -->
-                <!-- AGENDAMENTO E CULTURA -->
-                <!-- ========================================= -->
+                <!-- ================================================== -->
+                <!-- 9. SELO -->
+                <!-- ================================================== -->
 
                 <section class="form-section mb-8">
 
                     <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
-                        8. Atendimento e Cultura Local
+
+                        9. Selo Municipal e autorização
+
                     </h3>
 
 
-                    <!-- Agendamento -->
+                    <!-- SELO -->
+
+                    <div class="mb-5">
+
+                        <p class="field-label">
+
+                            Deseja participar da avaliação para o
+                            Selo Municipal do Turismo?
+
+                        </p>
+
+
+                        <div class="radio-list">
+
+                            {{ form.deseja_selo_turismo }}
+
+                        </div>
+
+
+                        {{ form.deseja_selo_turismo.errors }}
+
+                    </div>
+
+
+                    <!-- AUTORIZAÇÃO -->
+
+                    <div>
+
+                        <p class="field-label">
+
+                            Autoriza o uso das informações para
+                            divulgação institucional?
+
+                        </p>
+
+
+                        <div class="radio-list">
+
+                            {{ form.autoriza_divulgacao }}
+
+                        </div>
+
+
+                        {{ form.autoriza_divulgacao.errors }}
+
+                    </div>
+
+
+                    <p class="text-sm text-gray-600 mt-4">
+
+                        O cadastro é gratuito e não garante
+                        automaticamente a concessão do selo.
+
+                    </p>
+
+                </section>
+
+
+                <!-- ================================================== -->
+                <!-- 10. ATENDIMENTO E CULTURA -->
+                <!-- ================================================== -->
+
+                <section class="form-section mb-8">
+
+                    <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
+
+                        10. Atendimento e Cultura Local
+
+                    </h3>
+
+
+                    <!-- AGENDAMENTO -->
+
                     <div class="mb-6">
 
-                        <p class="block text-sm font-semibold text-gray-700 mb-3">
+                        <p class="field-label">
+
                             Atende mediante agendamento?
+
                         </p>
 
-                        <div class="flex gap-6">
 
-                            <label class="flex items-center gap-2 cursor-pointer">
+                        <div class="radio-list">
 
-                                <input type="radio" name="atende_agendamento" value="True" class="w-4 h-4">
-
-                                <span>Sim</span>
-
-                            </label>
-
-
-                            <label class="flex items-center gap-2 cursor-pointer">
-
-                                <input type="radio" name="atende_agendamento" value="False" class="w-4 h-4">
-
-                                <span>Não</span>
-
-                            </label>
+                            {{ form.atende_agendamento }}
 
                         </div>
+
+
+                        {{ form.atende_agendamento.errors }}
 
                     </div>
 
 
-                    <!-- Cultura -->
+                    <!-- CULTURA -->
+
                     <div class="mb-5">
 
-                        <p class="block text-sm font-semibold text-gray-700 mb-3">
+                        <p class="field-label">
+
                             Valoriza a cultura local?
+
                         </p>
 
-                        <div class="flex gap-6">
 
-                            <label class="flex items-center gap-2 cursor-pointer">
+                        <div class="radio-list">
 
-                                <input type="radio" name="valoriza_cultura_local" value="True" class="w-4 h-4">
-
-                                <span>Sim</span>
-
-                            </label>
-
-
-                            <label class="flex items-center gap-2 cursor-pointer">
-
-                                <input type="radio" name="valoriza_cultura_local" value="False" class="w-4 h-4">
-
-                                <span>Não</span>
-
-                            </label>
+                            {{ form.valoriza_cultura_local }}
 
                         </div>
+
+
+                        {{ form.valoriza_cultura_local.errors }}
 
                     </div>
 
 
-                    <!-- Como valoriza -->
+                    <!-- COMO -->
+
                     <div>
 
                         <label for="id_como_valoriza_cultura" class="field-label">
+
                             Como valoriza a cultura local?
+
                         </label>
 
-                        <textarea name="como_valoriza_cultura" id="id_como_valoriza_cultura" rows="4"
-                            class="field-input"
-                            placeholder="Descreva como o empreendimento valoriza a cultura local...">{{ form.como_valoriza_cultura.value|default:'' }}</textarea>
+
+                        {{ form.como_valoriza_cultura }}
+
+
+                        {{ form.como_valoriza_cultura.errors }}
 
                     </div>
 
                 </section>
 
 
-                <!-- ========================================= -->
-                <!-- SUSTENTABILIDADE E ACESSIBILIDADE -->
-                <!-- ========================================= -->
+                <!-- ================================================== -->
+                <!-- 11. SUSTENTABILIDADE -->
+                <!-- ================================================== -->
 
                 <section class="form-section mb-8">
 
                     <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
-                        9. Sustentabilidade e Acessibilidade
+
+                        11. Sustentabilidade e Acessibilidade
+
                     </h3>
 
 
-                    <!-- Sustentabilidade -->
+                    <!-- SUSTENTABILIDADE -->
+
                     <div class="mb-5">
 
                         <label for="id_sustentabilidade" class="field-label">
+
                             Sustentabilidade
+
                         </label>
 
-                        <textarea name="sustentabilidade" id="id_sustentabilidade" rows="4"
-                            class="field-input"
-                            placeholder="Informe ações de sustentabilidade realizadas pelo empreendimento...">{{ form.sustentabilidade.value|default:'' }}</textarea>
+
+                        {{ form.sustentabilidade }}
+
+
+                        {{ form.sustentabilidade.errors }}
 
                     </div>
 
 
-                    <!-- Acessibilidade -->
+                    <!-- PRÁTICAS -->
+
+                    <div class="mb-5">
+
+                        <label for="id_praticas_sustentabilidade" class="field-label">
+
+                            Práticas de sustentabilidade e ESG
+
+                        </label>
+
+
+                        {{ form.praticas_sustentabilidade }}
+
+
+                        {{ form.praticas_sustentabilidade.errors }}
+
+                    </div>
+
+
+                    <!-- ACESSIBILIDADE -->
+
                     <div>
 
                         <label for="id_acessibilidade" class="field-label">
+
                             Acessibilidade
+
                         </label>
 
-                        <textarea name="acessibilidade" id="id_acessibilidade" rows="4"
-                            class="field-input"
-                            placeholder="Informe recursos e condições de acessibilidade...">{{ form.acessibilidade.value|default:'' }}</textarea>
+
+                        {{ form.acessibilidade }}
+
+
+                        {{ form.acessibilidade.errors }}
 
                     </div>
 
                 </section>
 
 
-                <!-- ========================================= -->
-                <!-- 6. FOTOS -->
-                <!-- ========================================= -->
+                <!-- ================================================== -->
+                <!-- 12. FOTOS -->
+                <!-- ================================================== -->
 
                 <section class="form-section mb-8">
 
                     <h3 class="text-lg font-bold text-green-700 border-b pb-2 mb-5">
-                        10. Fotos
+
+                        12. Fotos
+
                     </h3>
 
+
                     <p class="text-sm text-gray-600 mb-3">
-                        Você pode enviar até <strong>4 fotos</strong> do empreendimento.
+
+                        Você pode enviar até
+                        <strong>4 fotos</strong>
+                        do empreendimento.
+
                     </p>
 
 
@@ -867,13 +1538,13 @@
                         class="field-input bg-gray-50">
 
 
-                    <!-- Quantidade de fotos -->
                     <p id="contador-fotos" class="text-gray-600 text-sm mt-2">
+
                         Nenhuma foto selecionada.
+
                     </p>
 
 
-                    <!-- Mensagem de erro -->
                     <div id="mensagem-fotos"
                         class="hidden mt-3 p-3 rounded-lg bg-red-100 border border-red-300 text-red-700 text-sm">
 
@@ -884,44 +1555,81 @@
 
 
                     <p class="text-xs text-gray-500 mt-2">
+
                         Formatos permitidos: JPG, JPEG e PNG.
+                        Tamanho máximo: 5 MB por foto.
+
                     </p>
 
                 </section>
 
 
-                <!-- ========================================= -->
-                <!-- BOTÃO ENVIAR -->
-                <!-- ========================================= -->
+                <!-- ================================================== -->
+                <!-- ENVIO -->
+                <!-- ================================================== -->
 
                 <div class="border-t pt-6 mt-8">
 
+
+                    <!-- OBSERVAÇÃO -->
+
                     <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6 text-sm text-gray-700">
-                        <p class="font-bold text-blue-900">Observação importante</p>
-                        <p class="mt-2">
-                            O cadastro é gratuito e não garante automaticamente a
-                            concessão do Selo Municipal do Turismo de Picuí, que
-                            depende de avaliação técnica.
+
+                        <p class="font-bold text-blue-900">
+
+                            Observação importante
+
                         </p>
+
+
                         <p class="mt-2">
-                            Para mais informações, procure o Departamento de Turismo do Município.
+
+                            O cadastro é gratuito e não garante
+                            automaticamente a concessão do Selo
+                            Municipal do Turismo de Picuí,
+                            que depende de avaliação técnica.
+
                         </p>
+
+
+                        <p class="mt-2">
+
+                            Para mais informações, procure o
+                            Departamento de Turismo do Município.
+
+                        </p>
+
                     </div>
 
+
+                    <!-- CONSENTIMENTO -->
+
                     <label class="flex items-start gap-3 text-sm text-gray-600 mb-5 cursor-pointer">
-                        <input type="checkbox" name="consentimento" required class="mt-1 w-4 h-4">
+
+                        {{ form.consentimento }}
+
                         <span>
-                            Li e aceito o <a href="{% url 'privacidade' %}" target="_blank"
-                                class="font-semibold text-green-700 underline">aviso de privacidade</a>.
+
+                            Li e aceito o
+
+                            <a href="{% url 'privacidade' %}" target="_blank"
+                                class="font-semibold text-green-700 underline">
+
+                                aviso de privacidade
+
+                            </a>.
+
                         </span>
+
                     </label>
 
-                    {% if form.consentimento.errors %}
-                    <p class="text-red-600 text-sm mb-4">{{ form.consentimento.errors.0 }}</p>
-                    {% endif %}
 
-                    <button type="submit" id="botao-enviar"
-                        class="primary-btn w-full md:w-auto">
+                    {{ form.consentimento.errors }}
+
+
+                    <!-- BOTÃO -->
+
+                    <button type="submit" id="botao-enviar" class="primary-btn w-full md:w-auto">
 
                         Enviar cadastro
 
@@ -931,43 +1639,126 @@
 
             </form>
 
+        </div>
+
     </main>
 
 
+    <!-- ================================================== -->
     <!-- RODAPÉ -->
+    <!-- ================================================== -->
+
     <footer class="bg-green-800 text-white mt-10">
 
         <div class="max-w-6xl mx-auto px-4 py-6 text-center">
 
+
             <p class="text-sm">
+
                 Turismo de Picuí
+
             </p>
+
 
             <p class="text-xs text-green-200 mt-1">
+
                 Prefeitura Municipal de Picuí
+
             </p>
 
+
             <div class="text-xs text-green-100 mt-4 space-y-1">
-                <p><strong>Prefeito:</strong> Ranieri Ferreira</p>
-                <p><strong>Vice-prefeito:</strong> Patrício Dantas</p>
-                <p><strong>Secretário de Agricultura, Turismo e Meio Ambiente:</strong> Robinson Santos</p>
-                <p><strong>Diretor Municipal de Turismo e Meio Ambiente:</strong> Ismael Moisés</p>
-                <p><strong>Assessor Municipal de Turismo:</strong> Manassés Araújo - Serginho</p>
+
+                <p>
+
+                    <strong>Prefeito:</strong>
+
+                    Ranieri Ferreira
+
+                </p>
+
+
+                <p>
+
+                    <strong>Vice-prefeito:</strong>
+
+                    Patrício Dantas
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Secretário de Agricultura,
+                        Turismo e Meio Ambiente:
+                    </strong>
+
+                    Robinson Santos
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Diretor Municipal de Turismo
+                        e Meio Ambiente:
+                    </strong>
+
+                    Ismael Moisés
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Assessor Municipal de Turismo:
+                    </strong>
+
+                    Manassés Araújo - Serginho
+
+                </p>
+
             </div>
 
+
+            <!-- LINKS -->
+
             <div class="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-3 text-xs text-green-100">
-                <a href="https://www.picui.pb.gov.br/" target="_blank" rel="noopener noreferrer" class="hover:text-white underline">
+
+
+                <a href="https://www.picui.pb.gov.br/" target="_blank" rel="noopener noreferrer"
+                    class="hover:text-white underline">
+
                     Site da Prefeitura
+
                 </a>
-                <a href="https://www.instagram.com/prefeituradepicuioficial/" target="_blank" rel="noopener noreferrer" class="hover:text-white underline">
+
+
+                <a href="https://www.instagram.com/prefeituradepicuioficial/" target="_blank" rel="noopener noreferrer"
+                    class="hover:text-white underline">
+
                     Instagram oficial
+
                 </a>
-                <a href="https://heyzine.com/flip-book/e975954570.html" target="_blank" rel="noopener noreferrer" class="hover:text-white underline">
+
+
+                <a href="https://heyzine.com/flip-book/e975954570.html" target="_blank" rel="noopener noreferrer"
+                    class="hover:text-white underline">
+
                     Revista turística
+
                 </a>
+
+
                 <a href="{% url 'privacidade' %}" class="hover:text-white underline">
+
                     Aviso de privacidade
+
                 </a>
+
             </div>
 
         </div>
@@ -975,94 +1766,180 @@
     </footer>
 
 
-    <!-- ========================================= -->
+    <!-- ================================================== -->
     <!-- JAVASCRIPT -->
-    <!-- ========================================= -->
+    <!-- ================================================== -->
 
     <script>
 
-        const categoriaOutro = document.getElementById("categoria-outro");
-        const campoOutroSegmento = document.getElementById("campo-outro-segmento");
-
-        function atualizarCampoOutro() {
-            if (categoriaOutro && categoriaOutro.checked) {
-                campoOutroSegmento.classList.remove("hidden");
-            } else if (campoOutroSegmento) {
-                campoOutroSegmento.classList.add("hidden");
-            }
-        }
-
-        if (categoriaOutro) {
-            categoriaOutro.addEventListener("change", atualizarCampoOutro);
-            atualizarCampoOutro();
-        }
-
         document.addEventListener("DOMContentLoaded", function () {
 
-            const inputFotos = document.getElementById("fotos");
-            const contadorFotos = document.getElementById("contador-fotos");
-            const mensagemFotos = document.getElementById("mensagem-fotos");
+            // ==================================================
+            // CATEGORIA "OUTRO"
+            // ==================================================
 
-            inputFotos.addEventListener("change", function () {
+            const campoOutroSegmento =
+                document.getElementById("campo-outro-segmento");
 
-                const quantidade = this.files.length;
+            const outroCategoriaId =
+                "{{ form.outro_categoria_id|default:'' }}";
 
+            const categorias =
+                document.querySelectorAll(
+                    'input[name="categorias"]'
+                );
 
-                // Nenhuma foto
-                if (quantidade === 0) {
+            let categoriaOutro = null;
 
-                    contadorFotos.textContent =
-                        "Nenhuma foto selecionada.";
+            categorias.forEach(function (checkbox) {
 
-                    mensagemFotos.classList.add("hidden");
+                if (
+                    outroCategoriaId &&
+                    checkbox.value === String(outroCategoriaId)
+                ) {
 
-                    return;
+                    categoriaOutro = checkbox;
+
+                    checkbox.id = "categoria-outro";
                 }
-
-
-                // Mais de 4 fotos
-                if (quantidade > 4) {
-
-                    contadorFotos.textContent =
-                        quantidade + " fotos selecionadas.";
-
-                    mensagemFotos.classList.remove("hidden");
-
-                    // Limpa o campo
-                    this.value = "";
-
-                    contadorFotos.textContent =
-                        "Nenhuma foto selecionada.";
-
-                    return;
-                }
-
-
-                // 1 foto
-                if (quantidade === 1) {
-
-                    contadorFotos.textContent =
-                        "1 foto selecionada.";
-
-                }
-
-
-                // 2 a 4 fotos
-                else {
-
-                    contadorFotos.textContent =
-                        quantidade + " fotos selecionadas.";
-
-                }
-
-
-                mensagemFotos.classList.add("hidden");
 
             });
+
+            function atualizarCampoOutro() {
+
+                if (
+                    categoriaOutro &&
+                    categoriaOutro.checked
+                ) {
+
+                    campoOutroSegmento.classList.remove("hidden");
+
+                } else {
+
+                    campoOutroSegmento.classList.add("hidden");
+
+                }
+
+            }
+
+            if (categoriaOutro) {
+
+                categoriaOutro.addEventListener(
+                    "change",
+                    atualizarCampoOutro
+                );
+
+            }
+
+            atualizarCampoOutro();
+
+
+            // ==================================================
+            // FOTOS
+            // ==================================================
+
+            const inputFotos =
+                document.getElementById("fotos");
+
+            const contadorFotos =
+                document.getElementById("contador-fotos");
+
+            const mensagemFotos =
+                document.getElementById("mensagem-fotos");
+
+            if (
+                inputFotos &&
+                contadorFotos &&
+                mensagemFotos
+            ) {
+
+                inputFotos.addEventListener(
+                    "change",
+                    function () {
+
+                        const quantidade =
+                            this.files.length;
+
+                        if (quantidade === 0) {
+
+                            contadorFotos.textContent =
+                                "Nenhuma foto selecionada.";
+
+                            mensagemFotos.classList.add(
+                                "hidden"
+                            );
+
+                            return;
+                        }
+
+                        if (quantidade > 4) {
+
+                            mensagemFotos.classList.remove(
+                                "hidden"
+                            );
+
+                            this.value = "";
+
+                            contadorFotos.textContent =
+                                "Nenhuma foto selecionada.";
+
+                            return;
+                        }
+
+                        if (quantidade === 1) {
+
+                            contadorFotos.textContent =
+                                "1 foto selecionada.";
+
+                        } else {
+
+                            contadorFotos.textContent =
+                                quantidade +
+                                " fotos selecionadas.";
+
+                        }
+
+                        mensagemFotos.classList.add(
+                            "hidden"
+                        );
+
+                    }
+                );
+            }
+
+            // ==================================================
+            // BOTÃO DE ENVIO
+            // ==================================================
+
+            const formulario =
+                document.querySelector("form");
+
+            const botaoEnviar =
+                document.getElementById("botao-enviar");
+
+            if (
+                formulario &&
+                botaoEnviar
+            ) {
+
+                formulario.addEventListener(
+                    "submit",
+                    function () {
+
+                        botaoEnviar.disabled = true;
+
+                        botaoEnviar.textContent =
+                            "Enviando cadastro...";
+
+                    }
+                );
+
+            }
 
         });
 
     </script>
+
 
 </body>
 
