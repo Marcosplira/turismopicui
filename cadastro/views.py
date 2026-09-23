@@ -455,10 +455,18 @@ Prefeitura Municipal de Picuí
                 return redirect("cadastro_sucesso")
 
             except Exception:
+                import traceback
+
+                print("\n" + "=" * 70)
+                print("ERRO AO SALVAR CADASTRO:")
+                print(str(e))
+                print("=" * 70)
+                traceback.print_exc()
+                print("=" * 70 + "\n")
 
                 messages.error(
                     request,
-                    ("Ocorreu um erro ao salvar " "o cadastro. Tente novamente."),
+                    (f"Erro ao salvar o cadastro: {e}"),
                 )
 
         # ==========================================
