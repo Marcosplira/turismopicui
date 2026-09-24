@@ -1,21 +1,104 @@
 from django import forms
-
 from .models import Empreendimento
 
+SIM_NAO_CHOICES = [
+    (True, "Sim"),
+    (False, "Não"),
+]
 
 class EmpreendimentoForm(forms.ModelForm):
 
     # ==========================================
     # CONSENTIMENTO
     # ==========================================
-
     consentimento = forms.BooleanField(
         required=True,
         label="Li e aceito o aviso de privacidade.",
     )
 
-    class Meta:
+    # ==========================================
+    # CAMPOS BOOLEANOS (SIM / NÃO)
+    # Convertidos para TypedChoiceField para aceitarem False corretamente
+    # ==========================================
+    possui_cadastur = forms.TypedChoiceField(
+        coerce=lambda x: str(x).lower() in ['true', '1'],
+        choices=SIM_NAO_CHOICES,
+        widget=forms.RadioSelect,
+        required=True,
+        label="Possui CADASTUR?",
+    )
+    possui_sicab = forms.TypedChoiceField(
+        coerce=lambda x: str(x).lower() in ['true', '1'],
+        choices=SIM_NAO_CHOICES,
+        widget=forms.RadioSelect,
+        required=False,
+        label="É cadastrado no SICAB?",
+    )
+    possui_caf = forms.TypedChoiceField(
+        coerce=lambda x: str(x).lower() in ['true', '1'],
+        choices=SIM_NAO_CHOICES,
+        widget=forms.RadioSelect,
+        required=False,
+        label="Possui CAF?",
+    )
+    quarto_acessibilidade = forms.TypedChoiceField(
+        coerce=lambda x: str(x).lower() in ['true', '1'],
+        choices=SIM_NAO_CHOICES,
+        widget=forms.RadioSelect,
+        required=False,
+        label="Quarto com acessibilidade?",
+    )
+    cafe_incluso = forms.TypedChoiceField(
+        coerce=lambda x: str(x).lower() in ['true', '1'],
+        choices=SIM_NAO_CHOICES,
+        widget=forms.RadioSelect,
+        required=False,
+        label="Café incluso?",
+    )
+    possui_garagem = forms.TypedChoiceField(
+        coerce=lambda x: str(x).lower() in ['true', '1'],
+        choices=SIM_NAO_CHOICES,
+        widget=forms.RadioSelect,
+        required=False,
+        label="Possui garagem?",
+    )
+    atende_agendamento = forms.TypedChoiceField(
+        coerce=lambda x: str(x).lower() in ['true', '1'],
+        choices=SIM_NAO_CHOICES,
+        widget=forms.RadioSelect,
+        required=True,
+        label="Atende mediante agendamento?",
+    )
+    possui_estacionamento = forms.TypedChoiceField(
+        coerce=lambda x: str(x).lower() in ['true', '1'],
+        choices=SIM_NAO_CHOICES,
+        widget=forms.RadioSelect,
+        required=False,
+        label="Possui estacionamento?",
+    )
+    valoriza_cultura_local = forms.TypedChoiceField(
+        coerce=lambda x: str(x).lower() in ['true', '1'],
+        choices=SIM_NAO_CHOICES,
+        widget=forms.RadioSelect,
+        required=True,
+        label="Valoriza a cultura local?",
+    )
+    deseja_selo_turismo = forms.TypedChoiceField(
+        coerce=lambda x: str(x).lower() in ['true', '1'],
+        choices=SIM_NAO_CHOICES,
+        widget=forms.RadioSelect,
+        required=False,
+        label="Deseja participar da avaliação para o Selo Municipal do Turismo?",
+    )
+    autoriza_divulgacao = forms.TypedChoiceField(
+        coerce=lambda x: str(x).lower() in ['true', '1'],
+        choices=SIM_NAO_CHOICES,
+        widget=forms.RadioSelect,
+        required=False,
+        label="Autoriza o uso das informações para divulgação institucional?",
+    )
 
+    class Meta:
         model = Empreendimento
 
         fields = [
@@ -98,34 +181,13 @@ class EmpreendimentoForm(forms.ModelForm):
                 }
             ),
             # ==========================================
-            # CADASTUR
+            # CADASTUR & OUTROS
             # ==========================================
-            "possui_cadastur": forms.RadioSelect(
-                choices=[
-                    (True, "Sim"),
-                    (False, "Não"),
-                ]
-            ),
             "numero_cadastur": forms.TextInput(
                 attrs={
                     "class": "field-input",
                     "placeholder": "Número do CADASTUR",
                 }
-            ),
-            # ==========================================
-            # SICAB / CAF
-            # ==========================================
-            "possui_sicab": forms.RadioSelect(
-                choices=[
-                    (True, "Sim"),
-                    (False, "Não"),
-                ]
-            ),
-            "possui_caf": forms.RadioSelect(
-                choices=[
-                    (True, "Sim"),
-                    (False, "Não"),
-                ]
             ),
             # ==========================================
             # LOCALIZAÇÃO
@@ -228,31 +290,11 @@ class EmpreendimentoForm(forms.ModelForm):
                     "placeholder": "Ex.: 15 leitos",
                 }
             ),
-            "quarto_acessibilidade": forms.RadioSelect(
-                choices=[
-                    (True, "Sim"),
-                    (False, "Não"),
-                ]
-            ),
-            "cafe_incluso": forms.RadioSelect(
-                choices=[
-                    (True, "Sim"),
-                    (False, "Não"),
-                ]
-            ),
-            "possui_garagem": forms.RadioSelect(
-                choices=[
-                    (True, "Sim"),
-                    (False, "Não"),
-                ]
-            ),
             "valor_diarias": forms.Textarea(
                 attrs={
                     "class": "field-input",
                     "rows": 4,
-                    "placeholder": (
-                        "Informe os valores das diárias " "por tipo de quarto."
-                    ),
+                    "placeholder": "Informe os valores das diárias por tipo de quarto.",
                 }
             ),
             # ==========================================
@@ -262,17 +304,14 @@ class EmpreendimentoForm(forms.ModelForm):
                 attrs={
                     "class": "field-input",
                     "rows": 5,
-                    "placeholder": (
-                        "Descreva o empreendimento, os serviços "
-                        "oferecidos e seus principais diferenciais."
-                    ),
+                    "placeholder": "Descreva o empreendimento, os serviços oferecidos e seus principais diferenciais.",
                 }
             ),
             "historia": forms.Textarea(
                 attrs={
                     "class": "field-input",
                     "rows": 5,
-                    "placeholder": ("Conte um pouco da história do empreendimento."),
+                    "placeholder": "Conte um pouco da história do empreendimento.",
                 }
             ),
             # ==========================================
@@ -290,98 +329,45 @@ class EmpreendimentoForm(forms.ModelForm):
                     "placeholder": "Ex.: 08h às 18h",
                 }
             ),
-            "atende_agendamento": forms.RadioSelect(
-                choices=[
-                    (True, "Sim"),
-                    (False, "Não"),
-                ]
-            ),
-            "possui_estacionamento": forms.RadioSelect(
-                choices=[
-                    (True, "Sim"),
-                    (False, "Não"),
-                ]
-            ),
             # ==========================================
-            # CULTURA
+            # CULTURA, SUSTENTABILIDADE E ACESSIBILIDADE
             # ==========================================
-            "valoriza_cultura_local": forms.RadioSelect(
-                choices=[
-                    (True, "Sim"),
-                    (False, "Não"),
-                ]
-            ),
             "como_valoriza_cultura": forms.Textarea(
                 attrs={
                     "class": "field-input",
                     "rows": 4,
-                    "placeholder": (
-                        "Explique como o empreendimento " "valoriza a cultura local."
-                    ),
+                    "placeholder": "Explique como o empreendimento valoriza a cultura local.",
                 }
             ),
-            # ==========================================
-            # SUSTENTABILIDADE
-            # ==========================================
             "sustentabilidade": forms.Textarea(
                 attrs={
                     "class": "field-input",
                     "rows": 4,
-                    "placeholder": (
-                        "Informe ações de sustentabilidade, "
-                        "preservação ambiental ou uso consciente "
-                        "dos recursos."
-                    ),
+                    "placeholder": "Informe ações de sustentabilidade, preservação ambiental ou uso consciente dos recursos.",
                 }
             ),
             "praticas_sustentabilidade": forms.Textarea(
                 attrs={
                     "class": "field-input",
                     "rows": 4,
-                    "placeholder": (
-                        "Descreva práticas de sustentabilidade "
-                        "e ESG realizadas pelo empreendimento."
-                    ),
+                    "placeholder": "Descreva práticas de sustentabilidade e ESG realizadas pelo empreendimento.",
                 }
             ),
-            # ==========================================
-            # ACESSIBILIDADE
-            # ==========================================
             "acessibilidade": forms.Textarea(
                 attrs={
                     "class": "field-input",
                     "rows": 4,
-                    "placeholder": (
-                        "Informe recursos ou condições de "
-                        "acessibilidade disponíveis."
-                    ),
+                    "placeholder": "Informe recursos ou condições de acessibilidade disponíveis.",
                 }
-            ),
-            # ==========================================
-            # SELO MUNICIPAL
-            # ==========================================
-            "deseja_selo_turismo": forms.RadioSelect(
-                choices=[
-                    (True, "Sim"),
-                    (False, "Não"),
-                ]
-            ),
-            "autoriza_divulgacao": forms.RadioSelect(
-                choices=[
-                    (True, "Sim"),
-                    (False, "Não"),
-                ]
             ),
         }
 
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
 
         # ==========================================
         # IDENTIFICA A CATEGORIA "OUTRO"
         # ==========================================
-
         self.outro_categoria_id = (
             self.fields["categorias"]
             .queryset.filter(slug="outro")
@@ -392,121 +378,14 @@ class EmpreendimentoForm(forms.ModelForm):
         # ==========================================
         # ZONA
         # ==========================================
-
         self.fields["zona"].choices = [("", "Selecione a zona")] + list(
             self.fields["zona"].choices
         )
 
         # ==========================================
-        # CAMPOS SIM / NÃO OBRIGATÓRIOS
+        # EVITA MARCAR "NÃO" AUTOMATICAMENTE QUANDO NOVO FORMULÁRIO
         # ==========================================
-
-        self.fields["possui_cadastur"].required = True
-        self.fields["atende_agendamento"].required = True
-        self.fields["valoriza_cultura_local"].required = True
-
-        # ==========================================
-        # EVITA MARCAR "NÃO" AUTOMATICAMENTE
-        # ==========================================
-
         if not self.is_bound:
-
             self.fields["possui_cadastur"].initial = None
-
             self.fields["atende_agendamento"].initial = None
-
             self.fields["valoriza_cultura_local"].initial = None
-
-        # ==========================================
-        # LABELS
-        # ==========================================
-
-        self.fields["nome"].label = "Nome do empreendimento"
-
-        self.fields["responsavel"].label = "Responsável"
-
-        self.fields["categorias"].label = "Categoria(s)"
-
-        self.fields["cpf_responsavel"].label = "CPF do responsável"
-
-        self.fields["cnpj"].label = "CNPJ"
-
-        self.fields["possui_cadastur"].label = "Possui CADASTUR?"
-
-        self.fields["numero_cadastur"].label = "Número do CADASTUR"
-
-        self.fields["possui_sicab"].label = "É cadastrado no SICAB?"
-
-        self.fields["possui_caf"].label = "Possui CAF?"
-
-        self.fields["zona"].label = "Localização"
-
-        self.fields["endereco"].label = "Endereço"
-
-        self.fields["bairro_comunidade"].label = "Bairro ou comunidade"
-
-        self.fields["ponto_referencia"].label = "Ponto de referência"
-
-        self.fields["numero"].label = "Número"
-
-        self.fields["telefone"].label = "Telefone"
-
-        self.fields["whatsapp"].label = "WhatsApp"
-
-        self.fields["email"].label = "E-mail"
-
-        self.fields["instagram"].label = "Instagram"
-
-        self.fields["facebook"].label = "Facebook"
-
-        self.fields["outras_redes"].label = "Outras redes sociais"
-
-        self.fields["tipo_empreendimento"].label = "Tipo de empreendimento"
-
-        self.fields["outro_segmento"].label = "Outro segmento"
-
-        self.fields["numero_quartos"].label = "Número e tipos de quartos"
-
-        self.fields["numero_leitos"].label = "Número de leitos"
-
-        self.fields["quarto_acessibilidade"].label = "Quarto com acessibilidade?"
-
-        self.fields["cafe_incluso"].label = "Café incluso?"
-
-        self.fields["possui_garagem"].label = "Possui garagem?"
-
-        self.fields["valor_diarias"].label = "Valor das diárias"
-
-        self.fields["descricao"].label = "Descrição do empreendimento"
-
-        self.fields["historia"].label = "História do empreendimento"
-
-        self.fields["dias_funcionamento"].label = "Dias de funcionamento"
-
-        self.fields["horario_funcionamento"].label = "Horário de funcionamento"
-
-        self.fields["atende_agendamento"].label = "Atende mediante agendamento?"
-
-        self.fields["possui_estacionamento"].label = "Possui estacionamento?"
-
-        self.fields["valoriza_cultura_local"].label = "Valoriza a cultura local?"
-
-        self.fields["como_valoriza_cultura"].label = "Como valoriza a cultura local?"
-
-        self.fields["sustentabilidade"].label = "Sustentabilidade"
-
-        self.fields["praticas_sustentabilidade"].label = (
-            "Práticas de sustentabilidade e ESG"
-        )
-
-        self.fields["acessibilidade"].label = "Acessibilidade"
-
-        self.fields["deseja_selo_turismo"].label = (
-            "Deseja participar da avaliação para o " "Selo Municipal do Turismo?"
-        )
-
-        self.fields["autoriza_divulgacao"].label = (
-            "Autoriza o uso das informações para " "divulgação institucional?"
-        )
-
-        self.fields["consentimento"].label = "Li e aceito o aviso de privacidade."
