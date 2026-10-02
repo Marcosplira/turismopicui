@@ -15,6 +15,29 @@ User = get_user_model()
 
 
 class CadastroPublicoTests(TestCase):
+    @override_settings(
+        ANDROID_PACKAGE_NAME="com.turismopicui.guia",
+        ANDROID_SHA256_CERT_FINGERPRINT="AA:BB:CC, DD:EE:FF",
+    )
+    def test_assetlinks_publica_pacote_e_certificados_configurados(self):
+        resposta = self.client.get("/.well-known/assetlinks.json")
+
+        self.assertEqual(resposta.status_code, 200)
+        associacao = resposta.json()[0]
+        self.assertEqual(
+            associacao["target"]["package_name"], "com.turismopicui.guia"
+        )
+        self.assertEqual(
+            associacao["target"]["sha256_cert_fingerprints"],
+            ["AA:BB:CC", "DD:EE:FF"],
+        )
+
+    @override_settings(ANDROID_SHA256_CERT_FINGERPRINT="")
+    def test_assetlinks_nao_publica_associacao_sem_certificado(self):
+        resposta = self.client.get("/.well-known/assetlinks.json")
+
+        self.assertEqual(resposta.status_code, 404)
+
     def test_login_admin_exibe_identidade_visual_do_turismo(self):
         resposta = self.client.get(reverse("admin:login"))
 

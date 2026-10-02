@@ -20,9 +20,14 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from cadastro.views import catalogo, home
+from cadastro.views import android_assetlinks, catalogo, home
 
 urlpatterns = [
+    path(
+        ".well-known/assetlinks.json",
+        android_assetlinks,
+        name="android_assetlinks",
+    ),
     path("", home, name="home"),
     path("guia/", catalogo, name="catalogo_publico"),
     path("admin/", admin.site.urls),

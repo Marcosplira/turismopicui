@@ -138,6 +138,12 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+ANDROID_PACKAGE_NAME = os.environ.get(
+    "ANDROID_PACKAGE_NAME", "com.turismopicui.guia"
+)
+ANDROID_SHA256_CERT_FINGERPRINT = os.environ.get(
+    "ANDROID_SHA256_CERT_FINGERPRINT", ""
+)
 
 # ==========================================================
 # ARQUIVOS DE MÍDIA

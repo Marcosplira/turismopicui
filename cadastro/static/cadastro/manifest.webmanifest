@@ -2,23 +2,31 @@
   "name": "Turismo de Picuí",
   "short_name": "Turismo Picuí",
   "description": "Portal turístico e guia de empreendimentos de Picuí",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#166534",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/static/cadastro/imagem/logo-picui.png",
+      "src": "/static/cadastro/imagem/app-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/static/cadastro/imagem/logo-picui.png",
+      "src": "/static/cadastro/imagem/app-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/static/cadastro/imagem/app-icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

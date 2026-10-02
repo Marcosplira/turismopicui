@@ -5,11 +5,37 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_GET
 from django.db.models import Count, Q
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Empreendimento, FotoEmpreendimento, Categoria
 from .forms import EmpreendimentoForm
+
+
+@require_GET
+def android_assetlinks(request):
+    fingerprints = [
+        value.strip()
+        for value in settings.ANDROID_SHA256_CERT_FINGERPRINT.split(",")
+        if value.strip()
+    ]
+    if not fingerprints:
+        return HttpResponse(status=404)
+
+    return JsonResponse(
+        [
+            {
+                "relation": ["delegate_permission/common.handle_all_urls"],
+                "target": {
+                    "namespace": "android_app",
+                    "package_name": settings.ANDROID_PACKAGE_NAME,
+                    "sha256_cert_fingerprints": fingerprints,
+                },
+            }
+        ],
+        safe=False,
+    )
 
 
 def _enviar_notificacoes_cadastro(request, empreendimento):
