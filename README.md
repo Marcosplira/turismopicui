@@ -54,6 +54,15 @@ O projeto permite:
    - Cadastro: http://127.0.0.1:8001/cadastro/
    - Guia público: http://127.0.0.1:8001/guia/
    - Admin: http://127.0.0.1:8001/admin/
+   - Dashboard do gerente: http://127.0.0.1:8001/cadastro/dashboard-gerente/
+
+### Produção
+
+- Site: https://turismo-picui.onrender.com/
+- Administração: https://turismo-picui.onrender.com/admin/
+- Dashboard do gerente: https://turismo-picui.onrender.com/cadastro/dashboard-gerente/
+
+O acesso ao Admin e ao Dashboard exige usuário administrativo criado no banco do ambiente correspondente. A conta local não é compartilhada com o banco PostgreSQL do Render. Consulte [DOCUMENTACAO-ENTREGA.md](DOCUMENTACAO-ENTREGA.md) para instruções de criação e redefinição de senha. Nunca publique credenciais no repositório.
 
 ## Docker
 

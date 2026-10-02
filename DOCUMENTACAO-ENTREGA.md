@@ -90,25 +90,37 @@ Com isso, a prefeitura consegue administrar melhor a divulgação turística do 
 - Cadastro: http://127.0.0.1:8001/cadastro/
 - Guia público: http://127.0.0.1:8001/guia/
 - Administração: http://127.0.0.1:8001/admin/
+- Dashboard do gerente: http://127.0.0.1:8001/cadastro/dashboard-gerente/
 
 ### Produção
 
-- Link do serviço publicado em host da empresa ou prefeitura.
-- O endereço público deve ser compartilhado em materiais e apresentações.
+- Site: https://turismo-picui.onrender.com/
+- Administração: https://turismo-picui.onrender.com/admin/
+- Dashboard do gerente: https://turismo-picui.onrender.com/cadastro/dashboard-gerente/
 
 ## 8. Usuário administrativo
 
-Para criar o primeiro usuário administrador local:
+O painel e o dashboard são restritos a usuários da equipe com permissão de acesso administrativo (`is_staff`). Para criar um usuário administrador no ambiente local:
 
 ```powershell
 python manage.py createsuperuser
 ```
 
-Para criar ou resetar senha em produção:
+O banco local e o banco PostgreSQL do Render são separados. Usuários e senhas criados localmente não são copiados para produção. Os comandos abaixo só alteram o ambiente no qual o Django está conectado; execute-os em um shell conectado ao banco de produção, nunca suponha que o terminal local altera o Render.
+
+Para criar o primeiro administrador de produção, execute no ambiente conectado ao banco do Render:
+
+```bash
+python manage.py createsuperuser
+```
+
+Para redefinir a senha de um administrador existente nesse mesmo ambiente:
 
 ```powershell
 python manage.py changepassword nome_do_usuario
 ```
+
+Use uma senha forte e exclusiva. Não coloque credenciais em arquivos do projeto, documentação, GitHub ou mensagens. Depois do login, abra o Dashboard do gerente pelo link de produção acima.
 
 ## 9. E-mail e alertas
 
@@ -126,6 +138,7 @@ Essas mensagens avisam que houve um novo empreendimento em análise e ajudam a r
 - não publicar senhas dentro do código;
 - manter backups do banco;
 - controlar acessos ao painel administrativo;
+- criar usuários administrativos diretamente no ambiente de produção, sem reutilizar credenciais padrão;
 - configurar armazenamento permanente de fotos em produção.
 
 ## 11. Checklist para entrega ao gerente
