@@ -6,6 +6,10 @@ from django.utils.html import format_html
 
 from .models import Empreendimento, FotoEmpreendimento, Categoria
 
+admin.site.site_header = "Gestão do Turismo de Picuí"
+admin.site.site_title = "Painel Turismo de Picuí"
+admin.site.index_title = "Visão geral da gestão"
+
 
 class FotoEmpreendimentoInline(admin.TabularInline):
     model = FotoEmpreendimento

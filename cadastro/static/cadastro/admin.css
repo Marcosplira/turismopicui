@@ -1,0 +1,58 @@
+:root {
+    --primary: #176b4b;
+    --secondary: #12553c;
+    --accent: #f1c75b;
+    --header-bg: #176b4b;
+    --header-color: #ffffff;
+    --breadcrumbs-bg: #edf5ef;
+    --link-fg: #176b4b;
+    --link-hover-color: #104b35;
+    --button-bg: #176b4b;
+    --button-hover-bg: #104b35;
+    --default-button-bg: #176b4b;
+    --default-button-hover-bg: #104b35;
+}
+
+#header {
+    box-shadow: 0 2px 8px rgb(18 85 60 / 16%);
+}
+
+#branding h1 {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+#branding h1 a {
+    color: var(--header-color);
+}
+
+#content-main .module caption,
+#content-main .module h2,
+.inline-group h2 {
+    background: var(--primary);
+}
+
+.login #container {
+    overflow: hidden;
+    border: 1px solid #dce8df;
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgb(25 55 39 / 10%);
+}
+
+.login #header {
+    padding: 18px 16px;
+}
+
+.login #content {
+    padding: 26px;
+}
+
+@media (max-width: 767px) {
+    #branding h1 {
+        font-size: 16px;
+    }
+
+    .login #content {
+        padding: 20px;
+    }
+}

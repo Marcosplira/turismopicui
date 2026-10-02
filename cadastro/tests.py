@@ -15,6 +15,13 @@ User = get_user_model()
 
 
 class CadastroPublicoTests(TestCase):
+    def test_login_admin_exibe_identidade_visual_do_turismo(self):
+        resposta = self.client.get(reverse("admin:login"))
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertContains(resposta, "Gestão do Turismo de Picuí")
+        self.assertContains(resposta, "cadastro/admin.css")
+
     def test_formulario_nao_exibe_tags_template_como_texto(self):
         resposta = self.client.get(reverse("cadastrar_empreendimento"))
 
