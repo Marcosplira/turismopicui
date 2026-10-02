@@ -11,6 +11,8 @@ backups/
 .vscode/
 *.jks
 *.keystore
+*.aab
+*.apk
 android/.gradle/
 android/local.properties
 android/build/

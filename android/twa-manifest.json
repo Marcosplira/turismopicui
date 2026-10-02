@@ -17,7 +17,7 @@
   "maskableIconUrl": "https://turismo-picui.onrender.com/static/cadastro/imagem/app-icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "C:\\Users\\Marcos Paulo\\Desktop\\TurismoPicui\\android\\android.keystore",
+    "path": "android-release.keystore",
     "alias": "android"
   },
   "appVersionName": "1",
