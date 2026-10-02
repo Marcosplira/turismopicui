@@ -106,21 +106,16 @@ O painel e o dashboard são restritos a usuários da equipe com permissão de ac
 python manage.py createsuperuser
 ```
 
-O banco local e o banco PostgreSQL do Render são separados. Usuários e senhas criados localmente não são copiados para produção. Os comandos abaixo só alteram o ambiente no qual o Django está conectado; execute-os em um shell conectado ao banco de produção, nunca suponha que o terminal local altera o Render.
+O banco local e o banco PostgreSQL do Render são separados. Usuários e senhas criados localmente não são copiados para produção. Para provisionar ou redefinir a conta administrativa do Render sem expor uma senha no código:
 
-Para criar o primeiro administrador de produção, execute no ambiente conectado ao banco do Render:
+1. No painel do Render, abra o serviço `turismo-picui` e adicione estas variáveis de ambiente:
+	- `DJANGO_BOOTSTRAP_ADMIN_USERNAME`: por exemplo, `adminturismo`;
+	- `DJANGO_BOOTSTRAP_ADMIN_EMAIL`: e-mail institucional (opcional);
+	- `DJANGO_BOOTSTRAP_ADMIN_PASSWORD`: senha forte e exclusiva.
+2. Salve as variáveis para iniciar um novo deploy. O `build.sh` executa o comando de bootstrap depois das migrações: cria um superusuário se não existir ou redefine a senha se já for superusuário.
+3. Após o deploy, remova as variáveis `DJANGO_BOOTSTRAP_ADMIN_*` do Render e faça outro deploy. A conta permanece no banco; as credenciais deixam de estar nas variáveis do serviço.
 
-```bash
-python manage.py createsuperuser
-```
-
-Para redefinir a senha de um administrador existente nesse mesmo ambiente:
-
-```powershell
-python manage.py changepassword nome_do_usuario
-```
-
-Use uma senha forte e exclusiva. Não coloque credenciais em arquivos do projeto, documentação, GitHub ou mensagens. Depois do login, abra o Dashboard do gerente pelo link de produção acima.
+O comando não promove contas comuns a administradoras e não faz nada quando as variáveis não estão configuradas. Não use a senha padrão `admin`, nem envie senhas pelo GitHub ou por mensagens. Depois do login, acesse o Dashboard do gerente pelo link de produção acima.
 
 ## 9. E-mail e alertas
 

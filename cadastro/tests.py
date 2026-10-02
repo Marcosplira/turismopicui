@@ -1,7 +1,11 @@
+import os
+from unittest.mock import patch
+
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command, CommandError
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from io import BytesIO
@@ -12,6 +16,66 @@ from .admin import EmpreendimentoAdmin
 from .models import Empreendimento, Categoria, FotoEmpreendimento
 
 User = get_user_model()
+
+
+class BootstrapAdminCommandTests(TestCase):
+    def test_sem_variaveis_de_bootstrap_nao_cria_usuario(self):
+        with patch.dict(
+            os.environ,
+            {
+                "DJANGO_BOOTSTRAP_ADMIN_USERNAME": "",
+                "DJANGO_BOOTSTRAP_ADMIN_PASSWORD": "",
+            },
+        ):
+            call_command("bootstrap_admin")
+
+        self.assertEqual(User.objects.count(), 0)
+
+    def test_cria_superusuario_com_credenciais_do_ambiente(self):
+        with patch.dict(
+            os.environ,
+            {
+                "DJANGO_BOOTSTRAP_ADMIN_USERNAME": "adminturismo",
+                "DJANGO_BOOTSTRAP_ADMIN_EMAIL": "turismo@example.com",
+                "DJANGO_BOOTSTRAP_ADMIN_PASSWORD": "Acesso-Seguro-2026!",
+            },
+        ):
+            call_command("bootstrap_admin")
+
+        usuario = User.objects.get(username="adminturismo")
+        self.assertTrue(usuario.is_staff)
+        self.assertTrue(usuario.is_superuser)
+        self.assertTrue(usuario.check_password("Acesso-Seguro-2026!"))
+
+    def test_redefine_senha_de_superusuario_existente(self):
+        usuario = User.objects.create_superuser(
+            "adminturismo", "turismo@example.com", "Senha-Antiga-2026!"
+        )
+
+        with patch.dict(
+            os.environ,
+            {
+                "DJANGO_BOOTSTRAP_ADMIN_USERNAME": "adminturismo",
+                "DJANGO_BOOTSTRAP_ADMIN_PASSWORD": "Acesso-Novo-2026!",
+            },
+        ):
+            call_command("bootstrap_admin")
+
+        usuario.refresh_from_db()
+        self.assertTrue(usuario.check_password("Acesso-Novo-2026!"))
+
+    def test_nao_promove_usuario_comum_a_administrador(self):
+        User.objects.create_user("adminturismo", password="Senha-Comum-2026!")
+
+        with patch.dict(
+            os.environ,
+            {
+                "DJANGO_BOOTSTRAP_ADMIN_USERNAME": "adminturismo",
+                "DJANGO_BOOTSTRAP_ADMIN_PASSWORD": "Acesso-Seguro-2026!",
+            },
+        ):
+            with self.assertRaises(CommandError):
+                call_command("bootstrap_admin")
 
 
 class CadastroPublicoTests(TestCase):
