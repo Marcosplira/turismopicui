@@ -45,6 +45,21 @@ class CadastroPublicoTests(TestCase):
         self.assertContains(resposta, "Gestão do Turismo de Picuí")
         self.assertContains(resposta, "cadastro/admin.css")
 
+    def test_home_exibe_acesso_da_equipe_e_dashboard_para_staff(self):
+        resposta = self.client.get(reverse("home"))
+
+        self.assertContains(resposta, "Acesso da equipe")
+        self.assertContains(resposta, reverse("dashboard_gerente"))
+
+        gerente = User.objects.create_user("gerente", password="senha-forte")
+        gerente.is_staff = True
+        gerente.save()
+        self.client.force_login(gerente)
+
+        resposta = self.client.get(reverse("home"))
+
+        self.assertContains(resposta, "Dashboard do gerente")
+
     def test_formulario_nao_exibe_tags_template_como_texto(self):
         resposta = self.client.get(reverse("cadastrar_empreendimento"))
 

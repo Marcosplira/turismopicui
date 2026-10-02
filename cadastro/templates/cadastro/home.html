@@ -81,11 +81,8 @@
                 <a href="https://heyzine.com/flip-book/e975954570.html" target="_blank"
                     class="min-w-[145px] bg-white border border-green-700 hover:bg-green-50 text-green-800 font-bold px-5 py-3 rounded-lg text-center">Revista
                     turística</a>
-                {% if request.user.is_staff %}
                 <a href="{% url 'dashboard_gerente' %}"
-                    class="min-w-[145px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-3 rounded-lg text-center">Dashboard
-                    do gerente</a>
-                {% endif %}
+                    class="min-w-[145px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-3 rounded-lg text-center">{% if request.user.is_staff %}Dashboard do gerente{% else %}Acesso da equipe{% endif %}</a>
                 <a href="{% url 'admin:index' %}"
                     class="min-w-[145px] bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-5 py-3 rounded-lg text-center">Área
                     administrativa</a>
