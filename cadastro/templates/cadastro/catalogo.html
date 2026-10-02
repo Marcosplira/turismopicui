@@ -68,6 +68,7 @@
                     <p class="text-sm text-gray-500 mt-3">{{ empreendimento.bairro_comunidade }}</p>
                     <div class="flex flex-wrap gap-2 mt-5">
                         {% if empreendimento.whatsapp_url %}<a href="{{ empreendimento.whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold px-3 py-2 rounded-lg">WhatsApp</a>{% endif %}
+                        <a href="{% url 'detalhe_empreendimento' empreendimento.pk %}" class="bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold px-3 py-2 rounded-lg">Ver detalhes</a>
                         <a href="{{ empreendimento.mapa_url }}" target="_blank" rel="noopener noreferrer" class="border border-green-700 text-green-800 hover:bg-green-50 text-sm font-bold px-3 py-2 rounded-lg">Ver no mapa</a>
                     </div>
                 </div>

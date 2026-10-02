@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistente de Turismo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+    <header class="bg-green-700 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-6 py-6 flex items-center justify-between">
+            <div>
+                <p class="text-green-100 text-sm uppercase tracking-[0.2em]">Turismo de Picuí</p>
+                <h1 class="text-3xl font-bold mt-1">Assistente de Turismo</h1>
+            </div>
+            <a href="{% url 'home' %}" class="border border-white/40 px-4 py-2 rounded-lg hover:bg-white/10">Voltar</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-8">
+        <section class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+            <div class="bg-gradient-to-r from-green-700 to-emerald-600 p-5 text-white">
+                <h2 class="text-xl font-bold">Como posso ajudar?</h2>
+                <p class="text-green-50 mt-1">Perguntas rápidas sobre cadastro, guia turístico e status do empreendimento.</p>
+            </div>
+
+            <div class="p-5">
+                <div id="chat-messages" class="space-y-4 h-[420px] overflow-y-auto border border-slate-200 rounded-2xl bg-slate-50 p-4">
+                    <div class="max-w-[85%] bg-green-700 text-white rounded-2xl rounded-bl-md p-3">
+                        Olá! Sou o assistente do Turismo de Picuí. Posso te ajudar com cadastro, guia turístico e status de análise.
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <div class="flex gap-3">
+                        <input id="mensagem" type="text" placeholder="Digite sua dúvida..." class="flex-1 border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <button id="enviar" class="bg-green-700 hover:bg-green-800 text-white font-semibold px-5 py-3 rounded-xl">Enviar</button>
+                    </div>
+                </div>
+
+                <div class="mt-5 flex flex-wrap gap-2">
+                    <button class="prompt-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-full text-sm" data-text="Como cadastrar meu empreendimento?">Como cadastrar</button>
+                    <button class="prompt-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-full text-sm" data-text="Qual é o status do meu cadastro?">Status do cadastro</button>
+                    <button class="prompt-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-full text-sm" data-text="Como funciona o guia turístico?">Guia turístico</button>
+                    <button class="prompt-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-full text-sm" data-text="Quero saber mais sobre Picuí">Sobre a cidade</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const mensagemInput = document.getElementById('mensagem');
+        const enviarButton = document.getElementById('enviar');
+
+        function appendMessage(role, text) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'max-w-[85%] rounded-2xl p-3 ' + (role === 'user'
+                ? 'ml-auto bg-slate-800 text-white rounded-br-md'
+                : 'bg-green-700 text-white rounded-bl-md');
+            wrapper.textContent = text;
+            chatMessages.appendChild(wrapper);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function sendMessage(text) {
+            const value = (text || mensagemInput.value || '').trim();
+            if (!value) return;
+
+            appendMessage('user', value);
+            mensagemInput.value = '';
+            enviarButton.disabled = true;
+
+            fetch('{% url "chatbot_assistente" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: 'mensagem=' + encodeURIComponent(value)
+            })
+            .then(response => response.json())
+            .then(data => {
+                appendMessage('bot', data.resposta || 'Não consegui responder agora.');
+            })
+            .catch(() => {
+                appendMessage('bot', 'Tive um problema ao processar sua mensagem. Tente novamente.');
+            })
+            .finally(() => {
+                enviarButton.disabled = false;
+                mensagemInput.focus();
+            });
+        }
+
+        enviarButton.addEventListener('click', () => sendMessage());
+        mensagemInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') sendMessage();
+        });
+
+        document.querySelectorAll('.prompt-btn').forEach((button) => {
+            button.addEventListener('click', () => sendMessage(button.dataset.text));
+        });
+    </script>
+</body>
+</html>

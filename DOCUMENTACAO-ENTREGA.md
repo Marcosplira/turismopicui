@@ -1,248 +1,145 @@
-# Documentacao de entrega - Turismo de Picui
+# Documentação de entrega e funcionamento do sistema - Turismo de Picuí
 
-## Acesso oficial publicado
+## 1. Visão geral do software
 
-- Site: https://turismo-picui.onrender.com/
-- Cadastro: https://turismo-picui.onrender.com/cadastro/
-- Guia publico: https://turismo-picui.onrender.com/guia/
-- Administracao: https://turismo-picui.onrender.com/admin/
+O sistema foi desenvolvido para centralizar o processo de cadastro, análise e divulgação de empreendimentos turísticos do município de Picuí. Ele conecta três partes principais:
 
-## 1. O que o aplicativo faz
+- empreendedor: cadastra o empreendimento e envia dados e fotos;
+- administração: revisa os cadastros e aprova ou reprova a divulgação;
+- público: consulta o guia turístico com informações aprovadas.
 
-O sistema permite:
+Em termos de negócio, o software resolve um problema real: organizar em um único ambiente os dados dos empreendimentos locais, facilitar a análise pela prefeitura e melhorar a visibilidade dos negócios para moradores e turistas.
 
-- cadastrar empreendimentos e atrativos turisticos;
-- enviar ate quatro fotos por cadastro;
-- aceitar o aviso de privacidade;
-- receber confirmacao por e-mail quando o SMTP estiver configurado;
-- revisar cadastros no painel administrativo;
-- aprovar ou reprovar empreendimentos;
-- exibir somente empreendimentos aprovados no guia publico;
-- pesquisar por nome, categoria e zona;
-- abrir conversa no WhatsApp e localizacao no Google Maps;
-- acessar home e cadastro por QR Code.
+## 2. Objetivo do sistema para o gerente
 
-Rotas principais:
+O gerente precisa acompanhar o processo de forma simples e objetiva. O sistema foi pensado para permitir:
 
-- Home: `/`
-- Cadastro: `/cadastro/`
-- Guia publico: `/guia/`
-- Administracao: `/admin/`
-- Privacidade: `/cadastro/privacidade/`
+- receber novos cadastros de empreendimentos;
+- revisar informações cadastrais;
+- validar fotos e dados de contato;
+- aprovar ou reprovar os registros;
+- manter o guia municipal atualizado;
+- reduzir o trabalho manual e a dispersão de informações em mensagens ou planilhas.
 
-## 2. Abrir no computador hoje
+## 3. Como o software funciona
 
-No PowerShell, dentro da pasta do projeto:
+### Fluxo do empreendedor
+
+1. O empreendedor acessa a página de cadastro.
+2. Preenche os dados do empreendimento, responsável, endereço, categoria e contatos.
+3. Envia fotos do local ou serviço.
+4. Aceita o aviso de privacidade.
+5. O sistema salva o cadastro e marca como pendente.
+6. O cadastro passa para análise administrativa.
+
+### Fluxo da administração
+
+1. O gerente ou a equipe responsável acessa o painel administrativo.
+2. Visualiza todos os empreendimentos cadastrados.
+3. Revê nome, responsáveis, endereço, telefone, email, fotos e categoria.
+4. Aprova ou reprova o registro.
+5. O status do empreendimento muda para aprovado ou reprovado.
+
+### Fluxo do público
+
+1. Usuários acessam o guia turístico.
+2. A busca e os filtros ajudam a encontrar empreendimentos por categoria, nome e zona.
+3. Apenas os cadastros aprovados são exibidos.
+4. O visitante pode ver fotos, dados de contato, WhatsApp e localização.
+
+## 4. Funcionamento do painel administrativo
+
+O painel administrativo permite:
+
+- consultar todos os registros;
+- filtrar por zona, categoria e status;
+- pesquisar por nome, responsável, telefone e email;
+- visualizar fotos e informações do empreendimento;
+- aprovar ou reprovar em lote;
+- manter as categorias organizadas.
+
+Esse painel é o centro de operação do gerente, porque é nele que as decisões de divulgação são tomadas.
+
+## 5. O que o gerente acompanha no dia a dia
+
+O gerente deve acompanhar principalmente:
+
+- quantos cadastros chegaram;
+- quantos estão pendentes;
+- quantos foram aprovados;
+- quantos foram rejeitados;
+- quais categorias têm mais demanda;
+- se há falta de dados ou fotos incompletas.
+
+Com isso, a prefeitura consegue administrar melhor a divulgação turística do município.
+
+## 6. Benefícios do sistema
+
+- organização dos dados em um único sistema;
+- redução de falhas por cadastro disperso;
+- melhora na comunicação com empreendedores;
+- controle de aprovação da equipe da prefeitura;
+- acesso rápido do público ao guia turístico;
+- ambiente mais profissional para a gestão do turismo local.
+
+## 7. Acesso ao sistema
+
+### Local
+
+- Home: http://127.0.0.1:8001/
+- Cadastro: http://127.0.0.1:8001/cadastro/
+- Guia público: http://127.0.0.1:8001/guia/
+- Administração: http://127.0.0.1:8001/admin/
+
+### Produção
+
+- Link do serviço publicado em host da empresa ou prefeitura.
+- O endereço público deve ser compartilhado em materiais e apresentações.
+
+## 8. Usuário administrativo
+
+Para criar o primeiro usuário administrador local:
 
 ```powershell
-cd "C:\Users\Marcos Paulo\Desktop\TurismoPicui"
-.\venv\Scripts\python.exe manage.py migrate
-.\venv\Scripts\python.exe manage.py runserver 127.0.0.1:8001
-```
-
-Abrir no navegador:
-
-```text
-http://127.0.0.1:8001/
-```
-
-O servidor deve permanecer aberto no terminal enquanto o sistema estiver sendo usado.
-
-## 3. Abrir no celular pela mesma Wi-Fi
-
-1. Conecte computador e celular na mesma rede Wi-Fi.
-2. Descubra o IPv4 do computador com:
-
-```powershell
-ipconfig
-```
-
-3. Inicie o servidor aceitando conexoes da rede:
-
-```powershell
-.\venv\Scripts\python.exe manage.py runserver 0.0.0.0:8002
-```
-
-4. No celular, abra o endereco usando o IPv4 do computador:
-
-```text
-http://192.168.3.17:8002/
-```
-
-O IP pode mudar. Se o Windows perguntar sobre firewall, permita acesso em rede privada.
-
-O QR Code precisa ser visualizado na pagina aberta pelo IP da rede. Um QR Code criado com `127.0.0.1` nao funciona no celular.
-
-## 4. Painel administrativo
-
-Acesse:
-
-```text
-http://127.0.0.1:8001/admin/
-```
-
-Para criar o primeiro usuario administrador local:
-
-```powershell
-.\venv\Scripts\python.exe manage.py createsuperuser
-```
-
-### Criar o administrador no Render
-
-O login do administrador e diferente do cadastro do cliente. No Render, abra o servico `turismo-picui`, entre em **Shell** e execute:
-
-```text
 python manage.py createsuperuser
 ```
 
-Quando aparecerem as perguntas, informe:
-
-```text
-Username: adminturismo
-Email: um e-mail administrativo valido
-Password: uma senha forte, com letras, numeros e simbolos
-```
-
-O valor `admin` e muito fraco e pode ser recusado pelas regras de senha do Django. Nao coloque a senha no GitHub, na documentacao publica ou no codigo.
-
-Se `adminturismo` ja existir e a senha tiver sido esquecida, use o Shell do Render:
-
-```text
-python manage.py changepassword adminturismo
-```
-
-Na tela de login, use `adminturismo` no campo **Usuario**, nao no campo de e-mail. O Django Admin aceita o nome de usuario criado no comando acima.
-
-O cliente nao precisa criar usuario, e-mail ou senha para consultar o cadastro. Depois de enviar o formulario, o sistema abre automaticamente o cadastro recente em `Meus dados` naquele navegador. Por seguranca, essa consulta fica vinculada a sessao do navegador; o administrador continua sendo o responsavel por localizar todos os dados no painel.
-
-No admin:
-
-1. Cadastre as categorias.
-2. Cadastre ou revise empreendimentos.
-3. Adicione fotos.
-4. Use a acao `Aprovar empreendimentos selecionados`.
-5. Confira o resultado em `/guia/`.
-
-## 5. Backup local
-
-Para criar uma copia do SQLite:
+Para criar ou resetar senha em produção:
 
 ```powershell
-.\venv\Scripts\python.exe manage.py backup_db
+python manage.py changepassword nome_do_usuario
 ```
 
-O arquivo sera salvo em `backups/`. Em producao PostgreSQL, use `pg_dump` ou o backup automatico do provedor.
+## 9. E-mail e alertas
 
-## 6. Docker
+O sistema envia notificações por e-mail para:
 
-Com o Docker Desktop instalado, na pasta do projeto:
+- responsável pelo cadastro;
+- administrador do projeto/prefeitura.
 
-```powershell
-$env:DJANGO_SECRET_KEY = "gere-uma-chave-secreta-e-nao-compartilhe"
-docker compose up --build
-```
+Essas mensagens avisam que houve um novo empreendimento em análise e ajudam a reduzir demora na resposta.
 
-Abrir localmente:
+## 10. Segurança e boas práticas
 
-```text
-http://127.0.0.1:8000/
-```
+- manter a chave secreta em variável de ambiente;
+- usar DEBUG em False em produção;
+- não publicar senhas dentro do código;
+- manter backups do banco;
+- controlar acessos ao painel administrativo;
+- configurar armazenamento permanente de fotos em produção.
 
-O Docker usa Gunicorn, executa a aplicacao na porta 8000 e exige `DJANGO_SECRET_KEY` real no ambiente.
+## 11. Checklist para entrega ao gerente
 
-## 7. Publicacao recomendada para a entrega
+- [x] Sistema funcionando localmente
+- [x] Cadastro do empreendedor acessível
+- [x] Guia público com informações aprovadas
+- [x] Painel administrativo para revisão
+- [x] E-mails de confirmação e alerta
+- [x] Organização por categorias e status
+- [x] Estrutura pronta para apresentação ao cliente
 
-### Opcao mais simples: Render
+## 12. Observação final
 
-O projeto ja inclui `render.yaml` e `build.sh`. Ao conectar o repositorio no Render como Blueprint, essa configuracao cria o servico web e o PostgreSQL, instala as dependencias, coleta os arquivos estaticos e aplica as migracoes.
+O software foi construído para ser um sistema prático de gestão do turismo local. Ele não é apenas um formulário; ele é uma ferramenta operacional para a gestão de empreendimentos, o controle das aprovações e a divulgação municipal dos serviços turísticos.
 
-A documentacao oficial do Render para Django recomenda:
-
-- Web Service para a aplicacao;
-- PostgreSQL gerenciado;
-- variavel `DATABASE_URL`;
-- variavel `DJANGO_SECRET_KEY` gerada pelo provedor;
-- `DEBUG=False`;
-- `ALLOWED_HOSTS` com o dominio publicado;
-- comando de build com `collectstatic` e `migrate`;
-- Gunicorn para iniciar a aplicacao.
-
-Passos gerais:
-
-1. Criar uma conta no Render.
-2. Colocar o projeto em um repositorio privado no GitHub.
-3. No Render, escolher **New > Blueprint** e selecionar o repositorio.
-4. Conferir os servicos criados pelo arquivo `render.yaml`.
-5. Criar um Web Service ligado ao repositorio, caso o Blueprint nao faca isso automaticamente.
-6. Configurar:
-
-```text
-Build Command: bash build.sh
-Start Command: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
-```
-
-7. Configurar as variaveis:
-
-```text
-DEBUG=False
-DJANGO_SECRET_KEY=chave-gerada-pelo-provedor
-DATABASE_URL=url-do-postgresql
-ALLOWED_HOSTS=seu-endereco.onrender.com
-CSRF_TRUSTED_ORIGINS=https://seu-endereco.onrender.com
-```
-
-8. Criar o usuario admin no Shell do servico:
-
-```text
-python manage.py createsuperuser
-```
-
-Render gera um endereco HTTPS para o servico. Depois que o endereco estiver funcionando, gere novamente os QR Codes.
-
-### Railway
-
-Railway tambem oferece deploy por GitHub, banco PostgreSQL e dominio publico gerado no painel. O fluxo e semelhante: conectar repositorio, adicionar PostgreSQL, configurar variaveis e gerar o dominio na area Networking.
-
-### Google Cloud
-
-Google Cloud Run e uma opcao profissional, mas exige mais configuracao: projeto, faturamento, Artifact Registry, Cloud Run, Cloud SQL PostgreSQL e Cloud Storage. Para uma entrega urgente, Render ou Railway reduzem o risco operacional.
-
-## 8. Fotos em producao
-
-A pasta `media/` funciona localmente, mas o disco de muitos servicos de hospedagem pode ser temporario. Antes de divulgar o sistema, configurar um armazenamento permanente, como:
-
-- Google Cloud Storage;
-- Cloudinary;
-- Amazon S3.
-
-## 9. E-mail em producao
-
-Localmente, o projeto usa o backend de console e mostra a mensagem no terminal. Para envio real, configurar SMTP:
-
-```text
-EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-EMAIL_HOST=smtp.seu-provedor.com
-EMAIL_PORT=587
-EMAIL_HOST_USER=usuario
-EMAIL_HOST_PASSWORD=senha-ou-token
-EMAIL_USE_TLS=True
-DEFAULT_FROM_EMAIL=Turismo de Picui <noreply@seu-dominio.com>
-```
-
-Nunca colocar senha de e-mail dentro do codigo ou do repositorio.
-
-## 10. Checklist antes de divulgar
-
-- [x] Home abre no endereco publico.
-- [x] Cadastro abre pelo celular.
-- [ ] Consentimento e aviso de privacidade funcionam.
-- [ ] Upload de JPG e PNG funciona.
-- [ ] Fotos aparecem no armazenamento permanente.
-- [ ] E-mail de confirmacao foi testado.
-- [ ] Admin consegue aprovar um cadastro.
-- [ ] Empreendimento aprovado aparece em `/guia/`.
-- [ ] WhatsApp abre com o numero correto.
-- [ ] Google Maps abre o endereco correto.
-- [x] HTTPS esta ativo no Render.
-- [ ] Backup foi configurado.
-- [ ] QR Codes foram gerados usando o dominio publico.
+Com a utilização correta do painel administrativo e da rotina de aprovação, o gerente passa a ter uma visão mais organizada e profissional do setor turístico da cidade.

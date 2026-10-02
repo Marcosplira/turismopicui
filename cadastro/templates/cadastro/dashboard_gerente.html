@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard do gerente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+    <header class="bg-green-700 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <p class="text-green-100 text-sm uppercase tracking-[0.2em]">Turismo de Picuí</p>
+                <h1 class="text-3xl font-bold mt-1">Dashboard do gerente</h1>
+            </div>
+            <div class="flex gap-3 flex-wrap">
+                <a href="{% url 'admin:index' %}" class="bg-white text-green-800 font-semibold px-4 py-2 rounded-lg hover:bg-green-50">Administração</a>
+                <a href="{% url 'home' %}" class="border border-white/40 text-white px-4 py-2 rounded-lg hover:bg-white/10">Página inicial</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <section class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <p class="text-sm text-slate-500">Total</p>
+                <p class="text-3xl font-bold mt-2">{{ total }}</p>
+            </div>
+            <div class="bg-emerald-50 rounded-2xl shadow-sm border border-emerald-200 p-5">
+                <p class="text-sm text-emerald-700">Aprovados</p>
+                <p class="text-3xl font-bold mt-2 text-emerald-800">{{ aprovados }}</p>
+            </div>
+            <div class="bg-amber-50 rounded-2xl shadow-sm border border-amber-200 p-5">
+                <p class="text-sm text-amber-700">Pendentes</p>
+                <p class="text-3xl font-bold mt-2 text-amber-800">{{ pendentes }}</p>
+            </div>
+            <div class="bg-rose-50 rounded-2xl shadow-sm border border-rose-200 p-5">
+                <p class="text-sm text-rose-700">Reprovados</p>
+                <p class="text-3xl font-bold mt-2 text-rose-800">{{ reprovados }}</p>
+            </div>
+        </section>
+
+        {% if alertas %}
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">Alertas gerenciais</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                {% for alerta in alertas %}
+                    <div class="rounded-2xl border p-4 {% if alerta.tipo == 'warning' %}bg-amber-50 border-amber-200{% elif alerta.tipo == 'danger' %}bg-rose-50 border-rose-200{% else %}bg-sky-50 border-sky-200{% endif %}">
+                        <p class="font-bold text-slate-800">{{ alerta.titulo }}</p>
+                        <p class="mt-2 text-sm text-slate-700">{{ alerta.descricao }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <section class="grid lg:grid-cols-[1.5fr_1fr] gap-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
+                    <h2 class="text-xl font-bold">Últimos cadastros</h2>
+                    <span class="text-sm text-slate-500">{{ recentes|length }} registros</span>
+                </div>
+
+                <div class="divide-y divide-slate-200">
+                    {% for empreendimento in recentes %}
+                        <div class="px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                            <div>
+                                <h3 class="font-bold text-lg text-slate-800">{{ empreendimento.nome }}</h3>
+                                <p class="text-sm text-slate-600">{{ empreendimento.responsavel }} · {{ empreendimento.data_cadastro|date:"d/m/Y H:i" }}</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                {% if empreendimento.status == 'aprovado' %}
+                                    <span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-3 py-1 rounded-full text-xs font-bold">Aprovado</span>
+                                {% elif empreendimento.status == 'reprovado' %}
+                                    <span class="bg-rose-100 text-rose-800 border border-rose-300 px-3 py-1 rounded-full text-xs font-bold">Reprovado</span>
+                                {% else %}
+                                    <span class="bg-amber-100 text-amber-800 border border-amber-300 px-3 py-1 rounded-full text-xs font-bold">Pendente</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="px-6 py-8 text-slate-500">Nenhum empreendimento cadastrado até o momento.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <aside class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-xl font-bold mb-4">Resumo operacional</h2>
+                <ul class="space-y-4 text-sm text-slate-600">
+                    <li class="bg-slate-50 rounded-xl p-3">
+                        <span class="block font-semibold text-slate-800">Ações prioritárias</span>
+                        Revisar pendentes e validar contatos, fotos e localização.
+                    </li>
+                    <li class="bg-slate-50 rounded-xl p-3">
+                        <span class="block font-semibold text-slate-800">Taxa de aprovação</span>
+                        {% if total %}
+                            {{ aprovados|floatformat:0 }} de {{ total }} cadastros ativos
+                        {% else %}
+                            Ainda sem cadastros
+                        {% endif %}
+                    </li>
+                    <li class="bg-slate-50 rounded-xl p-3">
+                        <span class="block font-semibold text-slate-800">Próximo passo</span>
+                        Publicar no guia e monitorar novos cadastros em tempo real.
+                    </li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="mt-8 grid lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h3 class="text-xl font-bold mb-5">Distribuição por categoria</h3>
+                <div class="space-y-3">
+                    {% for categoria in categoria_summary %}
+                        <div>
+                            <div class="flex justify-between text-sm text-slate-600 mb-1">
+                                <span>{{ categoria.nome }}</span>
+                                <span>{{ categoria.total }}</span>
+                            </div>
+                            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-green-600 rounded-full" style="width: {% if total %}{% widthratio categoria.total total 100 %}{% else %}0{% endif %}%"></div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-slate-500">Ainda não há categorias ativas.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h3 class="text-xl font-bold mb-5">Distribuição por zona</h3>
+                <div class="space-y-3">
+                    {% for zona in zona_summary %}
+                        <div>
+                            <div class="flex justify-between text-sm text-slate-600 mb-1">
+                                <span>{{ zona.label }}</span>
+                                <span>{{ zona.total }}</span>
+                            </div>
+                            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-500 rounded-full" style="width: {% if total %}{% widthratio zona.total total 100 %}{% else %}0{% endif %}%"></div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-slate-500">Ainda não há distribuição por zona.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

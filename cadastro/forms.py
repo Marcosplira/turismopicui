@@ -24,7 +24,7 @@ class EmpreendimentoForm(forms.ModelForm):
         coerce=lambda x: str(x).lower() in ['true', '1'],
         choices=SIM_NAO_CHOICES,
         widget=forms.RadioSelect,
-        required=True,
+        required=False,
         label="Possui CADASTUR?",
     )
     possui_sicab = forms.TypedChoiceField(
@@ -66,7 +66,7 @@ class EmpreendimentoForm(forms.ModelForm):
         coerce=lambda x: str(x).lower() in ['true', '1'],
         choices=SIM_NAO_CHOICES,
         widget=forms.RadioSelect,
-        required=True,
+        required=False,
         label="Atende mediante agendamento?",
     )
     possui_estacionamento = forms.TypedChoiceField(
@@ -80,7 +80,7 @@ class EmpreendimentoForm(forms.ModelForm):
         coerce=lambda x: str(x).lower() in ['true', '1'],
         choices=SIM_NAO_CHOICES,
         widget=forms.RadioSelect,
-        required=True,
+        required=False,
         label="Valoriza a cultura local?",
     )
     deseja_selo_turismo = forms.TypedChoiceField(
