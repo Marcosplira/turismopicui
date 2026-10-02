@@ -109,9 +109,9 @@ python manage.py createsuperuser
 O banco local e o banco PostgreSQL do Render são separados. Usuários e senhas criados localmente não são copiados para produção. Para provisionar ou redefinir a conta administrativa do Render sem expor uma senha no código:
 
 1. No painel do Render, abra o serviço `turismo-picui` e adicione estas variáveis de ambiente:
-	- `DJANGO_BOOTSTRAP_ADMIN_USERNAME`: por exemplo, `adminturismo`;
-	- `DJANGO_BOOTSTRAP_ADMIN_EMAIL`: e-mail institucional (opcional);
-	- `DJANGO_BOOTSTRAP_ADMIN_PASSWORD`: senha forte e exclusiva.
+	- `DJANGO_BOOTSTRAP_ADMIN_PASSWORD`: senha forte e exclusiva (obrigatória);
+	- `DJANGO_BOOTSTRAP_ADMIN_USERNAME`: opcional; usa `adminturismo` quando omitida;
+	- `DJANGO_BOOTSTRAP_ADMIN_EMAIL`: e-mail institucional (opcional).
 2. Salve as variáveis para iniciar um novo deploy. O `build.sh` executa o comando de bootstrap depois das migrações: cria um superusuário se não existir ou redefine a senha se já for superusuário.
 3. Após o deploy, remova as variáveis `DJANGO_BOOTSTRAP_ADMIN_*` do Render e faça outro deploy. A conta permanece no banco; as credenciais deixam de estar nas variáveis do serviço.
 

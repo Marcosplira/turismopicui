@@ -20,13 +20,7 @@ User = get_user_model()
 
 class BootstrapAdminCommandTests(TestCase):
     def test_sem_variaveis_de_bootstrap_nao_cria_usuario(self):
-        with patch.dict(
-            os.environ,
-            {
-                "DJANGO_BOOTSTRAP_ADMIN_USERNAME": "",
-                "DJANGO_BOOTSTRAP_ADMIN_PASSWORD": "",
-            },
-        ):
+        with patch.dict(os.environ, {}, clear=True):
             call_command("bootstrap_admin")
 
         self.assertEqual(User.objects.count(), 0)
@@ -46,6 +40,21 @@ class BootstrapAdminCommandTests(TestCase):
         self.assertTrue(usuario.is_staff)
         self.assertTrue(usuario.is_superuser)
         self.assertTrue(usuario.check_password("Acesso-Seguro-2026!"))
+
+    def test_usa_adminturismo_quando_usuario_nao_foi_configurado(self):
+        with patch.dict(
+            os.environ,
+            {
+                "DJANGO_BOOTSTRAP_ADMIN_EMAIL": "turismo@example.com",
+                "DJANGO_BOOTSTRAP_ADMIN_PASSWORD": "Acesso-Seguro-2026!",
+            },
+            clear=True,
+        ):
+            call_command("bootstrap_admin")
+
+        usuario = User.objects.get(username="adminturismo")
+        self.assertTrue(usuario.is_staff)
+        self.assertTrue(usuario.is_superuser)
 
     def test_redefine_senha_de_superusuario_existente(self):
         usuario = User.objects.create_superuser(

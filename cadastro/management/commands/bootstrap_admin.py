@@ -17,11 +17,10 @@ class Command(BaseCommand):
             self.stdout.write("Admin bootstrap skipped; no credentials configured.")
             return
 
-        if not username or not password:
-            raise CommandError(
-                "Set both DJANGO_BOOTSTRAP_ADMIN_USERNAME and "
-                "DJANGO_BOOTSTRAP_ADMIN_PASSWORD."
-            )
+        if not password:
+            raise CommandError("Set DJANGO_BOOTSTRAP_ADMIN_PASSWORD.")
+
+        username = username or "adminturismo"
 
         User = get_user_model()
         usuario = User.objects.filter(username=username).first()
