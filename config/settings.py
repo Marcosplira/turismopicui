@@ -1,6 +1,7 @@
 """
 Django settings for config project.
 """
+
 import os
 from pathlib import Path
 import dj_database_url
@@ -14,7 +15,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SEGURANÇA
 # ==========================================================
 # Aceita tanto DEBUG quanto DJANGO_DEBUG, e por padrão é True no local
-DEBUG = os.environ.get("DEBUG", os.environ.get("DJANGO_DEBUG", "True")).lower() == "true"
+DEBUG = (
+    os.environ.get("DEBUG", os.environ.get("DJANGO_DEBUG", "True")).lower() == "true"
+)
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
@@ -23,6 +26,7 @@ if not SECRET_KEY:
     else:
         # Em produção vai precisar definir a variável no Render
         from django.core.exceptions import ImproperlyConfigured
+
         raise ImproperlyConfigured("Defina DJANGO_SECRET_KEY em produção.")
 
 # ==========================================================
@@ -30,10 +34,9 @@ if not SECRET_KEY:
 # ==========================================================
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.environ.get(
-        "ALLOWED_HOSTS",
-        "localhost,127.0.0.1,0.0.0.0"
-    ).split(",")
+    for host in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0").split(
+        ","
+    )
     if host.strip()
 ]
 
@@ -47,7 +50,7 @@ CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(
         "CSRF_TRUSTED_ORIGINS",
-        "http://localhost:8000,http://127.0.0.1:8000,http://localhost:8001,http://127.0.0.1:8001"
+        "http://localhost:8000,http://127.0.0.1:8000,http://localhost:8001,http://127.0.0.1:8001",
     ).split(",")
     if origin.strip()
 ]
@@ -118,7 +121,9 @@ DATABASES = {
 # VALIDAÇÃO DE SENHA
 # ==========================================================
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -138,12 +143,8 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-ANDROID_PACKAGE_NAME = os.environ.get(
-    "ANDROID_PACKAGE_NAME", "com.turismopicui.guia"
-)
-ANDROID_SHA256_CERT_FINGERPRINT = os.environ.get(
-    "ANDROID_SHA256_CERT_FINGERPRINT", ""
-)
+ANDROID_PACKAGE_NAME = os.environ.get("ANDROID_PACKAGE_NAME", "com.turismopicui.guia")
+ANDROID_SHA256_CERT_FINGERPRINT = os.environ.get("ANDROID_SHA256_CERT_FINGERPRINT", "")
 
 # ==========================================================
 # ARQUIVOS DE MÍDIA
@@ -154,24 +155,35 @@ MEDIA_ROOT = BASE_DIR / "media"
 # ==========================================================
 # CONFIGURAÇÃO DE E-MAIL
 # ==========================================================
-EMAIL_BACKEND = os.environ.get(
-    "EMAIL_BACKEND",
-    "django.core.mail.backends.console.EmailBackend" if DEBUG else "django.core.mail.backends.smtp.EmailBackend",
-)
-
-print("EMAIL_BACKEND CONFIGURADO:", repr(EMAIL_BACKEND))
-
-EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
-EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True").lower() == "true"
+if DEBUG:
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        },
+    }
+else:
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            "OPTIONS": {
+                "host": os.environ.get("EMAIL_HOST", "smtp.gmail.com"),
+                "port": int(os.environ.get("EMAIL_PORT", "587")),
+                "username": os.environ.get("EMAIL_HOST_USER", ""),
+                "password": os.environ.get("EMAIL_HOST_PASSWORD", ""),
+                "use_tls": os.environ.get("EMAIL_USE_TLS", "True").lower() == "true",
+            },
+        },
+    }
 
 DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL",
     "Turismo de Picuí <turismopicui@gmail.com>",
 )
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@prefeiturapicui.gov.br")
+
+ADMIN_EMAIL = os.environ.get(
+    "ADMIN_EMAIL",
+    "admin@prefeiturapicui.gov.br",
+)
 
 # ==========================================================
 # PADRÃO
