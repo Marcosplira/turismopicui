@@ -98,10 +98,8 @@ def catalogo(request):
     categoria_selecionada = request.GET.get("categoria", "").strip()
     zona_selecionada = request.GET.get("zona", "").strip()
 
-    empreendimentos = (
-        Empreendimento.objects
-        .filter(status="aprovado")
-        .prefetch_related("fotos", "categorias")
+    empreendimentos = Empreendimento.objects.filter(status="aprovado").prefetch_related(
+        "fotos", "categorias"
     )
 
     if busca:
@@ -112,22 +110,14 @@ def catalogo(request):
         )
 
     if categoria_selecionada:
-        empreendimentos = empreendimentos.filter(
-            categorias__slug=categoria_selecionada
-        )
+        empreendimentos = empreendimentos.filter(categorias__slug=categoria_selecionada)
 
     if zona_selecionada:
-        empreendimentos = empreendimentos.filter(
-            zona=zona_selecionada
-        )
+        empreendimentos = empreendimentos.filter(zona=zona_selecionada)
 
     empreendimentos = empreendimentos.distinct().order_by("nome")
 
-    categorias = (
-        Categoria.objects
-        .all()
-        .order_by("nome")
-    )
+    categorias = Categoria.objects.all().order_by("nome")
 
     return render(
         request,
@@ -188,8 +178,9 @@ def dashboard_gerente(request):
         .order_by("-data_cadastro")[:8]
     )
     categoria_summary = list(
-        Categoria.objects.annotate(total=Count("empreendimentos"))
-        .order_by("-total", "nome")[:6]
+        Categoria.objects.annotate(total=Count("empreendimentos")).order_by(
+            "-total", "nome"
+        )[:6]
     )
     zona_summary = list(
         Empreendimento.objects.values("zona")
@@ -205,27 +196,39 @@ def dashboard_gerente(request):
 
     alertas = []
     if pendentes:
-        alertas.append({
-            "titulo": "Cadastros pendentes",
-            "descricao": f"{pendentes} empreendimento(s) aguardando revisão da equipe.",
-            "tipo": "warning",
-        })
+        alertas.append(
+            {
+                "titulo": "Cadastros pendentes",
+                "descricao": f"{pendentes} empreendimento(s) aguardando revisão da equipe.",
+                "tipo": "warning",
+            }
+        )
 
-    sem_categoria = Empreendimento.objects.filter(categorias__isnull=True).distinct().count()
+    sem_categoria = (
+        Empreendimento.objects.filter(categorias__isnull=True).distinct().count()
+    )
     if sem_categoria:
-        alertas.append({
-            "titulo": "Sem categoria",
-            "descricao": f"{sem_categoria} empreendimento(s) ainda não foram classificados.",
-            "tipo": "info",
-        })
+        alertas.append(
+            {
+                "titulo": "Sem categoria",
+                "descricao": f"{sem_categoria} empreendimento(s) ainda não foram classificados.",
+                "tipo": "info",
+            }
+        )
 
-    sem_fotos = Empreendimento.objects.annotate(total_fotos=Count("fotos")).filter(total_fotos=0).count()
+    sem_fotos = (
+        Empreendimento.objects.annotate(total_fotos=Count("fotos"))
+        .filter(total_fotos=0)
+        .count()
+    )
     if sem_fotos:
-        alertas.append({
-            "titulo": "Falta de fotos",
-            "descricao": f"{sem_fotos} empreendimento(s) ainda não possuem imagens publicadas.",
-            "tipo": "danger",
-        })
+        alertas.append(
+            {
+                "titulo": "Falta de fotos",
+                "descricao": f"{sem_fotos} empreendimento(s) ainda não possuem imagens publicadas.",
+                "tipo": "danger",
+            }
+        )
 
     return render(
         request,
@@ -244,18 +247,22 @@ def dashboard_gerente(request):
 
 
 def minha_area(request):
-    if request.user.is_authenticated:
+    ultimo_id = request.session.get("ultimo_empreendimento_id")
+
+    if ultimo_id:
+        meus = Empreendimento.objects.filter(pk=ultimo_id).order_by("-data_cadastro")
+    elif request.user.is_authenticated:
         meus = Empreendimento.objects.filter(proprietario=request.user).order_by(
             "-data_cadastro"
         )
     else:
-        ultimo_id = request.session.get("ultimo_empreendimento_id")
-        if ultimo_id:
-            meus = Empreendimento.objects.filter(pk=ultimo_id).order_by("-data_cadastro")
-        else:
-            meus = Empreendimento.objects.none()
+        meus = Empreendimento.objects.none()
 
-    return render(request, "cadastro/minha_area.html", {"meus_empreendimentos": meus})
+    return render(
+        request,
+        "cadastro/minha_area.html",
+        {"meus_empreendimentos": meus},
+    )
 
 
 def _resposta_chatbot(mensagem):
@@ -263,22 +270,44 @@ def _resposta_chatbot(mensagem):
     if not texto:
         return "Olá! Posso te ajudar com cadastro, guia turístico, status de aprovação ou informações do município."
 
-    if any(p in texto for p in ["como cadastrar", "cadastrar", "cadastro", "inscrever", "empree"]):
+    if any(
+        p in texto
+        for p in ["como cadastrar", "cadastrar", "cadastro", "inscrever", "empree"]
+    ):
         return "Para cadastrar um empreendimento, acesse a página de cadastro no menu principal, preencha os dados do negócio e envie o formulário. Depois, o pedido entra em análise e você pode acompanhar o status na sua área pessoal."
 
-    if any(p in texto for p in ["status", "aprovado", "pendente", "reprovado", "analise", "análise"]):
+    if any(
+        p in texto
+        for p in ["status", "aprovado", "pendente", "reprovado", "analise", "análise"]
+    ):
         return "O status aparece na sua área pessoal após o envio do cadastro. Se estiver pendente, a equipe está avaliando o empreendimento. Aprovados entram no guia turístico e reprovados podem receber observações para ajustes."
 
-    if any(p in texto for p in ["guia", "catálogo", "buscar", "descobrir", "atração", "hotel", "restaurante"]):
+    if any(
+        p in texto
+        for p in [
+            "guia",
+            "catálogo",
+            "buscar",
+            "descobrir",
+            "atração",
+            "hotel",
+            "restaurante",
+        ]
+    ):
         return "O guia turístico reúne hotéis, pousadas, restaurantes, atrativos culturais e serviços da cidade. Você pode navegar por categoria ou buscar por nome, bairro ou tipo de serviço."
 
     if any(p in texto for p in ["contato", "telefone", "whatsapp", "falar", "ajuda"]):
         return "Você pode usar o WhatsApp do empreendimento cadastrado ou entrar em contato com a administração do sistema para esclarecer dúvidas sobre aprovação ou revisão."
 
-    if any(p in texto for p in ["cidade", "picuí", "pocui", "local", "municipio", "turismo"]):
+    if any(
+        p in texto
+        for p in ["cidade", "picuí", "pocui", "local", "municipio", "turismo"]
+    ):
         return "Pocuí? Picuí é um município com forte valor cultural, turístico e gastronômico; o guia tem como objetivo divulgar empreendimentos locais e atrativos da região."
 
-    if any(p in texto for p in ["dúvida", "olá", "oi", "bom dia", "boa tarde", "boa noite"]):
+    if any(
+        p in texto for p in ["dúvida", "olá", "oi", "bom dia", "boa tarde", "boa noite"]
+    ):
         return "Olá! Sou o assistente do Turismo de Picuí. Posso responder sobre cadastro, guia turístico, status e apoio para empreendedores locais."
 
     return "Posso ajudar com cadastro, guia turístico, status de análise e informações do município. Tente perguntar: 'como cadastrar?', 'qual o status do meu empreendimento?' ou 'como funciona o guia?'."
