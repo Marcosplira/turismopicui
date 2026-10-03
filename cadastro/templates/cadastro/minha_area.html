@@ -5,16 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Meus dados - Turismo de Picuí</title>
+    <title>Acompanhamento do cadastro - Turismo de Picuí</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100 min-h-screen text-gray-800">
 
-    <!-- Cabeçalho -->
+    <!-- CABEÇALHO -->
     <header class="bg-green-700 text-white">
-        <div class="max-w-5xl mx-auto px-6 py-6">
+        <div class="max-w-5xl mx-auto px-6 py-7">
 
             <div class="flex flex-wrap justify-between items-center gap-4">
 
@@ -23,24 +23,27 @@
                         Turismo de Picuí
                     </p>
 
-                    <h1 class="text-3xl font-bold mt-1">
-                        Meus dados
+                    <h1 class="text-3xl md:text-4xl font-bold mt-1">
+                        Acompanhamento do cadastro
                     </h1>
 
-                    <p class="text-green-100 text-sm mt-2">
-                        Consulte os dados dos seus empreendimentos cadastrados.
+                    <p class="text-green-100 mt-2">
+                        Consulte o andamento do seu cadastro no Guia Turístico de Picuí.
                     </p>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <a href="{% url 'home' %}" class="text-white hover:text-green-100 font-semibold underline">
+                <div class="flex items-center gap-3">
+
+                    <a href="{% url 'home' %}"
+                        class="bg-white text-green-700 font-bold px-5 py-3 rounded-lg hover:bg-green-50 transition">
                         Página inicial
                     </a>
 
                     <a href="{% url 'sair' %}"
-                        class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg">
+                        class="bg-red-600 text-white font-bold px-5 py-3 rounded-lg hover:bg-red-700 transition">
                         Sair
                     </a>
+
                 </div>
 
             </div>
@@ -49,69 +52,57 @@
     </header>
 
 
-    <!-- Conteúdo -->
-    <main class="max-w-5xl mx-auto px-6 py-8">
+    <!-- CONTEÚDO -->
+    <main class="max-w-4xl mx-auto px-6 py-10">
 
-        {% if meus_empreendimentos %}
+        {% for empreendimento in empreendimentos %}
 
-        <div class="mb-6">
-            <h2 class="text-2xl font-bold text-gray-800">
-                Seus empreendimentos
-            </h2>
+        <article class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
 
-            <p class="text-gray-600 mt-1">
-                Acompanhe abaixo os cadastros vinculados à sua conta.
-            </p>
-        </div>
+            <!-- TÍTULO -->
+            <div class="p-6 md:p-8 border-b border-gray-200">
+
+                <p class="text-sm text-gray-500 font-semibold uppercase tracking-wide">
+                    Cadastro recebido
+                </p>
+
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mt-2">
+                    {{ empreendimento.nome }}
+                </h2>
+
+            </div>
 
 
-        <div class="space-y-6">
+            <!-- STATUS -->
+            <div class="p-6 md:p-8">
 
-            {% for empreendimento in meus_empreendimentos %}
+                {% if empreendimento.status == "pendente" %}
 
-            <article class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
 
-                <!-- Cabeçalho do empreendimento -->
-                <div class="bg-green-50 border-b border-green-100 px-6 py-5">
+                    <div class="flex items-start gap-4">
 
-                    <div class="flex flex-wrap justify-between items-start gap-4">
-
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-900">
-                                {{ empreendimento.nome }}
-                            </h2>
-
-                            <p class="text-sm text-gray-600 mt-1">
-                                Cadastro realizado em
-                                {{ empreendimento.data_cadastro|date:"d/m/Y H:i" }}
-                            </p>
+                        <div
+                            class="flex-shrink-0 w-12 h-12 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center text-2xl">
+                            ⏳
                         </div>
 
-
-                        <!-- Status -->
                         <div>
-                            {% if empreendimento.status == "aprovado" %}
 
-                            <span
-                                class="inline-flex items-center bg-green-100 text-green-800 border border-green-300 px-3 py-2 rounded-full text-sm font-bold">
-                                ✓ Aprovado
-                            </span>
+                            <h3 class="text-xl font-bold text-yellow-800">
+                                Cadastro em análise
+                            </h3>
 
-                            {% elif empreendimento.status == "reprovado" %}
+                            <p class="text-yellow-700 mt-2 leading-relaxed">
+                                Recebemos seu cadastro com sucesso.
+                                A equipe do Turismo de Picuí irá analisar
+                                as informações enviadas.
+                            </p>
 
-                            <span
-                                class="inline-flex items-center bg-red-100 text-red-800 border border-red-300 px-3 py-2 rounded-full text-sm font-bold">
-                                ✕ Reprovado
-                            </span>
+                            <p class="text-yellow-700 mt-3 text-sm">
+                                Aguarde a avaliação da equipe responsável.
+                            </p>
 
-                            {% else %}
-
-                            <span
-                                class="inline-flex items-center bg-yellow-100 text-yellow-800 border border-yellow-300 px-3 py-2 rounded-full text-sm font-bold">
-                                ⏳ Em análise
-                            </span>
-
-                            {% endif %}
                         </div>
 
                     </div>
@@ -119,255 +110,151 @@
                 </div>
 
 
-                <!-- Informações -->
-                <div class="p-6">
+                {% elif empreendimento.status == "aprovado" %}
 
-                    <div class="mb-6">
+                <div class="bg-green-50 border border-green-200 rounded-xl p-6">
 
-                        <h3 class="font-bold text-gray-800 mb-2">
-                            Descrição
-                        </h3>
+                    <div class="flex items-start gap-4">
 
-                        <p class="text-gray-600 leading-relaxed">
-                            {{ empreendimento.descricao }}
-                        </p>
-
-                    </div>
-
-
-                    <!-- Dados principais -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <p class="text-xs uppercase tracking-wide text-gray-500 font-bold">
-                                Responsável
-                            </p>
-
-                            <p class="text-gray-800 font-semibold mt-1">
-                                {{ empreendimento.responsavel }}
-                            </p>
+                        <div
+                            class="flex-shrink-0 w-12 h-12 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-2xl">
+                            ✓
                         </div>
 
+                        <div>
 
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <p class="text-xs uppercase tracking-wide text-gray-500 font-bold">
-                                E-mail
+                            <h3 class="text-xl font-bold text-green-800">
+                                Cadastro aprovado
+                            </h3>
+
+                            <p class="text-green-700 mt-2 leading-relaxed">
+                                Seu cadastro foi aprovado pela equipe do
+                                Turismo de Picuí.
                             </p>
 
-                            <p class="text-gray-800 font-semibold mt-1 break-words">
-                                {{ empreendimento.email|default:"Não informado" }}
+                            <p class="text-green-700 mt-3 text-sm">
+                                O empreendimento poderá ser divulgado no
+                                Guia Turístico de Picuí, conforme as regras
+                                de divulgação do projeto.
                             </p>
-                        </div>
-
-
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <p class="text-xs uppercase tracking-wide text-gray-500 font-bold">
-                                Telefone
-                            </p>
-
-                            <p class="text-gray-800 font-semibold mt-1">
-                                {{ empreendimento.telefone }}
-                            </p>
-                        </div>
-
-
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <p class="text-xs uppercase tracking-wide text-gray-500 font-bold">
-                                Zona
-                            </p>
-
-                            <p class="text-gray-800 font-semibold mt-1">
-                                {{ empreendimento.get_zona_display }}
-                            </p>
-                        </div>
-
-
-                        <div class="bg-gray-50 rounded-xl p-4 sm:col-span-2">
-                            <p class="text-xs uppercase tracking-wide text-gray-500 font-bold">
-                                Localização
-                            </p>
-
-                            <p class="text-gray-800 font-semibold mt-1">
-                                {{ empreendimento.endereco }},
-                                {{ empreendimento.bairro_comunidade }}
-                            </p>
-                        </div>
-
-                    </div>
-
-
-                    <!-- Categorias -->
-                    {% if empreendimento.categorias.all %}
-
-                    <div class="mt-6">
-
-                        <h3 class="font-bold text-gray-800 mb-3">
-                            Categorias
-                        </h3>
-
-                        <div class="flex flex-wrap gap-2">
-
-                            {% for categoria in empreendimento.categorias.all %}
-
-                            <span
-                                class="bg-green-100 text-green-800 border border-green-200 px-3 py-1 rounded-full text-sm font-semibold">
-                                {{ categoria.nome }}
-                            </span>
-
-                            {% endfor %}
 
                         </div>
 
                     </div>
-
-                    {% endif %}
-
-
-                    <!-- Fotos -->
-                    {% if empreendimento.fotos.all %}
-
-                    <div class="mt-6">
-
-                        <h3 class="font-bold text-gray-800 mb-3">
-                            Fotos
-                        </h3>
-
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-
-                            {% for foto in empreendimento.fotos.all %}
-
-                            <div class="rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
-
-                                <img src="{{ foto.imagem.url }}" alt="{{ empreendimento.nome }}"
-                                    class="w-full h-32 object-cover">
-
-                            </div>
-
-                            {% endfor %}
-
-                        </div>
-
-                    </div>
-
-                    {% endif %}
-
-
-                    <!-- Observação da administração -->
-                    {% if empreendimento.observacoes %}
-
-                    <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-
-                        <h3 class="font-bold text-yellow-900">
-                            Observação da administração
-                        </h3>
-
-                        <p class="text-yellow-800 mt-2">
-                            {{ empreendimento.observacoes }}
-                        </p>
-
-                    </div>
-
-                    {% endif %}
-
-
-                    <!-- Informações de status -->
-                    {% if empreendimento.status == "pendente" %}
-
-                    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
-
-                        <p class="font-bold text-blue-900">
-                            Cadastro em análise
-                        </p>
-
-                        <p class="text-blue-800 text-sm mt-1">
-                            Seu cadastro foi recebido e está aguardando avaliação da equipe responsável pelo Turismo de
-                            Picuí.
-                        </p>
-
-                    </div>
-
-                    {% elif empreendimento.status == "aprovado" %}
-
-                    <div class="mt-6 bg-green-50 border border-green-200 rounded-xl p-4">
-
-                        <p class="font-bold text-green-900">
-                            Cadastro aprovado
-                        </p>
-
-                        <p class="text-green-800 text-sm mt-1">
-                            Este empreendimento está aprovado para divulgação no Guia Turístico de Picuí.
-                        </p>
-
-                    </div>
-
-                    {% elif empreendimento.status == "reprovado" %}
-
-                    <div class="mt-6 bg-red-50 border border-red-200 rounded-xl p-4">
-
-                        <p class="font-bold text-red-900">
-                            Cadastro não aprovado
-                        </p>
-
-                        <p class="text-red-800 text-sm mt-1">
-                            Consulte a observação da administração para verificar as informações disponíveis sobre a
-                            análise.
-                        </p>
-
-                    </div>
-
-                    {% endif %}
 
                 </div>
 
-            </article>
 
-            {% endfor %}
+                {% elif empreendimento.status == "reprovado" %}
 
-        </div>
+                <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+
+                    <div class="flex items-start gap-4">
+
+                        <div
+                            class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 text-red-700 flex items-center justify-center text-2xl">
+                            !
+                        </div>
+
+                        <div>
+
+                            <h3 class="text-xl font-bold text-red-800">
+                                Cadastro não aprovado
+                            </h3>
+
+                            <p class="text-red-700 mt-2 leading-relaxed">
+                                Neste momento, o cadastro não foi aprovado
+                                pela equipe responsável.
+                            </p>
+
+                            <p class="text-red-700 mt-3 text-sm">
+                                Para obter mais informações, entre em contato
+                                com a equipe do Turismo de Picuí.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endif %}
 
 
-        {% else %}
+                <!-- AVISO DE PRIVACIDADE -->
+                <div class="mt-8 bg-gray-50 border border-gray-200 rounded-xl p-5">
 
-        <!-- Nenhum cadastro -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center">
+                    <h3 class="font-bold text-gray-800">
+                        🔒 Seus dados estão protegidos
+                    </h3>
+
+                    <p class="text-sm text-gray-600 mt-2 leading-relaxed">
+                        As informações fornecidas no cadastro são utilizadas
+                        pela equipe responsável pelo Turismo de Picuí para
+                        análise e gestão do cadastro.
+                    </p>
+
+                    <p class="text-sm text-gray-600 mt-2 leading-relaxed">
+                        Os dados pessoais informados no formulário não são
+                        exibidos nesta área pública de acompanhamento.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </article>
+
+        {% empty %}
+
+        <!-- SEM CADASTRO -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 md:p-12 text-center">
 
             <div
-                class="w-16 h-16 mx-auto rounded-full bg-green-100 flex items-center justify-center text-green-700 text-2xl">
+                class="mx-auto w-16 h-16 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-3xl">
                 +
             </div>
 
             <h2 class="text-2xl font-bold text-gray-900 mt-5">
-                Nenhum cadastro recente
+                Nenhum cadastro encontrado
             </h2>
 
-            <p class="text-gray-600 mt-2 max-w-lg mx-auto">
-                Não encontramos empreendimentos cadastrados para esta conta.
+            <p class="text-gray-600 mt-3 max-w-lg mx-auto">
+                Não encontramos um cadastro associado a esta sessão.
+                Caso ainda não tenha realizado seu cadastro, você pode
+                iniciar agora.
             </p>
 
             <a href="{% url 'cadastrar_empreendimento' %}"
-                class="inline-block mt-6 bg-green-700 hover:bg-green-800 text-white font-bold px-6 py-3 rounded-lg">
+                class="inline-block mt-6 bg-green-700 text-white font-bold px-6 py-3 rounded-lg hover:bg-green-800 transition">
                 Fazer cadastro
             </a>
 
         </div>
 
-        {% endif %}
+        {% endfor %}
 
     </main>
 
 
-    <!-- Rodapé -->
+    <!-- RODAPÉ -->
     <footer class="bg-green-800 text-white mt-10">
 
-        <div class="max-w-5xl mx-auto px-6 py-6 text-center">
+        <div class="max-w-5xl mx-auto px-6 py-7 text-center">
 
-            <p class="text-sm">
+            <p class="font-semibold">
                 Turismo de Picuí - Prefeitura Municipal de Picuí
             </p>
 
-            <p class="text-xs text-green-100 mt-2">
+            <p class="text-green-100 text-sm mt-2">
                 Guia Turístico de Picuí - PB
             </p>
+
+            <div class="mt-4">
+                <a href="{% url 'privacidade' %}" class="text-green-100 hover:text-white underline text-sm">
+                    Aviso de privacidade
+                </a>
+            </div>
 
         </div>
 
