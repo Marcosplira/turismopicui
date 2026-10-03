@@ -159,6 +159,8 @@ EMAIL_BACKEND = os.environ.get(
     "django.core.mail.backends.console.EmailBackend" if DEBUG else "django.core.mail.backends.smtp.EmailBackend",
 )
 
+print("EMAIL_BACKEND CONFIGURADO:", repr(EMAIL_BACKEND))
+
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
