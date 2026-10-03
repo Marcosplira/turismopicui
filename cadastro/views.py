@@ -376,45 +376,79 @@ def cadastrar_empreendimento(request):
         form = EmpreendimentoForm(request.POST, request.FILES)
 
         if form.is_valid():
-            empreendimento = form.save(commit=False)
+            try:
+                logger.info("CADASTRO: formulário validado com sucesso.")
 
-            if request.user.is_authenticated:
-                empreendimento.proprietario = request.user
+                empreendimento = form.save(commit=False)
 
-            empreendimento.save()
-            form.save_m2m()
-            _enviar_notificacoes_cadastro(request, empreendimento)
+                if request.user.is_authenticated:
+                    empreendimento.proprietario = request.user
 
-            fotos = request.FILES.getlist("fotos")
-            for foto in fotos:
-                if foto.size > 5 * 1024 * 1024:
-                    messages.error(
-                        request, f"Foto {foto.name} muito grande (máx. 5 MB)."
+                logger.info("CADASTRO: salvando empreendimento no banco.")
+                empreendimento.save()
+
+                logger.info("CADASTRO: salvando categorias.")
+                form.save_m2m()
+
+                logger.info("CADASTRO: enviando notificações.")
+                _enviar_notificacoes_cadastro(request, empreendimento)
+
+                logger.info("CADASTRO: processando fotos.")
+                fotos = request.FILES.getlist("fotos")
+
+                for foto in fotos:
+                    if foto.size > 5 * 1024 * 1024:
+                        messages.error(
+                            request,
+                            f"Foto {foto.name} muito grande (máx. 5 MB).",
+                        )
+                        continue
+
+                    if not foto.name.lower().endswith(
+                        (".jpg", ".jpeg", ".png", ".webp")
+                    ):
+                        messages.error(
+                            request,
+                            f"Formato inválido em {foto.name}. Use JPG ou PNG.",
+                        )
+                        continue
+
+                    FotoEmpreendimento.objects.create(
+                        empreendimento=empreendimento,
+                        imagem=foto,
                     )
-                    continue
-                if not foto.name.lower().endswith((".jpg", ".jpeg", ".png", ".webp")):
-                    messages.error(
-                        request, f"Formato inválido em {foto.name}. Use JPG ou PNG."
-                    )
-                    continue
 
-                FotoEmpreendimento.objects.create(
-                    empreendimento=empreendimento,
-                    imagem=foto,
+                logger.info("CADASTRO: fotos processadas.")
+
+                request.session["ultimo_empreendimento_id"] = empreendimento.pk
+
+                messages.success(
+                    request,
+                    "Cadastro do empreendimento realizado com sucesso! Aguarde a avaliação.",
                 )
 
-            request.session["ultimo_empreendimento_id"] = empreendimento.pk
-            messages.success(
-                request,
-                "Cadastro do empreendimento realizado com sucesso! Aguarde a avaliação.",
-            )
-            return redirect("cadastro_sucesso")
+                logger.info(
+                    "CADASTRO: concluído com sucesso. ID=%s",
+                    empreendimento.pk,
+                )
+
+                return redirect("cadastro_sucesso")
+
+            except Exception:
+                logger.exception("ERRO AO PROCESSAR CADASTRO DE EMPREENDIMENTO.")
+                raise
+
         else:
             messages.error(
                 request,
                 "Existem erros no formulário. Verifique os campos marcados abaixo.",
             )
+
     else:
         form = EmpreendimentoForm()
 
-    return render(request, "cadastro/cadastrar.html", {"form": form})
+    return render(
+        request,
+        "cadastro/cadastrar.html",
+        {"form": form},
+    )
