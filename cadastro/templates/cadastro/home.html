@@ -67,8 +67,8 @@
             <!-- BOTÕES CORRIGIDOS -->
             <div class="flex flex-wrap justify-center gap-3 mt-10 pt-8 border-t border-gray-200">
                 <a href="{% url 'catalogo' %}"
-                    class="min-w-[160px] bg-green-700 hover:bg-green-800 text-white font-bold px-6 py-3 rounded-lg text-center">🌵
-                    Ver Guia Turístico</a>
+                    class="min-w-[160px] bg-green-700 hover:bg-green-800 text-white font-bold px-6 py-3 rounded-lg text-center">
+                    Busca do Guia</a>
                 <a href="{% url 'cadastrar_empreendimento' %}"
                     class="min-w-[160px] bg-black hover:bg-gray-800 text-white font-bold px-6 py-3 rounded-lg text-center">Fazer
                     cadastro</a>
@@ -79,8 +79,7 @@
                     class="min-w-[145px] bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-5 py-3 rounded-lg text-center">Meus
                     dados</a>
                 <a href="https://heyzine.com/flip-book/e975954570.html" target="_blank"
-                    class="min-w-[145px] bg-white border border-green-700 hover:bg-green-50 text-green-800 font-bold px-5 py-3 rounded-lg text-center">Revista
-                    turística</a>
+                    class="min-w-[145px] bg-white border border-green-700 hover:bg-green-50 text-green-800 font-bold px-5 py-3 rounded-lg text-center">🌵 Ver Guia Turístico</a>
                 <a href="{% url 'dashboard_gerente' %}"
                     class="min-w-[145px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-3 rounded-lg text-center">{% if request.user.is_staff %}Dashboard do gerente{% else %}Acesso da equipe{% endif %}</a>
                 <a href="{% url 'admin:index' %}"
