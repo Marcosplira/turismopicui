@@ -271,50 +271,262 @@ def minha_area(request):
 
 def _resposta_chatbot(mensagem):
     texto = (mensagem or "").strip().lower()
+
     if not texto:
-        return "Olá! Posso te ajudar com cadastro, guia turístico, status de aprovação ou informações do município."
+        return (
+            "Olá! 👋 Sou o Assistente de Turismo de Picuí. "
+            "Estou aqui para ajudar você a utilizar o aplicativo. "
+            "O que você precisa saber?"
+        )
 
+    # ==========================================================
+    # SAUDAÇÕES
+    # ==========================================================
     if any(
         p in texto
-        for p in ["como cadastrar", "cadastrar", "cadastro", "inscrever", "empree"]
+        for p in [
+            "bom dia",
+            "boa tarde",
+            "boa noite",
+            "olá",
+            "ola",
+            "oi",
+            "oie",
+            "hey",
+        ]
     ):
-        return "Para cadastrar um empreendimento, acesse a página de cadastro no menu principal, preencha os dados do negócio e envie o formulário. Depois, o pedido entra em análise e você pode acompanhar o status na sua área pessoal."
+        if "bom dia" in texto:
+            saudacao = "Bom dia! 🌞"
+        elif "boa tarde" in texto:
+            saudacao = "Boa tarde! 😊"
+        elif "boa noite" in texto:
+            saudacao = "Boa noite! 🌙"
+        else:
+            saudacao = "Olá! 👋"
 
+        return (
+            f"{saudacao} Seja bem-vindo ao Turismo de Picuí! "
+            "Tudo bem com você? "
+            "Sou o assistente virtual do aplicativo e posso ajudar com "
+            "cadastro de empreendimentos, guia turístico, status do cadastro "
+            "e informações sobre Picuí. "
+            "O que você precisa saber sobre o aplicativo?"
+        )
+
+    # ==========================================================
+    # TUDO BEM / COMO VOCÊ ESTÁ
+    # ==========================================================
     if any(
         p in texto
-        for p in ["status", "aprovado", "pendente", "reprovado", "analise", "análise"]
+        for p in [
+            "tudo bem",
+            "tudo bom",
+            "como você está",
+            "como vc está",
+            "como vai",
+        ]
     ):
-        return "O status aparece na sua área pessoal após o envio do cadastro. Se estiver pendente, a equipe está avaliando o empreendimento. Aprovados entram no guia turístico e reprovados podem receber observações para ajustes."
+        return (
+            "Tudo bem por aqui! 😊 "
+            "Estou pronto para ajudar você no Turismo de Picuí. "
+            "Posso explicar como fazer um cadastro, consultar o status, "
+            "usar o guia turístico ou conhecer melhor o município. "
+            "O que você gostaria de saber?"
+        )
 
+    # ==========================================================
+    # O QUE É O APLICATIVO / ASSISTENTE
+    # ==========================================================
+    if any(
+        p in texto
+        for p in [
+            "o que é o aplicativo",
+            "sobre o aplicativo",
+            "o que você faz",
+            "o que vc faz",
+            "como funciona o aplicativo",
+            "como funciona esse aplicativo",
+            "o que posso fazer",
+            "o que eu posso fazer",
+        ]
+    ):
+        return (
+            "O Turismo de Picuí é uma plataforma criada para facilitar o acesso "
+            "às informações turísticas do município e ajudar na divulgação dos "
+            "empreendimentos locais. 🗺️ "
+            "Você pode consultar o guia turístico, conhecer estabelecimentos, "
+            "cadastrar um empreendimento e acompanhar o status do cadastro."
+        )
+
+    # ==========================================================
+    # CADASTRO
+    # ==========================================================
+    if any(
+        p in texto
+        for p in [
+            "como cadastrar",
+            "quero cadastrar",
+            "fazer cadastro",
+            "fazer meu cadastro",
+            "cadastrar meu empreendimento",
+            "cadastrar empreendimento",
+            "cadastro de empreendimento",
+            "inscrever",
+        ]
+    ):
+        return (
+            "Para cadastrar um empreendimento, acesse a opção "
+            "\"Fazer cadastro\" no aplicativo. 📝 "
+            "Preencha as informações solicitadas, envie o formulário e, "
+            "se desejar, adicione as fotos do empreendimento. "
+            "Depois do envio, o cadastro será analisado pela equipe responsável."
+        )
+
+    # ==========================================================
+    # STATUS DO CADASTRO
+    # ==========================================================
+    if any(
+        p in texto
+        for p in [
+            "status",
+            "meu cadastro",
+            "cadastro aprovado",
+            "cadastro pendente",
+            "cadastro reprovado",
+            "acompanhar cadastro",
+            "consultar cadastro",
+        ]
+    ):
+        return (
+            "Você pode acompanhar o status do seu cadastro na opção "
+            "\"Meus dados\" ou \"Minha área\" do aplicativo. 📋 "
+            "O cadastro pode aparecer como pendente, aprovado ou reprovado. "
+            "Quando estiver pendente, significa que a equipe ainda está analisando."
+        )
+
+    # ==========================================================
+    # GUIA TURÍSTICO
+    # ==========================================================
     if any(
         p in texto
         for p in [
             "guia",
+            "guia turístico",
+            "guia turistico",
             "catálogo",
-            "buscar",
-            "descobrir",
-            "atração",
-            "hotel",
-            "restaurante",
+            "catalogo",
+            "onde encontrar",
+            "empreendimentos",
+            "lugares",
+            "estabelecimentos",
         ]
     ):
-        return "O guia turístico reúne hotéis, pousadas, restaurantes, atrativos culturais e serviços da cidade. Você pode navegar por categoria ou buscar por nome, bairro ou tipo de serviço."
+        return (
+            "O Guia Turístico reúne informações dos empreendimentos "
+            "cadastrados e aprovados em Picuí. 🗺️ "
+            "Você pode pesquisar por nome, categoria ou zona e conhecer "
+            "as opções disponíveis no município."
+        )
 
-    if any(p in texto for p in ["contato", "telefone", "whatsapp", "falar", "ajuda"]):
-        return "Você pode usar o WhatsApp do empreendimento cadastrado ou entrar em contato com a administração do sistema para esclarecer dúvidas sobre aprovação ou revisão."
-
+    # ==========================================================
+    # SOBRE PICUÍ
+    # ==========================================================
     if any(
         p in texto
-        for p in ["cidade", "picuí", "pocui", "local", "municipio", "turismo"]
+        for p in [
+            "picuí",
+            "picui",
+            "sobre a cidade",
+            "sobre o município",
+            "sobre o municipio",
+            "conhecer picuí",
+            "conhecer picui",
+            "turismo em picuí",
+            "turismo em picui",
+        ]
     ):
-        return "Pocuí? Picuí é um município com forte valor cultural, turístico e gastronômico; o guia tem como objetivo divulgar empreendimentos locais e atrativos da região."
+        return (
+            "Picuí é um município paraibano com uma identidade cultural, "
+            "histórica e gastronômica muito importante para a região. 🌵 "
+            "O Turismo de Picuí busca valorizar os empreendedores locais, "
+            "a cultura, os atrativos e as experiências que o município oferece."
+        )
 
+    # ==========================================================
+    # CONTATO / AJUDA
+    # ==========================================================
     if any(
-        p in texto for p in ["dúvida", "olá", "oi", "bom dia", "boa tarde", "boa noite"]
+        p in texto
+        for p in [
+            "contato",
+            "telefone",
+            "whatsapp",
+            "falar com alguém",
+            "falar com alguem",
+            "preciso de ajuda",
+            "ajuda",
+        ]
     ):
-        return "Olá! Sou o assistente do Turismo de Picuí. Posso responder sobre cadastro, guia turístico, status e apoio para empreendedores locais."
+        return (
+            "Claro! 😊 Posso ajudar você com informações sobre o aplicativo, "
+            "cadastro, guia turístico e acompanhamento do cadastro. "
+            "Se precisar falar diretamente com a equipe responsável, "
+            "utilize os canais de contato disponibilizados no sistema."
+        )
 
-    return "Posso ajudar com cadastro, guia turístico, status de análise e informações do município. Tente perguntar: 'como cadastrar?', 'qual o status do meu empreendimento?' ou 'como funciona o guia?'."
+    # ==========================================================
+    # AGRADECIMENTO
+    # ==========================================================
+    if any(
+        p in texto
+        for p in [
+            "obrigado",
+            "obrigada",
+            "valeu",
+            "agradeço",
+            "agradecido",
+        ]
+    ):
+        return (
+            "Por nada! 😊 Fico feliz em ajudar. "
+            "Se precisar de mais alguma informação sobre o Turismo de Picuí, "
+            "é só perguntar."
+        )
+
+    # ==========================================================
+    # DESPEDIDA
+    # ==========================================================
+    if any(
+        p in texto
+        for p in [
+            "tchau",
+            "até mais",
+            "ate mais",
+            "até logo",
+            "ate logo",
+            "falou",
+        ]
+    ):
+        return (
+            "Até mais! 👋 "
+            "Obrigado por utilizar o Assistente de Turismo de Picuí. "
+            "Quando precisar, estarei por aqui."
+        )
+
+    # ==========================================================
+    # RESPOSTA PADRÃO
+    # ==========================================================
+    return (
+        "Ainda estou aprendendo a responder essa pergunta. 😊 "
+        "Mas posso ajudar você com:\n\n"
+        "• Cadastro de empreendimento\n"
+        "• Status do cadastro\n"
+        "• Guia turístico\n"
+        "• Informações sobre Picuí\n"
+        "• Funcionamento do aplicativo\n\n"
+        "Tente me perguntar, por exemplo: "
+        "\"Como faço meu cadastro?\""
+    )
 
 
 def chatbot_assistente(request):
