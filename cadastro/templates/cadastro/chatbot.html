@@ -1,106 +1,475 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assistente de Turismo</title>
+
+    <title>Assistente de Turismo | Turismo de Picuí</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-slate-100 min-h-screen text-slate-800">
+
+    <!-- ======================================================
+         CABEÇALHO
+    ======================================================= -->
     <header class="bg-green-700 text-white shadow-md">
-        <div class="max-w-4xl mx-auto px-6 py-6 flex items-center justify-between">
-            <div>
-                <p class="text-green-100 text-sm uppercase tracking-[0.2em]">Turismo de Picuí</p>
-                <h1 class="text-3xl font-bold mt-1">Assistente de Turismo</h1>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-5">
+
+            <div class="flex items-center justify-between gap-4">
+
+                <div>
+                    <p class="text-green-100 text-xs sm:text-sm uppercase tracking-[0.18em]">
+                        Turismo de Picuí
+                    </p>
+
+                    <h1 class="text-2xl sm:text-3xl font-bold mt-1">
+                        Assistente de Turismo
+                    </h1>
+                </div>
+
+                <a href="{% url 'home' %}" class="shrink-0 border border-white/40 px-3 sm:px-4 py-2 rounded-lg
+                           hover:bg-white/10 transition text-sm sm:text-base">
+                    Voltar
+                </a>
+
             </div>
-            <a href="{% url 'home' %}" class="border border-white/40 px-4 py-2 rounded-lg hover:bg-white/10">Voltar</a>
+
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-6 py-8">
+
+    <!-- ======================================================
+         CONTEÚDO PRINCIPAL
+    ======================================================= -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
         <section class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
-            <div class="bg-gradient-to-r from-green-700 to-emerald-600 p-5 text-white">
-                <h2 class="text-xl font-bold">Como posso ajudar?</h2>
-                <p class="text-green-50 mt-1">Perguntas rápidas sobre cadastro, guia turístico e status do empreendimento.</p>
-            </div>
 
-            <div class="p-5">
-                <div id="chat-messages" class="space-y-4 h-[420px] overflow-y-auto border border-slate-200 rounded-2xl bg-slate-50 p-4">
-                    <div class="max-w-[85%] bg-green-700 text-white rounded-2xl rounded-bl-md p-3">
-                        Olá! Sou o assistente do Turismo de Picuí. Posso te ajudar com cadastro, guia turístico e status de análise.
+
+            <!-- ==================================================
+                 TOPO DO CHAT
+            =================================================== -->
+            <div class="bg-gradient-to-r from-green-700 to-emerald-600 p-5 sm:p-6 text-white">
+
+                <div class="flex items-start gap-3">
+
+                    <div class="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center
+                               text-xl shrink-0">
+                        🤖
                     </div>
+
+                    <div>
+
+                        <h2 class="text-xl sm:text-2xl font-bold">
+                            Como posso ajudar?
+                        </h2>
+
+                        <p class="text-green-50 mt-1 text-sm sm:text-base">
+                            Tire suas dúvidas sobre o aplicativo Turismo de Picuí.
+                        </p>
+
+                    </div>
+
                 </div>
 
+            </div>
+
+
+            <!-- ==================================================
+                 ÁREA DO CHAT
+            =================================================== -->
+            <div class="p-4 sm:p-5">
+
+                <div id="chat-messages" class="space-y-4 h-[420px] sm:h-[460px] overflow-y-auto
+                           border border-slate-200 rounded-2xl bg-slate-50 p-4">
+
+                    <!-- Mensagem inicial -->
+                    <div class="flex items-start gap-2">
+
+                        <div class="max-w-[88%] sm:max-w-[80%]
+                                   bg-green-700 text-white
+                                   rounded-2xl rounded-bl-md
+                                   px-4 py-3 shadow-sm">
+
+                            <p class="font-semibold mb-1">
+                                Olá! 👋
+                            </p>
+
+                            <p class="text-sm sm:text-base leading-relaxed">
+                                Seja bem-vindo ao Turismo de Picuí!
+                                Sou o assistente virtual do aplicativo e estou aqui
+                                para ajudar você.
+                            </p>
+
+                            <p class="text-sm sm:text-base leading-relaxed mt-2">
+                                Posso explicar como fazer um cadastro, consultar o
+                                status, utilizar o guia turístico ou conhecer melhor
+                                Picuí.
+                            </p>
+
+                            <p class="text-sm sm:text-base font-semibold mt-2">
+                                O que você precisa saber?
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==================================================
+                     CAMPO DE MENSAGEM
+                =================================================== -->
                 <div class="mt-5">
-                    <div class="flex gap-3">
-                        <input id="mensagem" type="text" placeholder="Digite sua dúvida..." class="flex-1 border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <button id="enviar" class="bg-green-700 hover:bg-green-800 text-white font-semibold px-5 py-3 rounded-xl">Enviar</button>
+
+                    <div class="flex flex-col sm:flex-row gap-3">
+
+                        <input id="mensagem" type="text" autocomplete="off" placeholder="Digite sua dúvida..." class="flex-1 border border-slate-300 rounded-xl
+                                   px-4 py-3
+                                   focus:outline-none
+                                   focus:ring-2 focus:ring-green-500
+                                   focus:border-green-500
+                                   transition">
+
+                        <button id="enviar" type="button" class="bg-green-700 hover:bg-green-800
+                                   disabled:bg-slate-400
+                                   disabled:cursor-not-allowed
+                                   text-white font-semibold
+                                   px-6 py-3 rounded-xl
+                                   transition">
+                            Enviar
+                        </button>
+
                     </div>
+
+                    <p class="text-xs text-slate-500 mt-2 ml-1">
+                        Pressione <strong>Enter</strong> para enviar sua pergunta.
+                    </p>
+
                 </div>
 
-                <div class="mt-5 flex flex-wrap gap-2">
-                    <button class="prompt-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-full text-sm" data-text="Como cadastrar meu empreendimento?">Como cadastrar</button>
-                    <button class="prompt-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-full text-sm" data-text="Qual é o status do meu cadastro?">Status do cadastro</button>
-                    <button class="prompt-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-full text-sm" data-text="Como funciona o guia turístico?">Guia turístico</button>
-                    <button class="prompt-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-full text-sm" data-text="Quero saber mais sobre Picuí">Sobre a cidade</button>
+
+                <!-- ==================================================
+                     PERGUNTAS RÁPIDAS
+                =================================================== -->
+                <div class="mt-5">
+
+                    <p class="text-sm font-semibold text-slate-700 mb-3">
+                        Perguntas rápidas
+                    </p>
+
+                    <div class="flex flex-wrap gap-2">
+
+                        <button class="prompt-btn bg-slate-100 hover:bg-green-100
+                                   hover:text-green-800
+                                   border border-slate-200
+                                   px-3 py-2 rounded-full
+                                   text-sm transition" data-text="Bom dia">
+                            👋 Bom dia
+                        </button>
+
+                        <button class="prompt-btn bg-slate-100 hover:bg-green-100
+                                   hover:text-green-800
+                                   border border-slate-200
+                                   px-3 py-2 rounded-full
+                                   text-sm transition" data-text="O que você faz?">
+                            🤖 O que você faz?
+                        </button>
+
+                        <button class="prompt-btn bg-slate-100 hover:bg-green-100
+                                   hover:text-green-800
+                                   border border-slate-200
+                                   px-3 py-2 rounded-full
+                                   text-sm transition" data-text="Como cadastrar meu empreendimento?">
+                            📝 Como cadastrar?
+                        </button>
+
+                        <button class="prompt-btn bg-slate-100 hover:bg-green-100
+                                   hover:text-green-800
+                                   border border-slate-200
+                                   px-3 py-2 rounded-full
+                                   text-sm transition" data-text="Qual é o status do meu cadastro?">
+                            📋 Status do cadastro
+                        </button>
+
+                        <button class="prompt-btn bg-slate-100 hover:bg-green-100
+                                   hover:text-green-800
+                                   border border-slate-200
+                                   px-3 py-2 rounded-full
+                                   text-sm transition" data-text="Como funciona o guia turístico?">
+                            🗺️ Guia turístico
+                        </button>
+
+                        <button class="prompt-btn bg-slate-100 hover:bg-green-100
+                                   hover:text-green-800
+                                   border border-slate-200
+                                   px-3 py-2 rounded-full
+                                   text-sm transition" data-text="Quero saber mais sobre Picuí">
+                            🏛️ Sobre Picuí
+                        </button>
+
+                    </div>
+
                 </div>
+
             </div>
+
         </section>
+
     </main>
 
+
+    <!-- ======================================================
+         JAVASCRIPT
+    ======================================================= -->
     <script>
+
         const chatMessages = document.getElementById('chat-messages');
         const mensagemInput = document.getElementById('mensagem');
         const enviarButton = document.getElementById('enviar');
 
+
+        // ======================================================
+        // ADICIONAR MENSAGEM NA TELA
+        // ======================================================
         function appendMessage(role, text) {
+
             const wrapper = document.createElement('div');
-            wrapper.className = 'max-w-[85%] rounded-2xl p-3 ' + (role === 'user'
-                ? 'ml-auto bg-slate-800 text-white rounded-br-md'
-                : 'bg-green-700 text-white rounded-bl-md');
-            wrapper.textContent = text;
+
+            if (role === 'user') {
+
+                wrapper.className =
+                    'flex justify-end';
+
+                wrapper.innerHTML = `
+                    <div class="max-w-[88%] sm:max-w-[80%]
+                                bg-slate-800 text-white
+                                rounded-2xl rounded-br-md
+                                px-4 py-3 shadow-sm">
+                        <p class="text-sm sm:text-base leading-relaxed"></p>
+                    </div>
+                `;
+
+            } else {
+
+                wrapper.className =
+                    'flex items-start gap-2';
+
+                wrapper.innerHTML = `
+                    <div class="w-8 h-8 rounded-full
+                                bg-green-100
+                                flex items-center justify-center
+                                text-sm shrink-0">
+                        🤖
+                    </div>
+
+                    <div class="max-w-[88%] sm:max-w-[80%]
+                                bg-green-700 text-white
+                                rounded-2xl rounded-bl-md
+                                px-4 py-3 shadow-sm">
+                        <p class="text-sm sm:text-base leading-relaxed"></p>
+                    </div>
+                `;
+            }
+
+            const paragraph = wrapper.querySelector('p');
+            paragraph.textContent = text;
+
             chatMessages.appendChild(wrapper);
+
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        function sendMessage(text) {
-            const value = (text || mensagemInput.value || '').trim();
-            if (!value) return;
 
+        // ======================================================
+        // INDICADOR DE PROCESSAMENTO
+        // ======================================================
+        function showTyping() {
+
+            const typing = document.createElement('div');
+
+            typing.id = 'typing-indicator';
+            typing.className = 'flex items-start gap-2';
+
+            typing.innerHTML = `
+                <div class="w-8 h-8 rounded-full
+                            bg-green-100
+                            flex items-center justify-center
+                            text-sm">
+                    🤖
+                </div>
+
+                <div class="bg-green-700 text-white
+                            rounded-2xl rounded-bl-md
+                            px-4 py-3">
+
+                    <div class="flex gap-1">
+                        <span class="animate-bounce">•</span>
+                        <span class="animate-bounce [animation-delay:150ms]">•</span>
+                        <span class="animate-bounce [animation-delay:300ms]">•</span>
+                    </div>
+
+                </div>
+            `;
+
+            chatMessages.appendChild(typing);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+
+        // ======================================================
+        // REMOVER INDICADOR
+        // ======================================================
+        function hideTyping() {
+
+            const typing = document.getElementById('typing-indicator');
+
+            if (typing) {
+                typing.remove();
+            }
+        }
+
+
+        // ======================================================
+        // ENVIAR MENSAGEM
+        // ======================================================
+        function sendMessage(text) {
+
+            const value = (text || mensagemInput.value || '').trim();
+
+            if (!value) {
+                mensagemInput.focus();
+                return;
+            }
+
+            // Mostra mensagem do usuário
             appendMessage('user', value);
+
+            // Limpa campo
             mensagemInput.value = '';
+
+            // Desabilita botão
             enviarButton.disabled = true;
+            enviarButton.textContent = 'Enviando...';
+
+            // Mostra indicador
+            showTyping();
+
 
             fetch('{% url "chatbot_assistente" %}', {
+
                 method: 'POST',
+
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'X-CSRFToken': '{{ csrf_token }}'
                 },
+
                 body: 'mensagem=' + encodeURIComponent(value)
+
             })
-            .then(response => response.json())
-            .then(data => {
-                appendMessage('bot', data.resposta || 'Não consegui responder agora.');
-            })
-            .catch(() => {
-                appendMessage('bot', 'Tive um problema ao processar sua mensagem. Tente novamente.');
-            })
-            .finally(() => {
-                enviarButton.disabled = false;
-                mensagemInput.focus();
-            });
+
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error('Erro HTTP ' + response.status);
+                    }
+
+                    return response.json();
+
+                })
+
+                .then(data => {
+
+                    hideTyping();
+
+                    appendMessage(
+                        'bot',
+                        data.resposta ||
+                        'Não consegui encontrar uma resposta para essa pergunta.'
+                    );
+
+                })
+
+                .catch(error => {
+
+                    console.error('Erro no chatbot:', error);
+
+                    hideTyping();
+
+                    appendMessage(
+                        'bot',
+                        'Desculpe, tive um problema ao processar sua pergunta. Tente novamente.'
+                    );
+
+                })
+
+                .finally(() => {
+
+                    enviarButton.disabled = false;
+                    enviarButton.textContent = 'Enviar';
+
+                    mensagemInput.focus();
+
+                });
         }
 
-        enviarButton.addEventListener('click', () => sendMessage());
-        mensagemInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') sendMessage();
+
+        // ======================================================
+        // BOTÃO ENVIAR
+        // ======================================================
+        enviarButton.addEventListener('click', () => {
+            sendMessage();
         });
 
-        document.querySelectorAll('.prompt-btn').forEach((button) => {
-            button.addEventListener('click', () => sendMessage(button.dataset.text));
+
+        // ======================================================
+        // ENTER PARA ENVIAR
+        // ======================================================
+        mensagemInput.addEventListener('keydown', (event) => {
+
+            if (event.key === 'Enter') {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
         });
+
+
+        // ======================================================
+        // PERGUNTAS RÁPIDAS
+        // ======================================================
+        document.querySelectorAll('.prompt-btn').forEach((button) => {
+
+            button.addEventListener('click', () => {
+
+                sendMessage(button.dataset.text);
+
+            });
+
+        });
+
+
+        // ======================================================
+        // FOCO AUTOMÁTICO
+        // ======================================================
+        window.addEventListener('load', () => {
+
+            mensagemInput.focus();
+
+        });
+
     </script>
+
 </body>
+
 </html>
