@@ -1,4 +1,5 @@
-const CACHE_NAME = 'turismo-picui-v2';
+const CACHE_NAME = 'turismo-picui-v3';
+
 const ASSETS = [
   '/static/cadastro/manifest.webmanifest',
   '/static/cadastro/imagem/app-icon-192.png',
@@ -8,46 +9,72 @@ const ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).catch(() => undefined)
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(ASSETS))
+      .catch(() => undefined)
   );
+
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(
-      keys
-        .filter((key) => key.startsWith('turismo-picui-') && key !== CACHE_NAME)
-        .map((key) => caches.delete(key))
-    ))
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter(
+            (key) =>
+              key.startsWith('turismo-picui-') &&
+              key !== CACHE_NAME
+          )
+          .map((key) => caches.delete(key))
+      )
+    )
   );
+
   self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
-  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
 
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).catch(() => new Response(
-        '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Turismo de Picuí</title><body><h1>Sem conexao</h1><p>Conecte-se a internet para acessar o Turismo de Picuí.</p></body></html>',
-        { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } },
-      ))
-    );
+  // Só trabalha com requisições GET do próprio site.
+  if (
+    request.method !== 'GET' ||
+    url.origin !== self.location.origin
+  ) {
     return;
   }
 
+  // IMPORTANTE:
+  // Não interceptamos páginas/navegação.
+  // O Django/Render recebe diretamente:
+  // /, /guia/, /cadastro/, /chatbot/, etc.
+  if (request.mode === 'navigate') {
+    return;
+  }
+
+  // Cache somente arquivos estáticos.
   if (url.pathname.startsWith('/static/')) {
     event.respondWith(
       caches.match(request).then((cached) => {
-        if (cached) return cached;
+        if (cached) {
+          return cached;
+        }
+
         return fetch(request).then((response) => {
-          if (response.ok && response.type === 'basic') {
+          if (
+            response.ok &&
+            response.type === 'basic'
+          ) {
             const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, copy);
+            });
           }
+
           return response;
         });
       })
