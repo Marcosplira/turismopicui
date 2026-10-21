@@ -26,6 +26,19 @@
     color: var(--header-color);
 }
 
+/* Correção imediata para a cor do texto do breadcrumb que estava sumindo */
+div.breadcrumbs {
+    color: #2c3e50 !important;
+}
+
+div.breadcrumbs a {
+    color: var(--link-fg) !important;
+}
+
+div.breadcrumbs a:hover {
+    color: var(--link-hover-color) !important;
+}
+
 #content-main .module caption,
 #content-main .module h2,
 .inline-group h2 {
