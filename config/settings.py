@@ -35,6 +35,7 @@ if not SECRET_KEY:
 ALLOWED_HOSTS = [
     "turismo.picui.pb.gov.br",
     "www.turismo.picui.pb.gov.br",
+    "turismopicui.pythonanywhere.com",
     "localhost",
     "127.0.0.1",
     "0.0.0.0",
