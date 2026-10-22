@@ -33,12 +33,19 @@ if not SECRET_KEY:
 # HOSTS PERMITIDOS
 # ==========================================================
 ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0").split(
-        ","
-    )
-    if host.strip()
+    "turismo.picui.pb.gov.br",
+    "www.turismo.picui.pb.gov.br",
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
 ]
+
+# Se você estiver usando variável de ambiente para complementar, ela continuará funcionando:
+extra_hosts = os.environ.get("ALLOWED_HOSTS", "")
+if extra_hosts:
+    for host in extra_hosts.split(","):
+        if host.strip() and host.strip() not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(host.strip())
 
 if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
     ALLOWED_HOSTS.append(os.environ["RENDER_EXTERNAL_HOSTNAME"])
@@ -47,12 +54,12 @@ if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
 # CSRF
 # ==========================================================
 CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.environ.get(
-        "CSRF_TRUSTED_ORIGINS",
-        "http://localhost:8000,http://127.0.0.1:8000,http://localhost:8001,http://127.0.0.1:8001",
-    ).split(",")
-    if origin.strip()
+    "https://turismo.picui.pb.gov.br",
+    "https://www.turismo.picui.pb.gov.br",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://localhost:8001",
+    "http://127.0.0.1:8001",
 ]
 
 if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
