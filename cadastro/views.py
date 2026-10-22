@@ -563,7 +563,7 @@ def qrcode_acesso(request):
     """
     Gera a imagem do QR Code dinamicamente apontando para a home.
     """
-    url_destino = request.build_absolute_uri("/")
+    url_destino = "https://heyzine.com/flip-book/e975954570.html"
     return HttpResponse(_gerar_qrcode_imagem(url_destino), content_type="image/png")
 
 
