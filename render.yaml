@@ -21,6 +21,6 @@ services:
           name: turismo-picui-db
           property: connectionString
       - key: ALLOWED_HOSTS
-        value: "turismo-picui.onrender.com,localhost,127.0.0.1"
+        value: "turismo-picui.onrender.com,turismo.picui.pb.gov.br,www.turismo.picui.pb.gov.br,127.0.0.1"
       - key: CSRF_TRUSTED_ORIGINS
-        value: "https://turismo-picui.onrender.com"
+        value: "[https://turismo-picui.onrender.com](https://turismo-picui.onrender.com),[https://turismo.picui.pb.gov.br](https://turismo.picui.pb.gov.br),[https://www.turismo.picui.pb.gov.br](https://www.turismo.picui.pb.gov.br)"
