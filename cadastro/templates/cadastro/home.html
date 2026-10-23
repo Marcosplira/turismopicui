@@ -29,16 +29,12 @@
                 <div class="flex items-center gap-4">
 
                     <div class="bg-white rounded-xl p-2 shadow-sm">
-                        <img
-                            src="{% static 'cadastro/imagem/logo-picui.png' %}"
-                            alt="Prefeitura de Picuí"
+                        <img src="{% static 'cadastro/imagem/logo-picui.png' %}" alt="Prefeitura de Picuí"
                             class="w-24 h-20 object-contain rounded-lg">
                     </div>
 
                     <div class="bg-white rounded-xl p-2 shadow-sm">
-                        <img
-                            src="{% static 'cadastro/imagem/turismo-picui.png' %}"
-                            alt="Turismo Picuí"
+                        <img src="{% static 'cadastro/imagem/turismo-picui.png' %}" alt="Turismo Picuí"
                             class="w-24 h-20 object-contain rounded-lg">
                     </div>
 
@@ -110,14 +106,12 @@
 
             <div class="flex flex-wrap justify-center gap-3 mt-10 pt-8 border-t border-gray-200">
 
-                <a
-                    href="{% url 'cadastrar_empreendimento' %}"
+                <a href="{% url 'cadastrar_empreendimento' %}"
                     class="min-w-[180px] bg-black hover:bg-gray-800 text-white font-bold px-6 py-3 rounded-lg text-center transition">
                     Fazer cadastro
                 </a>
 
-                <a
-                    href="{% url 'dashboard_gerente' %}"
+                <a href="{% url 'dashboard_gerente' %}"
                     class="min-w-[180px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-lg text-center transition">
                     Acesso da equipe
                 </a>
@@ -137,8 +131,7 @@
 
                         <div class="w-full flex justify-center">
 
-                            <img
-                                src="{% static 'cadastro/imagem/logo do guia.png' %}"
+                            <img src="{% static 'cadastro/imagem/logo do guia.png' %}"
                                 alt="Logo do Guia Turístico de Picuí"
                                 class="w-full max-w-[420px] h-auto object-contain rounded-xl">
 
@@ -155,21 +148,11 @@
                     </div>
 
 
-                    <div class="md:col-span-3">
-
-                        <video
-                            controls
-                            preload="metadata"
-                            class="w-full rounded-xl shadow-sm bg-gray-900">
-
-                            <source
-                                src="{% static 'cadastro/imagem/video-do-guia.mp4' %}"
-                                type="video/mp4">
-
+                    <div class="md:col-span-3 flex justify-center">
+                        <video controls preload="metadata" class="w-full max-w-md rounded-xl shadow-sm bg-gray-900">
+                            <source src="{% static 'cadastro/imagem/video-do-guia.mp4' %}" type="video/mp4">
                             Seu navegador não suporta vídeo.
-
                         </video>
-
                     </div>
 
                 </div>
@@ -202,9 +185,7 @@
 
                         <div class="flex justify-center">
 
-                            <img
-                                src="{% url 'qrcode_acesso' %}"
-                                alt="QR Code - Guia Turístico de Picuí"
+                            <img src="{% url 'qrcode_acesso' %}" alt="QR Code - Guia Turístico de Picuí"
                                 class="w-40 h-40 object-contain">
 
                         </div>
@@ -246,36 +227,25 @@
 
             <div class="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-3 text-green-100">
 
-                <a
-                    href="https://www.picui.pb.gov.br/"
-                    target="_blank"
-                    class="hover:text-white underline">
+                <a href="https://www.picui.pb.gov.br/" target="_blank" class="hover:text-white underline">
                     Site da Prefeitura
                 </a>
 
-                <a
-                    href="https://www.instagram.com/prefeituradepicuioficial/"
-                    target="_blank"
+                <a href="https://www.instagram.com/prefeituradepicuioficial/" target="_blank"
                     class="hover:text-white underline">
                     Instagram oficial
                 </a>
 
-                <a
-                    href="https://heyzine.com/flip-book/e975954570.html"
-                    target="_blank"
+                <a href="https://heyzine.com/flip-book/e975954570.html" target="_blank"
                     class="hover:text-white underline">
                     Revista turística
                 </a>
 
-                <a
-                    href="{% url 'privacidade' %}"
-                    class="hover:text-white underline">
+                <a href="{% url 'privacidade' %}" class="hover:text-white underline">
                     Aviso de privacidade
                 </a>
 
-                <a
-                    href="{% url 'catalogo' %}"
-                    class="hover:text-white underline">
+                <a href="{% url 'catalogo' %}" class="hover:text-white underline">
                     Guia Turístico
                 </a>
 
