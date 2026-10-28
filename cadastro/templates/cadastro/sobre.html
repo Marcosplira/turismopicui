@@ -1,0 +1,208 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre - Turismo de Picuí</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+    <header class="bg-green-700 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-6 py-6">
+            <a href="{% url 'home' %}" class="text-green-100 hover:text-white inline-flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Voltar à página inicial
+            </a>
+            <h1 class="text-3xl font-bold mt-3">Sobre o Projeto</h1>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-12">
+        <!-- Hero Section -->
+        <section class="bg-white rounded-3xl shadow-lg p-8 md:p-12 mb-8 animate-fade-in-up">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-bold text-green-800 mb-4">Turismo de Picuí</h2>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                    Uma plataforma digital para organizar, divulgar e valorizar os empreendimentos turísticos do município de Picuí-PB
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 mt-10">
+                <div class="bg-green-50 rounded-2xl p-6 card-hover text-center">
+                    <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-green-800 mb-2">Organização</h3>
+                    <p class="text-slate-600 text-sm">Centralize todos os empreendimentos turísticos em um único sistema organizado</p>
+                </div>
+
+                <div class="bg-emerald-50 rounded-2xl p-6 card-hover text-center">
+                    <div class="bg-emerald-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-emerald-800 mb-2">Visibilidade</h3>
+                    <p class="text-slate-600 text-sm">Aumente a visibilidade dos negócios locais para moradores e turistas</p>
+                </div>
+
+                <div class="bg-teal-50 rounded-2xl p-6 card-hover text-center">
+                    <div class="bg-teal-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-teal-800 mb-2">Gestão</h3>
+                    <p class="text-slate-600 text-sm">Ferramenta profissional para a prefeitura gerenciar o turismo municipal</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Objetivos -->
+        <section class="bg-white rounded-3xl shadow-lg p-8 md:p-12 mb-8 animate-fade-in-up" style="animation-delay: 100ms;">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6">Nossos Objetivos</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="flex items-start gap-4">
+                    <div class="bg-green-100 rounded-full p-2 flex-shrink-0">
+                        <svg class="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 mb-1">Centralizar Informações</h3>
+                        <p class="text-slate-600 text-sm">Unificar dados de empreendimentos em um sistema digital acessível</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="bg-green-100 rounded-full p-2 flex-shrink-0">
+                        <svg class="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 mb-1">Facilitar Acesso</h3>
+                        <p class="text-slate-600 text-sm"> Permitir que turistas encontrem facilmente serviços e atrativos locais</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="bg-green-100 rounded-full p-2 flex-shrink-0">
+                        <svg class="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 mb-1">Valorizar Empreendedores</h3>
+                        <p class="text-slate-600 text-sm">Dar visibilidade profissional aos negócios locais</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="bg-green-100 rounded-full p-2 flex-shrink-0">
+                        <svg class="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 mb-1">Modernizar Gestão</h3>
+                        <p class="text-slate-600 text-sm">Digitalizar processos e reduzir trabalho manual da equipe</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Equipe -->
+        <section class="bg-white rounded-3xl shadow-lg p-8 md:p-12 mb-8 animate-fade-in-up" style="animation-delay: 200ms;">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6">Equipe Responsável</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-slate-50 rounded-2xl p-6">
+                    <h3 class="font-bold text-green-800 text-lg mb-2">Prefeitura Municipal de Picuí</h3>
+                    <div class="space-y-2 text-sm text-slate-600">
+                        <p><strong>Prefeito:</strong> Ranieri Ferreira</p>
+                        <p><strong>Vice-Prefeito:</strong> Patrício Dantas</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-6">
+                    <h3 class="font-bold text-green-800 text-lg mb-2">Secretaria de Agricultura, Turismo e Meio Ambiente</h3>
+                    <div class="space-y-2 text-sm text-slate-600">
+                        <p><strong>Secretário:</strong> Robinson Santos</p>
+                        <p><strong>Diretor Municipal de Turismo e Meio Ambiente:</strong> Ismael Moisés</p>
+                        <p><strong>Assessor:</strong> Manassés Araújo - Serginho</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tecnologia -->
+        <section class="bg-white rounded-3xl shadow-lg p-8 md:p-12 animate-fade-in-up" style="animation-delay: 300ms;">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6">Tecnologia</h2>
+            <p class="text-slate-600 mb-6">
+                Este projeto foi desenvolvido com tecnologias modernas e de código aberto, garantindo segurança, performance e escalabilidade.
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-slate-50 rounded-xl p-4 text-center">
+                    <p class="font-bold text-slate-800">Python</p>
+                    <p class="text-xs text-slate-500 mt-1">Backend</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-4 text-center">
+                    <p class="font-bold text-slate-800">Django</p>
+                    <p class="text-xs text-slate-500 mt-1">Framework</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-4 text-center">
+                    <p class="font-bold text-slate-800">PostgreSQL</p>
+                    <p class="text-xs text-slate-500 mt-1">Banco de Dados</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-4 text-center">
+                    <p class="font-bold text-slate-800">Tailwind CSS</p>
+                    <p class="text-xs text-slate-500 mt-1">Design</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-green-800 text-white mt-10">
+        <div class="max-w-6xl mx-auto px-4 py-6 text-center text-sm">
+            <p>Turismo de Picuí</p>
+            <p class="text-green-200 mt-1">Prefeitura Municipal de Picuí</p>
+            <div class="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-3 text-green-100">
+                <a href="https://www.picui.pb.gov.br/" target="_blank" class="hover:text-white underline">Site da Prefeitura</a>
+                <a href="https://www.instagram.com/prefeituradepicuioficial/" target="_blank" class="hover:text-white underline">Instagram oficial</a>
+                <a href="{% url 'privacidade' %}" class="hover:text-white underline">Aviso de privacidade</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

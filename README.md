@@ -223,6 +223,11 @@ CSRF_TRUSTED_ORIGINS=https://seu-dominio.com
 - [x] Preparado para publicação em hospedagem
 - [x] Documentação de uso
 - [x] Documentação de apresentação
+- [x] Dashboard executivo com gráficos
+- [x] Exportação de relatórios CSV
+- [x] Galeria de fotos interativa
+- [x] Animações e micro-interações
+- [x] Página institucional "Sobre"
 
 ---
 

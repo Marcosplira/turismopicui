@@ -3,7 +3,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 import qrcode
-from io import BytesIO
+import csv
+from io import BytesIO, StringIO
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -542,6 +543,10 @@ def privacidade(request):
     return render(request, "cadastro/privacidade.html")
 
 
+def sobre(request):
+    return render(request, "cadastro/sobre.html")
+
+
 def _gerar_qrcode_imagem(url_destino):
     qr = qrcode.QRCode(
         version=1,
@@ -581,6 +586,50 @@ def sair(request):
     logout(request)
     messages.success(request, "Sessão encerrada com sucesso.")
     return redirect("home")
+
+
+@staff_member_required
+def exportar_csv(request):
+    """
+    Exporta todos os empreendimentos para CSV.
+    """
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="empreendimentos_turismo_picui.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow([
+        'ID', 'Nome', 'Responsável', 'CPF', 'CNPJ', 'Status',
+        'Zona', 'Endereço', 'Bairro/Comunidade', 'Telefone', 'WhatsApp',
+        'E-mail', 'Instagram', 'Facebook', 'Categorias',
+        'Descrição', 'Data de Cadastro', 'Data de Atualização'
+    ])
+
+    empreendimentos = Empreendimento.objects.all().prefetch_related('categorias').order_by('-data_cadastro')
+
+    for emp in empreendimentos:
+        categorias = ', '.join([cat.nome for cat in emp.categorias.all()])
+        writer.writerow([
+            emp.pk,
+            emp.nome,
+            emp.responsavel,
+            emp.cpf_responsavel,
+            emp.cnpj or '',
+            emp.get_status_display(),
+            emp.get_zona_display(),
+            emp.endereco,
+            emp.bairro_comunidade,
+            emp.telefone,
+            emp.whatsapp or '',
+            emp.email or '',
+            emp.instagram or '',
+            emp.facebook or '',
+            categorias,
+            emp.descricao,
+            emp.data_cadastro.strftime('%d/%m/%Y %H:%M') if emp.data_cadastro else '',
+            emp.data_atualizacao.strftime('%d/%m/%Y %H:%M') if emp.data_atualizacao else ''
+        ])
+
+    return response
 
 
 def cadastrar_empreendimento(request):

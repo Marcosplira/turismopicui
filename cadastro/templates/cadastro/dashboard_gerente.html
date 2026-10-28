@@ -6,6 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard do gerente</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800">
     <header class="bg-green-700 text-white shadow-md">
@@ -15,6 +32,12 @@
                 <h1 class="text-3xl font-bold mt-1">Dashboard do gerente</h1>
             </div>
             <div class="flex gap-3 flex-wrap">
+                <a href="{% url 'exportar_csv' %}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Exportar CSV
+                </a>
                 <a href="{% url 'admin:index' %}" class="bg-white text-green-800 font-semibold px-4 py-2 rounded-lg hover:bg-green-50">Administração</a>
                 <a href="{% url 'home' %}" class="border border-white/40 text-white px-4 py-2 rounded-lg hover:bg-white/10">Página inicial</a>
             </div>
@@ -23,21 +46,57 @@
 
     <main class="max-w-7xl mx-auto px-6 py-8">
         <section class="grid md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-                <p class="text-sm text-slate-500">Total</p>
-                <p class="text-3xl font-bold mt-2">{{ total }}</p>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 card-hover animate-fade-in" style="animation-delay: 0ms;">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-slate-500 font-medium">Total de Cadastros</p>
+                        <p class="text-3xl font-bold mt-2 text-slate-800">{{ total }}</p>
+                    </div>
+                    <div class="bg-slate-100 rounded-xl p-3">
+                        <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="bg-emerald-50 rounded-2xl shadow-sm border border-emerald-200 p-5">
-                <p class="text-sm text-emerald-700">Aprovados</p>
-                <p class="text-3xl font-bold mt-2 text-emerald-800">{{ aprovados }}</p>
+            <div class="bg-emerald-50 rounded-2xl shadow-sm border border-emerald-200 p-5 card-hover animate-fade-in" style="animation-delay: 100ms;">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-emerald-700 font-medium">Aprovados</p>
+                        <p class="text-3xl font-bold mt-2 text-emerald-800">{{ aprovados }}</p>
+                    </div>
+                    <div class="bg-emerald-100 rounded-xl p-3">
+                        <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="bg-amber-50 rounded-2xl shadow-sm border border-amber-200 p-5">
-                <p class="text-sm text-amber-700">Pendentes</p>
-                <p class="text-3xl font-bold mt-2 text-amber-800">{{ pendentes }}</p>
+            <div class="bg-amber-50 rounded-2xl shadow-sm border border-amber-200 p-5 card-hover animate-fade-in" style="animation-delay: 200ms;">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-amber-700 font-medium">Pendentes</p>
+                        <p class="text-3xl font-bold mt-2 text-amber-800">{{ pendentes }}</p>
+                    </div>
+                    <div class="bg-amber-100 rounded-xl p-3">
+                        <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="bg-rose-50 rounded-2xl shadow-sm border border-rose-200 p-5">
-                <p class="text-sm text-rose-700">Reprovados</p>
-                <p class="text-3xl font-bold mt-2 text-rose-800">{{ reprovados }}</p>
+            <div class="bg-rose-50 rounded-2xl shadow-sm border border-rose-200 p-5 card-hover animate-fade-in" style="animation-delay: 300ms;">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-rose-700 font-medium">Reprovados</p>
+                        <p class="text-3xl font-bold mt-2 text-rose-800">{{ reprovados }}</p>
+                    </div>
+                    <div class="bg-rose-100 rounded-xl p-3">
+                        <svg class="w-8 h-8 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -109,44 +168,170 @@
         </section>
 
         <section class="mt-8 grid lg:grid-cols-2 gap-6">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h3 class="text-xl font-bold mb-5">Distribuição por categoria</h3>
-                <div class="space-y-3">
-                    {% for categoria in categoria_summary %}
-                        <div>
-                            <div class="flex justify-between text-sm text-slate-600 mb-1">
-                                <span>{{ categoria.nome }}</span>
-                                <span>{{ categoria.total }}</span>
-                            </div>
-                            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-green-600 rounded-full" style="width: {% if total %}{% widthratio categoria.total total 100 %}{% else %}0{% endif %}%"></div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <p class="text-slate-500">Ainda não há categorias ativas.</p>
-                    {% endfor %}
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 card-hover animate-fade-in" style="animation-delay: 400ms;">
+                <div class="flex items-center justify-between mb-5">
+                    <h3 class="text-xl font-bold">Distribuição por categoria</h3>
+                    <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Gráfico</span>
+                </div>
+                <div class="h-64">
+                    <canvas id="graficoCategorias"></canvas>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h3 class="text-xl font-bold mb-5">Distribuição por zona</h3>
-                <div class="space-y-3">
-                    {% for zona in zona_summary %}
-                        <div>
-                            <div class="flex justify-between text-sm text-slate-600 mb-1">
-                                <span>{{ zona.label }}</span>
-                                <span>{{ zona.total }}</span>
-                            </div>
-                            <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-emerald-500 rounded-full" style="width: {% if total %}{% widthratio zona.total total 100 %}{% else %}0{% endif %}%"></div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <p class="text-slate-500">Ainda não há distribuição por zona.</p>
-                    {% endfor %}
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 card-hover animate-fade-in" style="animation-delay: 500ms;">
+                <div class="flex items-center justify-between mb-5">
+                    <h3 class="text-xl font-bold">Distribuição por zona</h3>
+                    <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Gráfico</span>
+                </div>
+                <div class="h-64">
+                    <canvas id="graficoZonas"></canvas>
                 </div>
             </div>
         </section>
+
+        <section class="mt-8 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 card-hover animate-fade-in" style="animation-delay: 600ms;">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xl font-bold">Visão geral de status</h3>
+                <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Doughnut</span>
+            </div>
+            <div class="h-64">
+                <canvas id="graficoStatus"></canvas>
+            </div>
+        </section>
     </main>
+
+    <script>
+        // Dados dos gráficos
+        const categoriasData = {
+            labels: [{% for categoria in categoria_summary %}"{{ categoria.nome }}"{% if not forloop.last %},{% endif %}{% empty %}[]{% endfor %}],
+            data: [{% for categoria in categoria_summary %}{{ categoria.total }}{% if not forloop.last %},{% endif %}{% empty %}[]{% endfor %}]
+        };
+
+        const zonasData = {
+            labels: [{% for zona in zona_summary %}"{{ zona.label }}"{% if not forloop.last %},{% endif %}{% empty %}[]{% endfor %}],
+            data: [{% for zona in zona_summary %}{{ zona.total }}{% if not forloop.last %},{% endif %}{% empty %}[]{% endfor %}]
+        };
+
+        const statusData = {
+            labels: ['Aprovados', 'Pendentes', 'Reprovados'],
+            data: [{{ aprovados }}, {{ pendentes }}, {{ reprovados }}]
+        };
+
+        // Gráfico de Categorias (Bar)
+        const ctxCategorias = document.getElementById('graficoCategorias');
+        if (ctxCategorias && categoriasData.labels.length > 0) {
+            new Chart(ctxCategorias, {
+                type: 'bar',
+                data: {
+                    labels: categoriasData.labels,
+                    datasets: [{
+                        label: 'Empreendimentos',
+                        data: categoriasData.data,
+                        backgroundColor: [
+                            'rgba(22, 101, 52, 0.8)',
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(74, 222, 128, 0.8)',
+                            'rgba(134, 239, 172, 0.8)',
+                            'rgba(187, 247, 208, 0.8)',
+                            'rgba(220, 252, 231, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(22, 101, 52)',
+                            'rgb(34, 197, 94)',
+                            'rgb(74, 222, 128)',
+                            'rgb(134, 239, 172)',
+                            'rgb(187, 247, 208)',
+                            'rgb(220, 252, 231)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico de Zonas (Pie)
+        const ctxZonas = document.getElementById('graficoZonas');
+        if (ctxZonas && zonasData.labels.length > 0) {
+            new Chart(ctxZonas, {
+                type: 'pie',
+                data: {
+                    labels: zonasData.labels,
+                    datasets: [{
+                        data: zonasData.data,
+                        backgroundColor: [
+                            'rgba(22, 101, 52, 0.8)',
+                            'rgba(59, 130, 246, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(22, 101, 52)',
+                            'rgb(59, 130, 246)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Gráfico de Status (Doughnut)
+        const ctxStatus = document.getElementById('graficoStatus');
+        if (ctxStatus) {
+            new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: statusData.labels,
+                    datasets: [{
+                        data: statusData.data,
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(251, 191, 36, 0.8)',
+                            'rgba(244, 63, 94, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(34, 197, 94)',
+                            'rgb(251, 191, 36)',
+                            'rgb(244, 63, 94)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>

@@ -17,6 +17,61 @@
         body {
             font-family: Arial, Helvetica, sans-serif;
         }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-hover {
+            transition: all 0.3s ease;
+        }
+
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-hover:active {
+            transform: translateY(0);
+        }
     </style>
 </head>
 
@@ -57,22 +112,22 @@
 
     <main class="max-w-5xl mx-auto px-6 py-12">
 
-        <section class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+        <section class="bg-white rounded-2xl shadow-lg p-8 md:p-12 animate-fade-in-up">
 
             <div class="grid md:grid-cols-2 gap-10 items-center">
 
                 <div>
 
                     <span
-                        class="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full mb-4">
+                        class="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full mb-4 animate-fade-in" style="animation-delay: 100ms;">
                         Guia Turístico de Picuí
                     </span>
 
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 animate-fade-in" style="animation-delay: 200ms;">
                         Cadastre seu Empreendimento no Turismo Local
                     </h2>
 
-                    <p class="text-lg text-gray-600 leading-relaxed mb-8">
+                    <p class="text-lg text-gray-600 leading-relaxed mb-8 animate-fade-in" style="animation-delay: 300ms;">
                         Participe do guia turístico da cidade, conecte
                         seu negócio ao turismo de Picuí e aumente a
                         visibilidade do seu empreendimento.
@@ -81,7 +136,7 @@
                 </div>
 
 
-                <div class="bg-green-50 border border-green-200 rounded-2xl p-6">
+                <div class="bg-green-50 border border-green-200 rounded-2xl p-6 card-hover animate-fade-in" style="animation-delay: 400ms;">
 
                     <h3 class="text-xl font-bold text-green-800 mb-4">
                         O que você pode cadastrar
@@ -104,15 +159,15 @@
                  BOTÕES PRINCIPAIS
                  ================================================== -->
 
-            <div class="flex flex-wrap justify-center gap-3 mt-10 pt-8 border-t border-gray-200">
+            <div class="flex flex-wrap justify-center gap-3 mt-10 pt-8 border-t border-gray-200 animate-fade-in" style="animation-delay: 500ms;">
 
                 <a href="{% url 'cadastrar_empreendimento' %}"
-                    class="min-w-[180px] bg-black hover:bg-gray-800 text-white font-bold px-6 py-3 rounded-lg text-center transition">
+                    class="min-w-[180px] bg-black hover:bg-gray-800 text-white font-bold px-6 py-3 rounded-lg text-center btn-hover">
                     Fazer cadastro
                 </a>
 
                 <a href="{% url 'dashboard_gerente' %}"
-                    class="min-w-[180px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-lg text-center transition">
+                    class="min-w-[180px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-lg text-center btn-hover">
                     Acesso da equipe
                 </a>
 
@@ -238,6 +293,10 @@
                 <a href="https://heyzine.com/flip-book/e975954570.html" target="_blank"
                     class="hover:text-white underline">
                     Revista turística
+                </a>
+
+                <a href="{% url 'sobre' %}" class="hover:text-white underline">
+                    Sobre o projeto
                 </a>
 
                 <a href="{% url 'privacidade' %}" class="hover:text-white underline">
