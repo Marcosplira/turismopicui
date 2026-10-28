@@ -235,6 +235,9 @@ def dashboard_gerente(request):
             }
         )
 
+    taxa_aprovacao = round((aprovados / total * 100), 1) if total > 0 else 0
+    com_cadastur = Empreendimento.objects.filter(possui_cadastur=True).count()
+
     return render(
         request,
         "cadastro/dashboard_gerente.html",
@@ -243,6 +246,8 @@ def dashboard_gerente(request):
             "aprovados": aprovados,
             "pendentes": pendentes,
             "reprovados": reprovados,
+            "taxa_aprovacao": taxa_aprovacao,
+            "com_cadastur": com_cadastur,
             "recentes": recentes,
             "categoria_summary": categoria_summary,
             "zona_summary": zona_summary,
@@ -591,45 +596,113 @@ def sair(request):
 @staff_member_required
 def exportar_csv(request):
     """
-    Exporta todos os empreendimentos para CSV.
+    Exporta todos os empreendimentos para CSV 100% compatível com Microsoft Excel (Windows)
+    com codificação UTF-8 BOM e delimitador ponto-e-vírgula.
     """
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="empreendimentos_turismo_picui.csv"'
+    response = HttpResponse(content_type="text/csv; charset=utf-8-sig")
+    response["Content-Disposition"] = 'attachment; filename="relatorio_turismo_picui.csv"'
 
-    writer = csv.writer(response)
+    # Grava explicitamente o caractere BOM para o Excel abrir sem quebrar acentos
+    response.write("\ufeff")
+
+    writer = csv.writer(response, delimiter=";", dialect="excel")
     writer.writerow([
-        'ID', 'Nome', 'Responsável', 'CPF', 'CNPJ', 'Status',
-        'Zona', 'Endereço', 'Bairro/Comunidade', 'Telefone', 'WhatsApp',
-        'E-mail', 'Instagram', 'Facebook', 'Categorias',
-        'Descrição', 'Data de Cadastro', 'Data de Atualização'
+        "ID", "Nome do Empreendimento", "Responsável", "CPF", "CNPJ", "Status",
+        "Zona", "Endereço", "Bairro / Comunidade", "Telefone", "WhatsApp",
+        "E-mail", "Instagram", "Facebook", "Possui Cadastur", "Nº Cadastur",
+        "Categorias", "Descrição", "Data de Cadastro", "Data de Atualização"
     ])
 
-    empreendimentos = Empreendimento.objects.all().prefetch_related('categorias').order_by('-data_cadastro')
+    empreendimentos = Empreendimento.objects.all().prefetch_related("categorias").order_by("-data_cadastro")
 
     for emp in empreendimentos:
-        categorias = ', '.join([cat.nome for cat in emp.categorias.all()])
+        categorias = ", ".join([cat.nome for cat in emp.categorias.all()])
+        desc = (emp.descricao or "").replace("\r\n", " ").replace("\n", " ").strip()
         writer.writerow([
             emp.pk,
             emp.nome,
             emp.responsavel,
             emp.cpf_responsavel,
-            emp.cnpj or '',
+            emp.cnpj or "",
             emp.get_status_display(),
             emp.get_zona_display(),
             emp.endereco,
             emp.bairro_comunidade,
             emp.telefone,
-            emp.whatsapp or '',
-            emp.email or '',
-            emp.instagram or '',
-            emp.facebook or '',
+            emp.whatsapp or "",
+            emp.email or "",
+            emp.instagram or "",
+            emp.facebook or "",
+            "Sim" if emp.possui_cadastur else "Não",
+            emp.numero_cadastur or "",
             categorias,
-            emp.descricao,
-            emp.data_cadastro.strftime('%d/%m/%Y %H:%M') if emp.data_cadastro else '',
-            emp.data_atualizacao.strftime('%d/%m/%Y %H:%M') if emp.data_atualizacao else ''
+            desc,
+            emp.data_cadastro.strftime("%d/%m/%Y %H:%M") if emp.data_cadastro else "",
+            emp.data_atualizacao.strftime("%d/%m/%Y %H:%M") if emp.data_atualizacao else ""
         ])
 
     return response
+
+
+@staff_member_required
+def relatorio_executivo(request):
+    """
+    Relatório Executivo Oficial pronto para impressão e exportação em PDF,
+    formatado com identidade institucional para apresentação ao Prefeito / Secretário.
+    """
+    total = Empreendimento.objects.count()
+    aprovados = Empreendimento.objects.filter(status="aprovado").count()
+    pendentes = Empreendimento.objects.filter(status="pendente").count()
+    reprovados = Empreendimento.objects.filter(status="reprovado").count()
+    com_cadastur = Empreendimento.objects.filter(possui_cadastur=True).count()
+    taxa_aprovacao = round((aprovados / total * 100), 1) if total > 0 else 0
+
+    categoria_summary = list(
+        Categoria.objects.annotate(total=Count("empreendimentos")).order_by("-total", "nome")
+    )
+    zona_summary = list(
+        Empreendimento.objects.values("zona").annotate(total=Count("id")).order_by("-total")
+    )
+    for item in zona_summary:
+        item["label"] = {"urbana": "Zona Urbana", "rural": "Comunidade Rural"}.get(item["zona"], item["zona"])
+
+    empreendimentos = Empreendimento.objects.prefetch_related("categorias").order_by("-data_cadastro")
+
+    return render(
+        request,
+        "cadastro/relatorio_executivo.html",
+        {
+            "total": total,
+            "aprovados": aprovados,
+            "pendentes": pendentes,
+            "reprovados": reprovados,
+            "com_cadastur": com_cadastur,
+            "taxa_aprovacao": taxa_aprovacao,
+            "categoria_summary": categoria_summary,
+            "zona_summary": zona_summary,
+            "empreendimentos": empreendimentos,
+        },
+    )
+
+
+@staff_member_required
+def aprovar_empreendimento_rapido(request, pk):
+    """Aprova diretamente um empreendimento a partir do Dashboard do Gerente."""
+    emp = get_object_or_404(Empreendimento, pk=pk)
+    emp.status = "aprovado"
+    emp.save(update_fields=["status", "data_atualizacao"])
+    messages.success(request, f"Empreendimento '{emp.nome}' aprovado com sucesso e publicado no Guia!")
+    return redirect("dashboard_gerente")
+
+
+@staff_member_required
+def reprovar_empreendimento_rapido(request, pk):
+    """Reprova diretamente um empreendimento a partir do Dashboard do Gerente."""
+    emp = get_object_or_404(Empreendimento, pk=pk)
+    emp.status = "reprovado"
+    emp.save(update_fields=["status", "data_atualizacao"])
+    messages.warning(request, f"Empreendimento '{emp.nome}' marcado como reprovado.")
+    return redirect("dashboard_gerente")
 
 
 def cadastrar_empreendimento(request):

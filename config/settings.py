@@ -57,11 +57,18 @@ if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
 CSRF_TRUSTED_ORIGINS = [
     "https://turismo.picui.pb.gov.br",
     "https://www.turismo.picui.pb.gov.br",
+    "https://turismopicui.pythonanywhere.com",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
     "http://localhost:8001",
     "http://127.0.0.1:8001",
 ]
+
+for host in ALLOWED_HOSTS:
+    if host not in ["localhost", "127.0.0.1", "0.0.0.0"]:
+        origin = f"https://{host}"
+        if origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(origin)
 
 if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
     CSRF_TRUSTED_ORIGINS.append(f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}")

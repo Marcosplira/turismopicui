@@ -7,9 +7,13 @@ urlpatterns = [
     path("minha-area/", views.minha_area, name="minha_area"),
     path("dashboard-gerente/", views.dashboard_gerente, name="dashboard_gerente"),
     path("dashboard-gerente/exportar-csv/", views.exportar_csv, name="exportar_csv"),
+    path("dashboard-gerente/relatorio-executivo/", views.relatorio_executivo, name="relatorio_executivo"),
+    path("dashboard-gerente/aprovar/<int:pk>/", views.aprovar_empreendimento_rapido, name="aprovar_rapido"),
+    path("dashboard-gerente/reprovar/<int:pk>/", views.reprovar_empreendimento_rapido, name="reprovar_rapido"),
     path("chatbot/", views.chatbot_assistente, name="chatbot_assistente"),
     # Catálogo público
     path("guia/", views.catalogo, name="catalogo"),
+    path("catalogo/", views.catalogo, name="catalogo_publico"),
     path("empreendimento/<int:pk>/", views.detalhe_empreendimento, name="detalhe_empreendimento"),
     path("empreendimento/<int:pk>/qrcode/", views.qrcode_empreendimento, name="qrcode_empreendimento"),
     # Privacidade e QR Code
