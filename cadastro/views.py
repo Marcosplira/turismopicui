@@ -552,6 +552,39 @@ def sobre(request):
     return render(request, "cadastro/sobre.html")
 
 
+def mapa_turistico(request):
+    """Página com mapa interativo de todos os empreendimentos."""
+    empreendimentos = Empreendimento.objects.filter(
+        status="aprovado"
+    ).prefetch_related("fotos", "categorias")
+
+    # Converter para JSON para usar no JavaScript
+    empreendimentos_data = []
+    for emp in empreendimentos:
+        empreendimentos_data.append({
+            'id': emp.pk,
+            'nome': emp.nome,
+            'descricao': emp.descricao[:200] if emp.descricao else '',
+            'endereco': emp.endereco,
+            'bairro': emp.bairro_comunidade,
+            'zona': emp.get_zona_display(),
+            'telefone': emp.telefone,
+            'whatsapp': emp.whatsapp_url,
+            'categoria': emp.categorias.first().nome if emp.categorias.exists() else '',
+            'lat': -6.4767,  # Coordenadas aproximadas de Picuí (seria ideal ter lat/long reais)
+            'lng': -36.3567,
+        })
+
+    return render(
+        request,
+        "cadastro/mapa_turistico.html",
+        {
+            "empreendimentos": empreendimentos,
+            "empreendimentos_json": empreendimentos_data,
+        },
+    )
+
+
 def _gerar_qrcode_imagem(url_destino):
     qr = qrcode.QRCode(
         version=1,
@@ -581,6 +614,22 @@ def qrcode_empreendimento(request, pk):
     empreendimento = get_object_or_404(Empreendimento, pk=pk, status="aprovado")
     url_destino = request.build_absolute_uri(f"/empreendimento/{empreendimento.pk}/")
     return HttpResponse(_gerar_qrcode_imagem(url_destino), content_type="image/png")
+
+
+def selo_display_balcao(request, pk):
+    """
+    Gera a placa de mesa / display de balcão oficial com QR Code
+    e Selo de Homologação Turística da Prefeitura Municipal de Picuí.
+    """
+    empreendimento = get_object_or_404(Empreendimento, pk=pk)
+    if empreendimento.status != "aprovado" and not request.user.is_staff:
+        empreendimento = get_object_or_404(Empreendimento, pk=pk, status="aprovado")
+
+    return render(
+        request,
+        "cadastro/selo_display.html",
+        {"empreendimento": empreendimento},
+    )
 
 
 def cadastro_sucesso(request):

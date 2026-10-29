@@ -186,6 +186,10 @@
                         <img src="{% url 'qrcode_empreendimento' empreendimento.pk %}" alt="QR Code de {{ empreendimento.nome }}" class="w-44 h-44 object-contain">
                     </div>
                     <p class="text-sm text-slate-600 mt-3">Compartilhe o perfil do empreendimento com clientes e turistas.</p>
+                    <a href="{% url 'selo_display_balcao' empreendimento.pk %}" target="_blank" class="mt-4 w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm shadow-sm transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Imprimir Placa de Balcão (A4)
+                    </a>
                 </div>
 
                 {% if empreendimento.categorias.all %}

@@ -177,6 +177,7 @@
                             <div class="flex flex-wrap items-center gap-2">
                                 {% if empreendimento.status == 'aprovado' %}
                                     <span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-full text-xs font-bold">Aprovado</span>
+                                    <a href="{% url 'selo_display_balcao' empreendimento.pk %}" target="_blank" class="text-xs bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold px-2 py-1 rounded-lg hover:bg-emerald-100 transition" title="Imprimir Placa de Balcão e Selo Oficial">Placa / Selo</a>
                                     <a href="{% url 'reprovar_rapido' empreendimento.pk %}" onclick="return confirm('Deseja realmente reprovar este empreendimento?');" class="text-xs text-rose-600 hover:underline px-2 py-1">Reprovar</a>
                                 {% elif empreendimento.status == 'reprovado' %}
                                     <span class="bg-rose-100 text-rose-800 border border-rose-300 px-2.5 py-1 rounded-full text-xs font-bold">Reprovado</span>

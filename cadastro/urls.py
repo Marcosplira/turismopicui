@@ -14,8 +14,10 @@ urlpatterns = [
     # Catálogo público
     path("guia/", views.catalogo, name="catalogo"),
     path("catalogo/", views.catalogo, name="catalogo_publico"),
+    path("mapa/", views.mapa_turistico, name="mapa_turistico"),
     path("empreendimento/<int:pk>/", views.detalhe_empreendimento, name="detalhe_empreendimento"),
     path("empreendimento/<int:pk>/qrcode/", views.qrcode_empreendimento, name="qrcode_empreendimento"),
+    path("empreendimento/<int:pk>/selo-display/", views.selo_display_balcao, name="selo_display_balcao"),
     # Privacidade e QR Code
     path("privacidade/", views.privacidade, name="privacidade"),
     path("sobre/", views.sobre, name="sobre"),

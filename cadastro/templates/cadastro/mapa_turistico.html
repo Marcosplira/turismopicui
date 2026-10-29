@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Turístico - Turismo de Picuí</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+            border-radius: 1rem;
+        }
+        .leaflet-popup-content-wrapper {
+            border-radius: 1rem;
+        }
+        .leaflet-popup-content {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+    <header class="bg-green-700 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-6 py-6">
+            <a href="{% url 'home' %}" class="text-green-100 hover:text-white inline-flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Voltar à página inicial
+            </a>
+            <h1 class="text-3xl font-bold mt-3">Mapa Turístico de Picuí</h1>
+            <p class="text-green-100 mt-1">Explore todos os empreendimentos aprovados no mapa interativo</p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-8">
+        <!-- Filtros -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
+            <div class="flex flex-wrap gap-4 items-center">
+                <span class="font-semibold text-slate-700">Filtrar por:</span>
+                <button onclick="filterByZona('all')" class="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition">Todos</button>
+                <button onclick="filterByZona('urbana')" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition">Zona Urbana</button>
+                <button onclick="filterByZona('rural')" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition">Comunidade Rural</button>
+            </div>
+        </div>
+
+        <!-- Mapa -->
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-4">
+            <div id="map"></div>
+        </div>
+
+        <!-- Legenda -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mt-6">
+            <h3 class="font-bold text-slate-800 mb-3">Legenda</h3>
+            <div class="flex flex-wrap gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-full bg-green-600"></div>
+                    <span class="text-sm text-slate-600">Zona Urbana</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-full bg-blue-600"></div>
+                    <span class="text-sm text-slate-600">Comunidade Rural</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Coordenadas centrais de Picuí-PB
+        const map = L.map('map').setView([-6.4767, -36.3567], 13);
+
+        // Adicionar camada do OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Dados dos empreendimentos
+        const empreendimentos = {{ empreendimentos_json|safe }};
+
+        // Criar ícones personalizados
+        const greenIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div style='background-color: #16a34a; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);'></div>",
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
+
+        const blueIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div style='background-color: #2563eb; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);'></div>",
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
+
+        // Adicionar markers ao mapa
+        const markers = {};
+        empreendimentos.forEach(emp => {
+            const icon = emp.zona === 'Zona Urbana' ? greenIcon : blueIcon;
+
+            const marker = L.marker([emp.lat, emp.lng], { icon: icon })
+                .addTo(map)
+                .bindPopup(`
+                    <div style="min-width: 250px;">
+                        <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 8px; color: #166534;">${emp.nome}</h3>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 8px;">${emp.descricao}</p>
+                        <p style="font-size: 12px; color: #64748b; margin-bottom: 4px;"><strong>Endereço:</strong> ${emp.endereco}, ${emp.bairro}</p>
+                        <p style="font-size: 12px; color: #64748b; margin-bottom: 4px;"><strong>Categoria:</strong> ${emp.categoria}</p>
+                        <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;"><strong>Telefone:</strong> ${emp.telefone}</p>
+                        <a href="/empreendimento/${emp.id}/" target="_blank" style="display: inline-block; background-color: #16a34a; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: bold;">Ver detalhes</a>
+                    </div>
+                `);
+
+            markers[emp.id] = marker;
+        });
+
+        // Função para filtrar por zona
+        function filterByZona(zona) {
+            empreendimentos.forEach(emp => {
+                const marker = markers[emp.id];
+                if (zona === 'all') {
+                    marker.addTo(map);
+                } else if (zona === 'urbana' && emp.zona === 'Zona Urbana') {
+                    marker.addTo(map);
+                } else if (zona === 'rural' && emp.zona === 'Comunidade Rural') {
+                    marker.addTo(map);
+                } else {
+                    map.removeLayer(marker);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

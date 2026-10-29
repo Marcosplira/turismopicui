@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Oficial - {{ empreendimento.nome }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                padding: 0 !important;
+            }
+            .display-card {
+                box-shadow: none !important;
+                border: 2px solid #166534 !important;
+                margin: 0 auto !important;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 p-4 md:p-8 flex flex-col items-center">
+
+    <!-- BARRA SUPERIOR DE AÇÕES (Não impressa) -->
+    <div class="no-print max-w-xl w-full mb-6 flex items-center justify-between gap-4">
+        <a href="{% url 'detalhe_empreendimento' empreendimento.pk %}" class="inline-flex items-center gap-2 text-sm text-green-800 hover:text-green-900 font-semibold bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Voltar
+        </a>
+        <button onclick="window.print()" class="bg-green-700 hover:bg-green-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-transform hover:scale-105">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Imprimir Display de Mesa
+        </button>
+    </div>
+
+    <!-- PLACA / DISPLAY OFICIAL (A4 / Mesa) -->
+    <div class="display-card max-w-xl w-full bg-white rounded-3xl shadow-xl border-4 border-green-700 p-8 sm:p-12 text-center relative overflow-hidden">
+        
+        <!-- DETALHE VISUAL DE BORDA DOURADA/VERDE -->
+        <div class="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-emerald-600 via-amber-400 to-green-700"></div>
+
+        <!-- CABEÇALHO INSTITUCIONAL -->
+        <div class="flex items-center justify-center gap-4 mb-6">
+            <img src="{% static 'cadastro/imagem/logo-picui.png' %}" alt="Prefeitura de Picuí" class="h-16 w-auto object-contain">
+            <div class="text-left">
+                <p class="text-xs uppercase tracking-widest text-slate-500 font-bold">Prefeitura Municipal de Picuí - PB</p>
+                <p class="text-sm font-black text-green-800 uppercase tracking-wide">Secretaria de Turismo e Desenvolvimento</p>
+            </div>
+        </div>
+
+        <!-- SELO DE HOMOLOGAÇÃO -->
+        <div class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-100 border border-emerald-300 text-emerald-900 font-black text-xs uppercase tracking-wider px-4 py-2 rounded-full mb-6 shadow-sm">
+            <span>⭐</span>
+            <span>Empreendimento Turístico Homologado</span>
+            <span>⭐</span>
+        </div>
+
+        <!-- NOME DO ESTABELECIMENTO -->
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 mb-2 leading-tight">
+            {{ empreendimento.nome }}
+        </h1>
+        
+        <p class="text-sm font-semibold text-green-700 uppercase tracking-wider mb-6">
+            {{ empreendimento.get_zona_display }} · {{ empreendimento.bairro_comunidade }}
+        </p>
+
+        <!-- QUADRO DO QR CODE CENTRAL -->
+        <div class="bg-slate-50 border-2 border-dashed border-green-600 rounded-3xl p-6 inline-block mx-auto mb-6 shadow-inner">
+            <img src="{% url 'qrcode_empreendimento' empreendimento.pk %}" 
+                 alt="QR Code de {{ empreendimento.nome }}" 
+                 class="w-56 h-56 object-contain mx-auto bg-white p-3 rounded-2xl shadow-sm">
+            <p class="text-xs font-bold text-slate-500 mt-3 uppercase tracking-wider">
+                Código de Homologação #{{ empreendimento.pk|stringformat:"04d" }}
+            </p>
+        </div>
+
+        <!-- CHAMADA DE AÇÃO PARA O CLIENTE/TURISTA -->
+        <div class="bg-emerald-700 text-white p-4 rounded-2xl mb-6 shadow-sm">
+            <p class="font-bold text-base sm:text-lg">
+                📲 Aponte a câmera do seu celular
+            </p>
+            <p class="text-xs sm:text-sm text-emerald-100 mt-1">
+                Acesse fotos, história, horários de atendimento e rotas no Guia Oficial de Picuí.
+            </p>
+        </div>
+
+        <!-- SELOS ADICIONAIS (CADASTUR, ETC) -->
+        <div class="flex flex-wrap items-center justify-center gap-3 text-xs text-slate-600 font-semibold mb-6">
+            {% if empreendimento.possui_cadastur %}
+                <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-800 border border-blue-200 px-3 py-1 rounded-full">
+                    ✓ Registrado no Cadastur (Mtur)
+                </span>
+            {% endif %}
+            <span class="inline-flex items-center gap-1 bg-slate-100 text-slate-700 px-3 py-1 rounded-full">
+                Guia Turístico Municipal Oficial
+            </span>
+        </div>
+
+        <!-- RODAPÉ INSTITUCIONAL -->
+        <div class="pt-6 border-t border-slate-200 text-xs text-slate-500">
+            <p class="font-bold text-slate-700">Turismo de Picuí — Cidade da Carne de Sol</p>
+            <p class="mt-0.5">turismopicui.pythonanywhere.com</p>
+        </div>
+
+        <div class="absolute bottom-0 left-0 right-0 h-2 bg-green-700"></div>
+    </div>
+
+</body>
+</html>
