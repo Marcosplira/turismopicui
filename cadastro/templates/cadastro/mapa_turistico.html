@@ -4,133 +4,381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Turístico - Turismo de Picuí</title>
+    <meta name="theme-color" content="#166534">
+    <title>Mapa Turístico Interativo - Turismo de Picuí</title>
+    <link rel="icon" type="image/png" href="{% static 'cadastro/imagem/app-icon-192.png' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
+        body { font-family: Arial, Helvetica, sans-serif; }
         #map {
-            height: 600px;
+            height: 540px;
             width: 100%;
-            border-radius: 1rem;
+            border-radius: 1.25rem;
+            z-index: 10;
         }
         .leaflet-popup-content-wrapper {
             border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 4px;
         }
         .leaflet-popup-content {
-            font-family: Arial, sans-serif;
+            margin: 12px 14px;
+            line-height: 1.4;
+        }
+        .card-item {
+            transition: all 0.25s ease;
+        }
+        .card-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800">
-    <header class="bg-green-700 text-white shadow-md">
-        <div class="max-w-6xl mx-auto px-6 py-6">
-            <a href="{% url 'home' %}" class="text-green-100 hover:text-white inline-flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                Voltar à página inicial
-            </a>
-            <h1 class="text-3xl font-bold mt-3">Mapa Turístico de Picuí</h1>
-            <p class="text-green-100 mt-1">Explore todos os empreendimentos aprovados no mapa interativo</p>
-        </div>
-    </header>
-
-    <main class="max-w-6xl mx-auto px-6 py-8">
-        <!-- Filtros -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
-            <div class="flex flex-wrap gap-4 items-center">
-                <span class="font-semibold text-slate-700">Filtrar por:</span>
-                <button onclick="filterByZona('all')" class="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition">Todos</button>
-                <button onclick="filterByZona('urbana')" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition">Zona Urbana</button>
-                <button onclick="filterByZona('rural')" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition">Comunidade Rural</button>
-            </div>
-        </div>
-
-        <!-- Mapa -->
-        <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-4">
-            <div id="map"></div>
-        </div>
-
-        <!-- Legenda -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mt-6">
-            <h3 class="font-bold text-slate-800 mb-3">Legenda</h3>
-            <div class="flex flex-wrap gap-4">
-                <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 rounded-full bg-green-600"></div>
-                    <span class="text-sm text-slate-600">Zona Urbana</span>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col justify-between">
+    <div>
+        <header class="bg-green-700 text-white shadow-md">
+            <div class="max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <a href="{% url 'home' %}" class="bg-white rounded-xl p-1.5 shadow-sm inline-block">
+                        <img src="{% static 'cadastro/imagem/logo-picui.png' %}" alt="Prefeitura de Picuí" class="h-10 w-auto object-contain">
+                    </a>
+                    <div>
+                        <a href="{% url 'home' %}" class="text-green-200 hover:text-white text-xs font-semibold uppercase tracking-wider">
+                            ← Início
+                        </a>
+                        <h1 class="text-2xl md:text-3xl font-bold mt-0.5">Mapa Turístico de Picuí</h1>
+                    </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 rounded-full bg-blue-600"></div>
-                    <span class="text-sm text-slate-600">Comunidade Rural</span>
+                    <a href="{% url 'catalogo' %}" class="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2 rounded-xl border border-white/20 transition">
+                        Ver Catálogo Completo
+                    </a>
+                    <a href="{% url 'cadastrar_empreendimento' %}" class="bg-white text-green-800 hover:bg-green-50 text-xs font-bold px-4 py-2 rounded-xl transition shadow">
+                        + Cadastrar
+                    </a>
                 </div>
             </div>
-        </div>
-    </main>
+        </header>
 
+        <main class="max-w-6xl mx-auto px-6 py-8">
+
+            <!-- BARRA DE FILTROS INTERATIVA POR ZONA E GEOSSÍTIOS -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider mr-2">Filtrar:</span>
+                    <button id="btn-filtro-all" onclick="filterByZona('all')" class="filter-zona-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-green-700 text-white shadow-sm ring-2 ring-green-600">
+                        📍 Todos (<span id="count-all">0</span>)
+                    </button>
+                    <button id="btn-filtro-urbana" onclick="filterByZona('urbana')" class="filter-zona-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        🏙️ Zona Urbana (<span id="count-urbana">0</span>)
+                    </button>
+                    <button id="btn-filtro-rural" onclick="filterByZona('rural')" class="filter-zona-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        🌾 Comunidade Rural (<span id="count-rural">0</span>)
+                    </button>
+                    <button id="btn-filtro-geo" onclick="filterByZona('geo')" class="filter-zona-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200">
+                        🌋 Geossítios & Ecoturismo (<span id="count-geo">0</span>)
+                    </button>
+                </div>
+                <span class="text-xs text-slate-400">Clique em um ponto no mapa para ver dados de geodiversidade</span>
+            </div>
+
+            <!-- CONTAINER DO MAPA -->
+            <div class="bg-white rounded-3xl shadow-lg border border-slate-200 p-3 relative overflow-hidden">
+                <div id="map"></div>
+
+                <!-- LEGENDA FLUTUANTE SOBRE O MAPA -->
+                <div class="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-slate-200 z-[1000] text-xs">
+                    <p class="font-bold text-slate-800 mb-2">Legenda de Pontos</p>
+                    <div class="space-y-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3.5 h-3.5 rounded-full bg-emerald-600 border border-white shadow-sm"></span>
+                            <span class="text-slate-600">Zona Urbana</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3.5 h-3.5 rounded-full bg-blue-600 border border-white shadow-sm"></span>
+                            <span class="text-slate-600">Comunidade Rural</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3.5 h-3.5 rounded-full bg-amber-500 border border-white shadow-sm"></span>
+                            <span class="text-slate-600">Geossítio (Estudo UEPB)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAINEL CIENTÍFICO: GEODIVERSIDADE & GEOTURISMO DE PICUÍ (UEPB) -->
+            <div class="mt-8 bg-gradient-to-r from-amber-50 via-emerald-50 to-teal-50 rounded-3xl border border-amber-200/80 p-6 md:p-8 shadow-sm">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="bg-amber-600 text-white text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow-xs">
+                                Geodiversidade & Ciência
+                            </span>
+                            <span class="text-xs text-amber-900 font-semibold">Pesquisa UEPB • V SGFNE (2024)</span>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-bold text-slate-900 mt-1">Patrimônio Geológico e Arqueológico de Picuí</h3>
+                    </div>
+                    <button onclick="filterByZona('geo')" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition inline-flex items-center gap-1.5 flex-shrink-0">
+                        🌋 Destacar Geossítios no Mapa
+                    </button>
+                </div>
+                <p class="text-slate-700 text-sm leading-relaxed mb-5">
+                    Segundo estudo dos pesquisadores <em>Marcella Kamilly Araújo Santos, Gabriela Sucupira Gomes da Costa e Prof. Dr. Rafael Albuquerque Xavier (Universidade Estadual da Paraíba - UEPB)</em>, o município de Picuí apresenta uma <strong>singular geodiversidade no Nordeste</strong>, contando em seu território com os <strong>três tipos de rochas</strong> (ígneas/vulcânicas, metamórficas e sedimentares), o que confere uma riqueza única de geoformas para o geoturismo sustentável.
+                </p>
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
+                    <div class="bg-white/95 backdrop-blur-xs p-4 rounded-2xl border border-amber-100 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-amber-900 text-sm flex items-center gap-1.5 mb-1.5">
+                                ⛰️ Serra do Pedro
+                            </span>
+                            <p class="text-slate-600 leading-relaxed">Sítio arqueológico Cachoeira do Pedro com pinturas rupestres, micaxistos e granada micaxistose da Formação Seridó. Acesso pela PB-151 a 5 km da cidade.</p>
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[10px] text-amber-700 font-mono font-bold">6°32'32.72" S, 36°23'47.33" O</span>
+                            <button onclick="focarNoPontoPorNome('Serra do Pedro')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/95 backdrop-blur-xs p-4 rounded-2xl border border-amber-100 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-amber-900 text-sm flex items-center gap-1.5 mb-1.5">
+                                🌋 Saco do Inferninho
+                            </span>
+                            <p class="text-slate-600 leading-relaxed">Plug vulcânico semicircular de 150m de altura composto por fragmentos de basalto negro do antigo Magmatismo Macau no sítio Barra do Cipó.</p>
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[10px] text-amber-700 font-mono font-bold">6°21'42.11" S, 36°18'40.34" O</span>
+                            <button onclick="focarNoPontoPorNome('Saco do Inferninho')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/95 backdrop-blur-xs p-4 rounded-2xl border border-amber-100 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-amber-900 text-sm flex items-center gap-1.5 mb-1.5">
+                                🌄 Mirante dos Brandões
+                            </span>
+                            <p class="text-slate-600 leading-relaxed">Ponto culminante da microrregião na Província Borborema, oferecendo vista panorâmica de 360° do relevo semiárido paraibano e potiguar.</p>
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[10px] text-amber-700 font-mono font-bold">Província Borborema</span>
+                            <button onclick="focarNoPontoPorNome('Brandões')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LISTAGEM DOS PONTOS CORRESPONDENTES ABAIXO DO MAPA -->
+            <div class="mt-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-slate-800">Empreendimentos & Atrativos em Exibição</h2>
+                    <span id="label-exibindo" class="text-xs text-slate-500 font-medium">Exibindo todos os pontos</span>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="cards-container">
+                    <!-- Cards são alimentados via JavaScript com sincronia direta com o mapa -->
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="bg-green-800 text-white mt-12">
+        <div class="max-w-6xl mx-auto px-4 py-6 text-center text-sm">
+            <p>Turismo de Picuí - Prefeitura Municipal de Picuí</p>
+            <div class="flex flex-wrap justify-center gap-5 mt-3 text-green-100 text-xs">
+                <a href="https://www.picui.pb.gov.br/" target="_blank" class="hover:text-white underline">Site da Prefeitura</a>
+                <a href="{% url 'sobre' %}" class="hover:text-white underline">Sobre o projeto</a>
+                <a href="{% url 'catalogo' %}" class="hover:text-white underline">Guia Turístico</a>
+                <a href="{% url 'privacidade' %}" class="hover:text-white underline">Aviso de privacidade</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'cadastro/scroll-reveal.js' %}"></script>
     <script>
         // Coordenadas centrais de Picuí-PB
-        const map = L.map('map').setView([-6.4767, -36.3567], 13);
+        const map = L.map('map', {
+            center: [-6.5115, -36.3475],
+            zoom: 13,
+            scrollWheelZoom: true
+        });
 
-        // Adicionar camada do OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+        // Camada CartoDB Voyager: 100% livre de bloqueio 403, rápida, moderna e profissional
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
         }).addTo(map);
 
-        // Dados dos empreendimentos
+        // Dados dos empreendimentos injetados pelo Django
         const empreendimentos = {{ empreendimentos_json|safe }};
 
-        // Criar ícones personalizados
+        // Atualizar contadores
+        const totalAll = empreendimentos.length;
+        const totalUrbana = empreendimentos.filter(e => e.zona_raw === 'urbana' || e.zona === 'Zona Urbana').length;
+        const totalRural = empreendimentos.filter(e => e.zona_raw === 'rural' || e.zona === 'Comunidade Rural').length;
+
+        document.getElementById('count-all').textContent = totalAll;
+        document.getElementById('count-urbana').textContent = totalUrbana;
+        document.getElementById('count-rural').textContent = totalRural;
+
+        // Ícones temáticos para o mapa
         const greenIcon = L.divIcon({
-            className: 'custom-div-icon',
-            html: "<div style='background-color: #16a34a; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);'></div>",
-            iconSize: [30, 30],
-            iconAnchor: [15, 15]
+            className: 'custom-pin-urbano',
+            html: `
+                <div style="background-color: #059669; width: 34px; height: 34px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                    🏙️
+                </div>`,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17],
+            popupAnchor: [0, -16]
         });
 
         const blueIcon = L.divIcon({
-            className: 'custom-div-icon',
-            html: "<div style='background-color: #2563eb; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);'></div>",
-            iconSize: [30, 30],
-            iconAnchor: [15, 15]
+            className: 'custom-pin-rural',
+            html: `
+                <div style="background-color: #2563eb; width: 34px; height: 34px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                    🌾
+                </div>`,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17],
+            popupAnchor: [0, -16]
         });
 
-        // Adicionar markers ao mapa
         const markers = {};
+        const markerGroup = L.featureGroup().addTo(map);
+
+        // Adicionar marcadores ao mapa
         empreendimentos.forEach(emp => {
-            const icon = emp.zona === 'Zona Urbana' ? greenIcon : blueIcon;
+            const isRural = (emp.zona_raw === 'rural' || emp.zona === 'Comunidade Rural');
+            const icon = isRural ? blueIcon : greenIcon;
 
-            const marker = L.marker([emp.lat, emp.lng], { icon: icon })
-                .addTo(map)
-                .bindPopup(`
-                    <div style="min-width: 250px;">
-                        <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 8px; color: #166534;">${emp.nome}</h3>
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 8px;">${emp.descricao}</p>
-                        <p style="font-size: 12px; color: #64748b; margin-bottom: 4px;"><strong>Endereço:</strong> ${emp.endereco}, ${emp.bairro}</p>
-                        <p style="font-size: 12px; color: #64748b; margin-bottom: 4px;"><strong>Categoria:</strong> ${emp.categoria}</p>
-                        <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;"><strong>Telefone:</strong> ${emp.telefone}</p>
-                        <a href="/empreendimento/${emp.id}/" target="_blank" style="display: inline-block; background-color: #16a34a; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: bold;">Ver detalhes</a>
+            const popupContent = `
+                <div style="min-width: 240px; font-family: inherit;">
+                    ${emp.foto_url ? `<img src="${emp.foto_url}" alt="${emp.nome}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;">` : ''}
+                    <span style="font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 999px; background-color: ${isRural ? '#dbeafe' : '#d1fae5'}; color: ${isRural ? '#1e40af' : '#065f46'};">
+                        ${emp.zona}
+                    </span>
+                    <h3 style="font-weight: bold; font-size: 15px; margin-top: 6px; margin-bottom: 4px; color: #0f172a;">${emp.nome}</h3>
+                    <p style="font-size: 12px; color: #475569; margin-bottom: 8px; line-height: 1.4;">${emp.descricao}</p>
+                    <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">📍 ${emp.endereco}, ${emp.bairro}</p>
+                    ${emp.telefone ? `<p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">📞 ${emp.telefone}</p>` : ''}
+                    <div style="display: flex; gap: 6px; margin-top: 8px;">
+                        <a href="/empreendimento/${emp.id}/" target="_blank" style="flex: 1; text-align: center; background-color: #166534; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold;">Ver Detalhes</a>
+                        ${emp.whatsapp ? `<a href="${emp.whatsapp}" target="_blank" style="background-color: #16a34a; color: white; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold;">WhatsApp</a>` : ''}
                     </div>
-                `);
+                </div>
+            `;
 
+            const marker = L.marker([emp.lat, emp.lng], { icon: icon }).bindPopup(popupContent);
+            markerGroup.addLayer(marker);
             markers[emp.id] = marker;
         });
 
-        // Função para filtrar por zona
+        // Ajustar zoom inicial aos pontos caso existam
+        if (empreendimentos.length > 0) {
+            map.fitBounds(markerGroup.getBounds(), { padding: [40, 40], maxZoom: 14 });
+        }
+
+        // Renderizar cards sincronizados
+        function renderCards(lista) {
+            const container = document.getElementById('cards-container');
+            if (lista.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full bg-white rounded-2xl p-8 text-center text-slate-500 border border-slate-200">
+                        Nenhum empreendimento cadastrado nesta zona.
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = lista.map(emp => `
+                <div class="bg-white rounded-2xl p-4 border border-slate-200 card-item cursor-pointer flex flex-col justify-between" onclick="focarNoPonto(${emp.id})">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${emp.zona_raw === 'rural' || emp.zona === 'Comunidade Rural' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}">
+                                ${emp.zona}
+                            </span>
+                            ${emp.categoria ? `<span class="text-[10px] text-slate-500">${emp.categoria}</span>` : ''}
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm mb-1 hover:text-green-700 transition">${emp.nome}</h4>
+                        <p class="text-xs text-slate-500 line-clamp-2">${emp.descricao}</p>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span class="text-slate-400">📍 ${emp.bairro}</span>
+                        <span class="font-bold text-green-700 hover:underline">Ver no mapa →</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Focar no ponto quando clica no card
+        function focarNoPonto(id) {
+            const emp = empreendimentos.find(e => e.id === id);
+            const marker = markers[id];
+            if (emp && marker) {
+                map.flyTo([emp.lat, emp.lng], 16, { duration: 1.2 });
+                setTimeout(() => marker.openPopup(), 1250);
+                document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Filtrar por Zona (Todos / Urbana / Rural)
         function filterByZona(zona) {
-            empreendimentos.forEach(emp => {
-                const marker = markers[emp.id];
-                if (zona === 'all') {
-                    marker.addTo(map);
-                } else if (zona === 'urbana' && emp.zona === 'Zona Urbana') {
-                    marker.addTo(map);
-                } else if (zona === 'rural' && emp.zona === 'Comunidade Rural') {
-                    marker.addTo(map);
+            // Atualizar botões
+            const botoes = {
+                all: document.getElementById('btn-filtro-all'),
+                urbana: document.getElementById('btn-filtro-urbana'),
+                rural: document.getElementById('btn-filtro-rural')
+            };
+
+            Object.entries(botoes).forEach(([k, btn]) => {
+                if (k === zona) {
+                    btn.className = 'filter-zona-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-green-700 text-white shadow-sm ring-2 ring-green-600';
                 } else {
-                    map.removeLayer(marker);
+                    btn.className = 'filter-zona-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200';
                 }
             });
+
+            const visiveis = [];
+            const subBounds = L.featureGroup();
+
+            empreendimentos.forEach(emp => {
+                const marker = markers[emp.id];
+                const isRural = (emp.zona_raw === 'rural' || emp.zona === 'Comunidade Rural');
+
+                let match = false;
+                if (zona === 'all') match = true;
+                else if (zona === 'urbana' && !isRural) match = true;
+                else if (zona === 'rural' && isRural) match = true;
+
+                if (match) {
+                    if (!map.hasLayer(marker)) marker.addTo(map);
+                    subBounds.addLayer(marker);
+                    visiveis.push(emp);
+                } else {
+                    if (map.hasLayer(marker)) map.removeLayer(marker);
+                }
+            });
+
+            // Atualizar rótulo
+            const label = document.getElementById('label-exibindo');
+            if (zona === 'all') label.textContent = `Exibindo todos os ${visiveis.length} pontos`;
+            else if (zona === 'urbana') label.textContent = `Exibindo ${visiveis.length} pontos da Zona Urbana`;
+            else label.textContent = `Exibindo ${visiveis.length} pontos de Comunidade Rural`;
+
+            // Atualizar cards
+            renderCards(visiveis);
+
+            // Ajustar mapa
+            if (visiveis.length > 0) {
+                map.fitBounds(subBounds.getBounds(), { padding: [40, 40], maxZoom: 15 });
+            }
         }
+
+        // Inicializar cards
+        renderCards(empreendimentos);
     </script>
 </body>
 </html>

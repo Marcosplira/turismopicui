@@ -165,3 +165,72 @@ class FotoEmpreendimento(models.Model):
 
     def __str__(self):
         return f"Foto de {self.empreendimento.nome}"
+
+
+class Depoimento(models.Model):
+    nome = models.CharField(max_length=150, verbose_name="Nome do Empreendedor")
+    ramo_atividade = models.CharField(
+        max_length=150,
+        verbose_name="Ramo / Atividade",
+        help_text="Ex: Restaurante, Artesanato, Pousada, Guiamento Ecológico",
+    )
+    depoimento = models.TextField(
+        verbose_name="Depoimento / Relato",
+        help_text="Texto do depoimento do empreendedor sobre a plataforma",
+    )
+    foto = models.ImageField(
+        upload_to="depoimentos/",
+        blank=True,
+        null=True,
+        verbose_name="Foto do Empreendedor",
+        help_text="Upload direto da foto de perfil",
+    )
+    avatar_url = models.CharField(
+        max_length=500,
+        blank=True,
+        verbose_name="URL da Foto / Avatar",
+        help_text="Link web da foto (usado caso não faça upload de arquivo)",
+    )
+    estrelas = models.PositiveSmallIntegerField(
+        default=5,
+        verbose_name="Avaliação (Estrelas)",
+        help_text="Nota de 1 a 5 estrelas",
+    )
+    ativo = models.BooleanField(
+        default=True,
+        verbose_name="Ativo na Home",
+        help_text="Marque para exibir na página inicial",
+    )
+    ordem = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Ordem de Exibição",
+        help_text="Ordem crescente (menor número aparece primeiro)",
+    )
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Data de Cadastro",
+    )
+
+    class Meta:
+        verbose_name = "Depoimento"
+        verbose_name_plural = "Depoimentos"
+        ordering = ["ordem", "-data_criacao"]
+
+    def __str__(self):
+        return f"{self.nome} ({self.ramo_atividade})"
+
+    @property
+    def foto_url(self):
+        if self.foto:
+            try:
+                return self.foto.url
+            except Exception:
+                pass
+        if self.avatar_url:
+            return self.avatar_url
+        return ""
+
+    @property
+    def estrelas_display(self):
+        qtd = min(max(self.estrelas or 5, 1), 5)
+        return "★" * qtd

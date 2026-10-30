@@ -220,6 +220,19 @@
         </div>
     </main>
 
+    <footer class="bg-green-800 text-white mt-12">
+        <div class="max-w-6xl mx-auto px-4 py-6 text-center text-sm">
+            <p>Turismo de Picuí - Prefeitura Municipal de Picuí</p>
+            <div class="flex flex-wrap justify-center gap-5 mt-3 text-green-100 text-xs">
+                <a href="https://www.picui.pb.gov.br/" target="_blank" class="hover:text-white underline">Site da Prefeitura</a>
+                <a href="{% url 'sobre' %}" class="hover:text-white underline">Sobre o projeto</a>
+                <a href="{% url 'catalogo' %}" class="hover:text-white underline">Guia Turístico</a>
+                <a href="{% url 'privacidade' %}" class="hover:text-white underline">Aviso de privacidade</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'cadastro/scroll-reveal.js' %}"></script>
     <script>
         function changeMainImage(url, element) {
             const mainImage = document.getElementById('mainImage');

@@ -14,7 +14,7 @@ from django.views.decorators.http import require_GET
 from django.db.models import Count, Q
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import Empreendimento, FotoEmpreendimento, Categoria
+from .models import Empreendimento, FotoEmpreendimento, Categoria, Depoimento
 from .forms import EmpreendimentoForm
 
 
@@ -93,8 +93,15 @@ def home(request):
         "-data_cadastro"
     )[:6]
     total = Empreendimento.objects.filter(status="aprovado").count()
+    depoimentos = Depoimento.objects.filter(ativo=True).order_by("ordem", "-data_criacao")
     return render(
-        request, "cadastro/home.html", {"destaques": destaques, "total": total}
+        request,
+        "cadastro/home.html",
+        {
+            "destaques": destaques,
+            "total": total,
+            "depoimentos": depoimentos,
+        },
     )
 
 
@@ -115,7 +122,38 @@ def catalogo(request):
         )
 
     if categoria_selecionada:
-        empreendimentos = empreendimentos.filter(categorias__slug=categoria_selecionada)
+        cat_lower = categoria_selecionada.lower()
+        if cat_lower == "gastronomia":
+            empreendimentos = empreendimentos.filter(
+                Q(categorias__slug="gastronomia")
+                | Q(categorias__slug__icontains="gastronomia")
+                | Q(categorias__slug__icontains="restaurante")
+                | Q(categorias__slug__icontains="bar")
+                | Q(categorias__slug__icontains="lanchonete")
+            )
+        elif cat_lower == "hospedagem":
+            empreendimentos = empreendimentos.filter(
+                Q(categorias__slug="hospedagem")
+                | Q(categorias__slug__icontains="hospedagem")
+                | Q(categorias__slug__icontains="hotel")
+                | Q(categorias__slug__icontains="pousada")
+            )
+        elif cat_lower in ("atrativo", "atrativos"):
+            empreendimentos = empreendimentos.filter(
+                Q(categorias__slug__icontains="atrativo")
+                | Q(categorias__slug__icontains="turismo-de-aventura")
+                | Q(categorias__slug__icontains="turismo-rural")
+            )
+        elif cat_lower in ("evento", "eventos"):
+            empreendimentos = empreendimentos.filter(
+                Q(categorias__slug__icontains="evento")
+            )
+        elif cat_lower == "artesanato":
+            empreendimentos = empreendimentos.filter(
+                Q(categorias__slug__icontains="artesanato")
+            )
+        else:
+            empreendimentos = empreendimentos.filter(categorias__slug=categoria_selecionada)
 
     if zona_selecionada:
         empreendimentos = empreendimentos.filter(zona=zona_selecionada)
@@ -180,7 +218,7 @@ def dashboard_gerente(request):
     recentes = (
         Empreendimento.objects.select_related("proprietario")
         .prefetch_related("categorias")
-        .order_by("-data_cadastro")[:8]
+        .order_by("-data_cadastro")[:50]
     )
     categoria_summary = list(
         Categoria.objects.annotate(total=Count("empreendimentos")).order_by(
@@ -459,6 +497,44 @@ def _resposta_chatbot(mensagem):
         )
 
     # ==========================================================
+    # GEODIVERSIDADE / GEOTURISMO / ATRATIVOS NATURAIS
+    # ==========================================================
+    if any(
+        p in texto
+        for p in [
+            "geodiversidade",
+            "geoturismo",
+            "saco do inferninho",
+            "serra do pedro",
+            "cachoeira do pedro",
+            "rochas",
+            "vulcão",
+            "vulcao",
+            "basalto",
+            "uepb",
+            "geologia",
+            "geossítio",
+            "geossitio",
+            "serra dos brandões",
+            "trilha",
+            "atrativo natural",
+            "natureza",
+        ]
+    ):
+        return (
+            "Picuí possui uma geodiversidade raríssima no Brasil! 🌋⛰️ "
+            "Pesquisas científicas da UEPB (V SGFNE) destacam que o município conta com os três tipos "
+            "de rochas (magmáticas, metamórficas e sedimentares). "
+            "Entre os principais geossítios estão:\n\n"
+            "• Serra do Pedro / Cachoeira do Pedro: sítio arqueológico com pinturas rupestres, "
+            "micaxistos da Formação Seridó e mirante panorâmico.\n"
+            "• Saco do Inferninho: impressionante plug vulcânico de 150m de altura composto por fragmentos "
+            "de basalto negro do antigo Magmatismo Macau.\n"
+            "• Mirante da Serra dos Brandões: vista espetacular de 360° da caatinga e relevo do Seridó.\n\n"
+            "Você pode explorar e traçar rotas para esses pontos no nosso Mapa Turístico!"
+        )
+
+    # ==========================================================
     # CONTATO / AJUDA
     # ==========================================================
     if any(
@@ -553,14 +629,63 @@ def sobre(request):
 
 
 def mapa_turistico(request):
-    """Página com mapa interativo de todos os empreendimentos."""
+    """Página com mapa interativo de todos os empreendimentos e geossítios."""
     empreendimentos = Empreendimento.objects.filter(
         status="aprovado"
     ).prefetch_related("fotos", "categorias")
 
-    # Converter para JSON para usar no JavaScript
+    # Coordenadas georreferenciadas e pontos científicos do V SGFNE / UEPB (2024)
+    COORDENADAS_ESPECIFICAS = {
+        "serra do pedro": (-6.54242, -36.39648, True, "Geossítio Arqueológico e Formação Seridó (Pesquisa UEPB)"),
+        "cachoeira do pedro": (-6.54242, -36.39648, True, "Geossítio Arqueológico e Formação Seridó (Pesquisa UEPB)"),
+        "saco do inferninho": (-6.36170, -36.31121, True, "Plug Vulcânico de Basalto - Magmatismo Macau (Pesquisa UEPB)"),
+        "serra dos brandões": (-6.4715, -36.2980, True, "Mirante Panorâmico 360° e Ecoturismo"),
+        "igreja matriz": (-6.5115, -36.3475, False, ""),
+        "chero do sertão": (-6.5132, -36.3490, False, ""),
+        "portal do seridó": (-6.5085, -36.3440, False, ""),
+        "arte da terra": (-6.5100, -36.3460, False, ""),
+        "recanto das serras": (-6.5350, -36.3200, False, ""),
+        "bodega do seridó": (-6.5122, -36.3482, False, ""),
+    }
+
+    # Converter para JSON para usar no JavaScript com coordenadas geográficas de Picuí
     empreendimentos_data = []
     for emp in empreendimentos:
+        nome_lower = emp.nome.lower()
+        bairro_lower = emp.bairro_comunidade.lower()
+        lat = None
+        lng = None
+        is_geossitio = False
+        geologia_info = ""
+
+        # Verificar se coincide com pontos georreferenciados específicos
+        for chave, (c_lat, c_lng, c_geo, c_desc) in COORDENADAS_ESPECIFICAS.items():
+            if chave in nome_lower or chave in bairro_lower:
+                lat = c_lat
+                lng = c_lng
+                is_geossitio = c_geo
+                geologia_info = c_desc
+                break
+
+        if lat is None or lng is None:
+            # Deslocamento determinístico baseado na chave primária para dispersão dos pontos
+            offset_lat = ((emp.pk * 7 + 3) % 17 - 8) * 0.0018
+            offset_lng = ((emp.pk * 13 + 5) % 17 - 8) * 0.0018
+
+            if emp.zona == "rural":
+                base_lat = -6.4850
+                base_lng = -36.3250
+                lat = base_lat + offset_lat * 2.5
+                lng = base_lng + offset_lng * 2.5
+            else:
+                base_lat = -6.5115
+                base_lng = -36.3475
+                lat = base_lat + offset_lat
+                lng = base_lng + offset_lng
+
+        primeira_foto = emp.fotos.first()
+        foto_url = primeira_foto.imagem.url if primeira_foto else ""
+
         empreendimentos_data.append({
             'id': emp.pk,
             'nome': emp.nome,
@@ -568,11 +693,15 @@ def mapa_turistico(request):
             'endereco': emp.endereco,
             'bairro': emp.bairro_comunidade,
             'zona': emp.get_zona_display(),
+            'zona_raw': emp.zona,
             'telefone': emp.telefone,
             'whatsapp': emp.whatsapp_url,
             'categoria': emp.categorias.first().nome if emp.categorias.exists() else '',
-            'lat': -6.4767,  # Coordenadas aproximadas de Picuí (seria ideal ter lat/long reais)
-            'lng': -36.3567,
+            'foto_url': foto_url,
+            'lat': round(lat, 5),
+            'lng': round(lng, 5),
+            'is_geossitio': is_geossitio,
+            'geologia_info': geologia_info,
         })
 
     return render(
@@ -740,7 +869,27 @@ def aprovar_empreendimento_rapido(request, pk):
     emp = get_object_or_404(Empreendimento, pk=pk)
     emp.status = "aprovado"
     emp.save(update_fields=["status", "data_atualizacao"])
-    messages.success(request, f"Empreendimento '{emp.nome}' aprovado com sucesso e publicado no Guia!")
+    msg = f"Empreendimento '{emp.nome}' aprovado com sucesso e publicado no Guia!"
+    messages.success(request, msg)
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest" or request.GET.get("format") == "json":
+        aprovados = Empreendimento.objects.filter(status="aprovado").count()
+        pendentes = Empreendimento.objects.filter(status="pendente").count()
+        reprovados = Empreendimento.objects.filter(status="reprovado").count()
+        total = Empreendimento.objects.count()
+        taxa = round((aprovados / total * 100), 1) if total > 0 else 0
+        return JsonResponse({
+            "status": "success",
+            "message": msg,
+            "novo_status": "aprovado",
+            "emp_id": emp.pk,
+            "emp_nome": emp.nome,
+            "aprovados": aprovados,
+            "pendentes": pendentes,
+            "reprovados": reprovados,
+            "total": total,
+            "taxa_aprovacao": taxa,
+        })
     return redirect("dashboard_gerente")
 
 
@@ -750,7 +899,27 @@ def reprovar_empreendimento_rapido(request, pk):
     emp = get_object_or_404(Empreendimento, pk=pk)
     emp.status = "reprovado"
     emp.save(update_fields=["status", "data_atualizacao"])
-    messages.warning(request, f"Empreendimento '{emp.nome}' marcado como reprovado.")
+    msg = f"Empreendimento '{emp.nome}' marcado como reprovado."
+    messages.warning(request, msg)
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest" or request.GET.get("format") == "json":
+        aprovados = Empreendimento.objects.filter(status="aprovado").count()
+        pendentes = Empreendimento.objects.filter(status="pendente").count()
+        reprovados = Empreendimento.objects.filter(status="reprovado").count()
+        total = Empreendimento.objects.count()
+        taxa = round((aprovados / total * 100), 1) if total > 0 else 0
+        return JsonResponse({
+            "status": "success",
+            "message": msg,
+            "novo_status": "reprovado",
+            "emp_id": emp.pk,
+            "emp_nome": emp.nome,
+            "aprovados": aprovados,
+            "pendentes": pendentes,
+            "reprovados": reprovados,
+            "total": total,
+            "taxa_aprovacao": taxa,
+        })
     return redirect("dashboard_gerente")
 
 

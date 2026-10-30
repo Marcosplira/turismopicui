@@ -4,7 +4,7 @@ from django.contrib.messages.api import MessageFailure
 from django.core.mail import send_mail
 from django.utils.html import format_html
 
-from .models import Empreendimento, FotoEmpreendimento, Categoria
+from .models import Empreendimento, FotoEmpreendimento, Categoria, Depoimento
 
 admin.site.site_header = "Gestão do Turismo de Picuí"
 admin.site.site_title = "Painel Turismo de Picuí"
@@ -232,3 +232,70 @@ class CategoriaAdmin(admin.ModelAdmin):
     }
 
     ordering = ("nome",)
+
+
+@admin.register(Depoimento)
+class DepoimentoAdmin(admin.ModelAdmin):
+    list_display = (
+        "preview",
+        "nome",
+        "ramo_atividade",
+        "estrelas_display",
+        "ativo",
+        "ordem",
+        "data_criacao",
+    )
+    list_editable = ("ativo", "ordem")
+    list_filter = ("ativo", "estrelas")
+    search_fields = ("nome", "ramo_atividade", "depoimento")
+    ordering = ("ordem", "-data_criacao")
+
+    fieldsets = (
+        (
+            "Empreendedor",
+            {
+                "fields": (
+                    "nome",
+                    "ramo_atividade",
+                    "foto",
+                    "avatar_url",
+                )
+            },
+        ),
+        (
+            "Conteúdo do Depoimento",
+            {
+                "fields": (
+                    "depoimento",
+                    "estrelas",
+                )
+            },
+        ),
+        (
+            "Publicação",
+            {
+                "fields": (
+                    "ativo",
+                    "ordem",
+                )
+            },
+        ),
+    )
+
+    @admin.display(description="Foto")
+    def preview(self, obj):
+        url = obj.foto_url
+        if url:
+            return format_html(
+                '<img src="{}" style="width:42px;height:42px;object-fit:cover;border-radius:50%;border:2px solid #16a34a;" />',
+                url,
+            )
+        iniciais = "".join(p[0] for p in obj.nome.split()[:2]).upper() if obj.nome else "DP"
+        return format_html(
+            '<div style="width:42px;height:42px;border-radius:50%;background:#16a34a;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;">{}</div>',
+            iniciais,
+        )
+
+    @admin.display(description="Avaliação")
+    def estrelas_display(self, obj):
+        return format_html('<span style="color:#eab308;font-size:15px;">{}</span>', "★" * min(max(obj.estrelas or 5, 1), 5))

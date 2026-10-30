@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard do gerente</title>
+    <meta name="theme-color" content="#166534">
+    <title>Dashboard do gerente - Turismo de Picuí</title>
+    <link rel="icon" type="image/png" href="{% static 'cadastro/imagem/app-icon-192.png' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -12,45 +14,110 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .card-hover { transition: all 0.25s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08); }
+        .btn-hover { transition: all 0.2s ease; }
+        .btn-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+        .btn-hover:active { transform: translateY(0); }
+        
+        /* Toast notification animations */
+        #toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
         }
-        .card-hover {
+        .toast-item {
+            pointer-events: auto;
+            min-width: 300px;
+            max-width: 420px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             transition: all 0.3s ease;
         }
-        .card-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        .toast-item.hide {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
         }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800">
-    <header class="bg-green-700 text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-                <p class="text-green-100 text-sm uppercase tracking-[0.2em]">Turismo de Picuí</p>
-                <h1 class="text-3xl font-bold mt-1">Dashboard do gerente</h1>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container"></div>
+
+    <header class="bg-green-700 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <a href="{% url 'home' %}" class="bg-white rounded-lg p-1.5 shadow-sm inline-block">
+                    <img src="{% static 'cadastro/imagem/logo-picui.png' %}" alt="Picuí" class="h-9 w-auto object-contain">
+                </a>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-green-200 text-xs uppercase tracking-widest font-semibold">Prefeitura de Picuí</span>
+                        {% if pendentes > 0 %}
+                        <div id="header-notif-pill" class="relative inline-flex items-center gap-1.5 bg-amber-500/30 border border-amber-300 text-amber-100 px-2.5 py-0.5 rounded-full text-xs font-bold animate-pulse">
+                            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                            <span><span id="header-pendentes-count">{{ pendentes }}</span> pendente{{ pendentes|pluralize }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Dashboard do gerente</h1>
+                </div>
             </div>
-            <div class="flex gap-3 flex-wrap">
-                <a href="{% url 'relatorio_executivo' %}" target="_blank" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 border border-white/30 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+            <div class="flex gap-2.5 flex-wrap items-center">
+                <a href="{% url 'relatorio_executivo' %}" target="_blank" class="bg-white/20 hover:bg-white/30 text-white text-sm font-semibold px-4 py-2 rounded-xl flex items-center gap-2 border border-white/30 transition btn-hover" title="Gerar relatório institucional para impressão">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                     </svg>
                     Relatório Oficial (PDF)
                 </a>
-                <a href="{% url 'exportar_csv' %}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{% url 'exportar_csv' %}" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2 rounded-xl flex items-center gap-2 transition btn-hover shadow" title="Baixar planilha para Excel">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    Exportar Planilha (CSV)
+                    Planilha (CSV)
                 </a>
-                <a href="{% url 'admin:index' %}" class="bg-white text-green-800 font-semibold px-4 py-2 rounded-lg hover:bg-green-50 transition">Painel Admin</a>
-                <a href="{% url 'home' %}" class="border border-white/40 text-white px-4 py-2 rounded-lg hover:bg-white/10 transition">Página inicial</a>
+                <a href="{% url 'admin:index' %}" class="bg-white text-green-800 text-sm font-semibold px-4 py-2 rounded-xl hover:bg-green-50 transition btn-hover shadow">Admin</a>
+                <a href="{% url 'home' %}" class="border border-white/40 text-white text-sm px-3.5 py-2 rounded-xl hover:bg-white/10 transition">Página inicial</a>
             </div>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-8">
+
+        <!-- ALERTA GERENCIAL / NOTIFICAÇÃO DE NOVOS CADASTROS -->
+        <div id="banner-pendencias" class="{% if pendentes == 0 %}hidden{% endif %} bg-gradient-to-r from-amber-600 via-amber-500 to-orange-500 text-white p-5 rounded-2xl shadow-lg mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 animate-fade-in border border-amber-300">
+            <div class="flex items-center gap-4">
+                <div class="bg-white/20 p-3 rounded-2xl backdrop-blur-sm flex items-center justify-center">
+                    <svg class="w-7 h-7 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                </div>
+                <div>
+                    <span class="inline-block bg-white/20 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-1">Ação Requerida</span>
+                    <h3 class="font-bold text-lg leading-snug">Novos Cadastros Aguardando Análise</h3>
+                    <p class="text-amber-100 text-sm mt-0.5">
+                        Existem <strong id="banner-count" class="font-extrabold text-white underline">{{ pendentes }}</strong> cadastro(s) pendente(s) aguardando homologação para publicação no Guia Turístico de Picuí.
+                    </p>
+                </div>
+            </div>
+            <button onclick="filterRegistros('pendente'); scrollToCadastros();" class="bg-white text-amber-900 hover:bg-amber-50 font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all hover:scale-105 whitespace-nowrap self-start md:self-center flex items-center gap-2">
+                Revisar Pendentes Agora
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+        </div>
+
         {% if messages %}
             <div class="mb-6 space-y-2">
                 {% for message in messages %}
@@ -61,12 +128,13 @@
             </div>
         {% endif %}
 
+        <!-- CARDS DE ESTATÍSTICAS PRINCIPAIS -->
         <section class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 card-hover animate-fade-in" style="animation-delay: 0ms;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-slate-500 font-semibold uppercase">Total Geral</p>
-                        <p class="text-3xl font-bold mt-2 text-slate-800">{{ total }}</p>
+                        <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Geral</p>
+                        <p id="stat-total" class="text-3xl font-extrabold mt-1 text-slate-800">{{ total }}</p>
                     </div>
                     <div class="bg-slate-100 rounded-xl p-3">
                         <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,11 +143,12 @@
                     </div>
                 </div>
             </div>
+
             <div class="bg-emerald-50 rounded-2xl shadow-sm border border-emerald-200 p-5 card-hover animate-fade-in" style="animation-delay: 50ms;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-emerald-700 font-semibold uppercase">Aprovados</p>
-                        <p class="text-3xl font-bold mt-2 text-emerald-800">{{ aprovados }}</p>
+                        <p class="text-xs text-emerald-700 font-semibold uppercase tracking-wider">Aprovados</p>
+                        <p id="stat-aprovados" class="text-3xl font-extrabold mt-1 text-emerald-800">{{ aprovados }}</p>
                     </div>
                     <div class="bg-emerald-100 rounded-xl p-3">
                         <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,11 +157,12 @@
                     </div>
                 </div>
             </div>
+
             <div class="bg-amber-50 rounded-2xl shadow-sm border border-amber-200 p-5 card-hover animate-fade-in" style="animation-delay: 100ms;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-amber-700 font-semibold uppercase">Pendentes</p>
-                        <p class="text-3xl font-bold mt-2 text-amber-800">{{ pendentes }}</p>
+                        <p class="text-xs text-amber-700 font-semibold uppercase tracking-wider">Pendentes</p>
+                        <p id="stat-pendentes" class="text-3xl font-extrabold mt-1 text-amber-800">{{ pendentes }}</p>
                     </div>
                     <div class="bg-amber-100 rounded-xl p-3">
                         <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,11 +171,12 @@
                     </div>
                 </div>
             </div>
+
             <div class="bg-rose-50 rounded-2xl shadow-sm border border-rose-200 p-5 card-hover animate-fade-in" style="animation-delay: 150ms;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-rose-700 font-semibold uppercase">Reprovados</p>
-                        <p class="text-3xl font-bold mt-2 text-rose-800">{{ reprovados }}</p>
+                        <p class="text-xs text-rose-700 font-semibold uppercase tracking-wider">Reprovados</p>
+                        <p id="stat-reprovados" class="text-3xl font-extrabold mt-1 text-rose-800">{{ reprovados }}</p>
                     </div>
                     <div class="bg-rose-100 rounded-xl p-3">
                         <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,11 +185,12 @@
                     </div>
                 </div>
             </div>
+
             <div class="bg-blue-50 rounded-2xl shadow-sm border border-blue-200 p-5 card-hover animate-fade-in col-span-2 md:col-span-1" style="animation-delay: 200ms;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-blue-700 font-semibold uppercase">Com Cadastur</p>
-                        <p class="text-3xl font-bold mt-2 text-blue-800">{{ com_cadastur }}</p>
+                        <p class="text-xs text-blue-700 font-semibold uppercase tracking-wider">Com Cadastur</p>
+                        <p id="stat-cadastur" class="text-3xl font-extrabold mt-1 text-blue-800">{{ com_cadastur }}</p>
                     </div>
                     <div class="bg-blue-100 rounded-xl p-3">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,255 +203,332 @@
 
         {% if alertas %}
         <section class="mb-8">
-            <h2 class="text-xl font-bold mb-4">Alertas gerenciais</h2>
+            <h2 class="text-lg font-bold mb-3 text-slate-800 flex items-center gap-2">
+                <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Alertas gerenciais
+            </h2>
             <div class="grid md:grid-cols-3 gap-4">
                 {% for alerta in alertas %}
-                    <div class="rounded-2xl border p-4 {% if alerta.tipo == 'warning' %}bg-amber-50 border-amber-200{% elif alerta.tipo == 'danger' %}bg-rose-50 border-rose-200{% else %}bg-sky-50 border-sky-200{% endif %}">
-                        <p class="font-bold text-slate-800">{{ alerta.titulo }}</p>
-                        <p class="mt-2 text-sm text-slate-700">{{ alerta.descricao }}</p>
+                    <div class="rounded-2xl border p-4 shadow-sm {% if alerta.tipo == 'warning' %}bg-amber-50 border-amber-200 text-amber-900{% elif alerta.tipo == 'danger' %}bg-rose-50 border-rose-200 text-rose-900{% else %}bg-sky-50 border-sky-200 text-sky-900{% endif %}">
+                        <p class="font-bold text-sm">{{ alerta.titulo }}</p>
+                        <p class="mt-1 text-xs opacity-90">{{ alerta.descricao }}</p>
                     </div>
                 {% endfor %}
             </div>
         </section>
         {% endif %}
 
-        <section class="grid lg:grid-cols-[1.6fr_1fr] gap-6">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="px-6 py-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div>
-                        <h2 class="text-xl font-bold">Gestão dos Cadastros</h2>
-                        <span class="text-xs text-slate-500">Ações rápidas de análise e homologação</span>
+        <!-- SEÇÃO PRINCIPAL DE GESTÃO E EFICIÊNCIA -->
+        <section id="secao-cadastros" class="grid lg:grid-cols-[1.65fr_1fr] gap-6">
+            
+            <!-- LISTA DE CADASTROS COM AÇÃO RÁPIDA -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <div class="px-6 py-5 border-b border-slate-200 flex flex-col gap-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900">Gestão dos Cadastros</h2>
+                            <p class="text-xs text-slate-500">Ações rápidas de homologação em 1 clique</p>
+                        </div>
+                        
+                        <!-- FILTRO POR STATUS -->
+                        <div class="flex items-center gap-1.5 text-xs font-semibold bg-slate-100 p-1 rounded-xl">
+                            <button onclick="filterRegistros('todos')" class="px-3 py-1.5 rounded-lg bg-slate-800 text-white filter-btn transition" data-target="todos">Todos</button>
+                            <button onclick="filterRegistros('pendente')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 filter-btn transition flex items-center gap-1" data-target="pendente">
+                                Pendentes
+                                <span id="tab-pendentes-badge" class="bg-amber-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">{{ pendentes }}</span>
+                            </button>
+                            <button onclick="filterRegistros('aprovado')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 filter-btn transition" data-target="aprovado">Aprovados</button>
+                            <button onclick="filterRegistros('reprovado')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 filter-btn transition" data-target="reprovado">Reprovados</button>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-1.5 text-xs font-semibold">
-                        <button onclick="filterRegistros('todos')" class="px-3 py-1.5 rounded-lg bg-slate-800 text-white filter-btn" data-target="todos">Todos</button>
-                        <button onclick="filterRegistros('pendente')" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 filter-btn" data-target="pendente">Pendentes</button>
-                        <button onclick="filterRegistros('aprovado')" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 filter-btn" data-target="aprovado">Aprovados</button>
+
+                    <!-- BUSCA RÁPIDA EM TEMPO REAL -->
+                    <div class="relative">
+                        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <input type="text" id="filtro-busca-rapida" onkeyup="buscarRegistrosAoVivo(this.value)" placeholder="Filtrar por nome, responsável ou telefone..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 transition">
                     </div>
                 </div>
 
-                <div class="divide-y divide-slate-100" id="lista-cadastros">
+                <div class="divide-y divide-slate-100 flex-1 overflow-y-auto max-h-[580px]" id="lista-cadastros">
                     {% for empreendimento in recentes %}
-                        <div class="px-6 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 registro-item" data-status="{{ empreendimento.status }}">
+                        <div class="px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 registro-item transition-colors hover:bg-slate-50/80" 
+                             id="item-{{ empreendimento.pk }}" 
+                             data-status="{{ empreendimento.status }}"
+                             data-nome="{{ empreendimento.nome|lower }}"
+                             data-resp="{{ empreendimento.responsavel|lower }}"
+                             data-tel="{{ empreendimento.telefone }}">
                             <div class="space-y-1">
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-2 flex-wrap">
                                     <a href="{% url 'detalhe_empreendimento' empreendimento.pk %}" class="font-bold text-base text-slate-900 hover:text-green-700 transition">
                                         {{ empreendimento.nome }}
                                     </a>
                                     {% if empreendimento.possui_cadastur %}
-                                        <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded">Cadastur</span>
+                                        <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full">Cadastur</span>
                                     {% endif %}
+                                    <span class="text-[10px] bg-slate-100 text-slate-600 font-medium px-2 py-0.5 rounded-full">{{ empreendimento.get_zona_display }}</span>
                                 </div>
                                 <p class="text-xs text-slate-500">
-                                    {{ empreendimento.responsavel }} · {{ empreendimento.telefone }} · {{ empreendimento.data_cadastro|date:"d/m/Y H:i" }}
+                                    <span class="font-medium text-slate-700">{{ empreendimento.responsavel }}</span> · {{ empreendimento.telefone }} · {{ empreendimento.data_cadastro|date:"d/m/Y H:i" }}
                                 </p>
                             </div>
 
-                            <div class="flex flex-wrap items-center gap-2">
+                            <!-- AÇÕES RÁPIDAS -->
+                            <div class="flex flex-wrap items-center gap-2 self-start sm:self-center" id="acoes-{{ empreendimento.pk }}">
                                 {% if empreendimento.status == 'aprovado' %}
-                                    <span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-full text-xs font-bold">Aprovado</span>
-                                    <a href="{% url 'selo_display_balcao' empreendimento.pk %}" target="_blank" class="text-xs bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold px-2 py-1 rounded-lg hover:bg-emerald-100 transition" title="Imprimir Placa de Balcão e Selo Oficial">Placa / Selo</a>
-                                    <a href="{% url 'reprovar_rapido' empreendimento.pk %}" onclick="return confirm('Deseja realmente reprovar este empreendimento?');" class="text-xs text-rose-600 hover:underline px-2 py-1">Reprovar</a>
+                                    <span class="status-badge bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aprovado
+                                    </span>
+                                    <a href="{% url 'selo_display_balcao' empreendimento.pk %}" target="_blank" class="text-xs bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold px-2.5 py-1 rounded-lg hover:bg-emerald-100 transition shadow-sm" title="Imprimir Placa de Balcão e Selo Oficial">
+                                        Placa / Selo
+                                    </a>
+                                    <button onclick="executarAcaoRapida('{% url 'reprovar_rapido' empreendimento.pk %}', {{ empreendimento.pk }}, 'reprovar')" class="text-xs text-rose-600 hover:text-rose-800 hover:bg-rose-50 px-2 py-1 rounded transition" title="Reprovar cadastro">
+                                        Reprovar
+                                    </button>
                                 {% elif empreendimento.status == 'reprovado' %}
-                                    <span class="bg-rose-100 text-rose-800 border border-rose-300 px-2.5 py-1 rounded-full text-xs font-bold">Reprovado</span>
-                                    <a href="{% url 'aprovar_rapido' empreendimento.pk %}" onclick="return confirm('Aprovar e publicar no Guia?');" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-2.5 py-1 rounded-lg">Aprovar</a>
+                                    <span class="status-badge bg-rose-100 text-rose-800 border border-rose-300 px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Reprovado
+                                    </span>
+                                    <button onclick="executarAcaoRapida('{% url 'aprovar_rapido' empreendimento.pk %}', {{ empreendimento.pk }}, 'aprovar')" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1 rounded-lg shadow-sm transition">
+                                        ✓ Reaprovar
+                                    </button>
                                 {% else %}
-                                    <span class="bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded-full text-xs font-bold">Pendente</span>
-                                    <a href="{% url 'aprovar_rapido' empreendimento.pk %}" onclick="return confirm('Aprovar e publicar no Guia imediatamente?');" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm transition">
+                                    <span class="status-badge bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Pendente
+                                    </span>
+                                    <button onclick="executarAcaoRapida('{% url 'aprovar_rapido' empreendimento.pk %}', {{ empreendimento.pk }}, 'aprovar')" class="btn-aprovar text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm transition hover:scale-105" title="Aprovar e publicar no Guia imediatamente">
                                         ✓ Aprovar
-                                    </a>
-                                    <a href="{% url 'reprovar_rapido' empreendimento.pk %}" onclick="return confirm('Marcar como reprovado?');" class="text-xs bg-slate-200 hover:bg-rose-100 hover:text-rose-700 text-slate-700 font-semibold px-2.5 py-1.5 rounded-lg transition">
+                                    </button>
+                                    <button onclick="executarAcaoRapida('{% url 'reprovar_rapido' empreendimento.pk %}', {{ empreendimento.pk }}, 'reprovar')" class="btn-reprovar text-xs bg-slate-200 hover:bg-rose-100 hover:text-rose-700 text-slate-700 font-semibold px-2.5 py-1.5 rounded-lg transition" title="Reprovar este cadastro">
                                         ✗ Reprovar
-                                    </a>
+                                    </button>
                                 {% endif %}
 
-                                <a href="{% url 'admin:cadastro_empreendimento_change' empreendimento.pk %}" target="_blank" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold px-2.5 py-1.5 rounded-lg transition" title="Editar no Admin Completo">
+                                <a href="{% url 'admin:cadastro_empreendimento_change' empreendimento.pk %}" target="_blank" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold px-2.5 py-1 rounded-lg transition" title="Editar no Admin Geral">
                                     Editar
                                 </a>
                             </div>
                         </div>
                     {% empty %}
-                        <div class="px-6 py-8 text-center text-slate-500">Nenhum empreendimento cadastrado até o momento.</div>
+                        <div class="px-6 py-12 text-center text-slate-500">
+                            <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                            <p class="font-semibold text-slate-600">Nenhum empreendimento cadastrado até o momento.</p>
+                            <p class="text-xs text-slate-400 mt-1">Os cadastros realizados aparecerão aqui em tempo real.</p>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
 
-            <aside class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h2 class="text-xl font-bold mb-4">Eficiência Operacional</h2>
-                <div class="space-y-4 text-sm text-slate-600">
-                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="font-semibold text-slate-800 text-xs uppercase tracking-wider">Taxa de Aprovação</span>
-                            <span class="font-bold text-green-700 text-sm">{{ taxa_aprovacao }}%</span>
+            <!-- PAINEL LATERAL: EFICIÊNCIA OPERACIONAL & METAS -->
+            <aside class="space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h2 class="text-xl font-bold mb-4 text-slate-900">Eficiência Operacional</h2>
+                    <div class="space-y-4 text-sm text-slate-600">
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-semibold text-slate-800 text-xs uppercase tracking-wider">Taxa de Homologação</span>
+                                <span id="taxa-porcentagem" class="font-extrabold text-green-700 text-sm">{{ taxa_aprovacao }}%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 rounded-full h-3 mt-2 overflow-hidden">
+                                <div id="taxa-barra" class="bg-green-600 h-3 rounded-full transition-all duration-500" style="width: {{ taxa_aprovacao }}%;"></div>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2">
+                                <span id="taxa-texto-aprovados">{{ aprovados }}</span> de <span id="taxa-texto-total">{{ total }}</span> cadastros aprovados e no ar.
+                            </p>
                         </div>
-                        <div class="w-full bg-slate-200 rounded-full h-2.5 mt-2 overflow-hidden">
-                            <div class="bg-green-600 h-2.5 rounded-full" style="width: {{ taxa_aprovacao }}%;"></div>
+
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                            <span class="block font-semibold text-slate-800 text-xs uppercase tracking-wider">Formalização Turística</span>
+                            <p class="text-sm text-slate-700 mt-1">
+                                <strong>{{ com_cadastur }}</strong> empreendimentos possuem cadastro <strong>Cadastur</strong> ativo no Ministério do Turismo.
+                            </p>
                         </div>
-                        <p class="text-xs text-slate-500 mt-2">{{ aprovados }} aprovados de {{ total }} cadastrados.</p>
-                    </div>
 
-                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                        <span class="block font-semibold text-slate-800 text-xs uppercase tracking-wider">Formalização Turística</span>
-                        <p class="text-sm text-slate-700 mt-1"><strong>{{ com_cadastur }}</strong> empreendimentos possuem registro <strong>Cadastur</strong>.</p>
-                    </div>
-
-                    <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
-                        <span class="block font-semibold text-emerald-800 text-xs uppercase tracking-wider">Ações Prioritárias</span>
-                        <p class="text-xs text-slate-700 mt-1">Revisar os <strong>{{ pendentes }}</strong> cadastros pendentes e emitir o relatório executivo para o secretariado.</p>
+                        <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
+                            <span class="block font-semibold text-emerald-800 text-xs uppercase tracking-wider">Ações Prioritárias</span>
+                            <p class="text-xs text-slate-700 mt-1">
+                                Homologar os <strong id="aside-pendentes-count">{{ pendentes }}</strong> cadastros pendentes e emitir o relatório executivo oficial para apresentação.
+                            </p>
+                        </div>
                     </div>
                 </div>
+
+                <!-- ATALHOS RÁPIDOS PARA O GERENTE -->
+                <div class="bg-gradient-to-br from-green-800 to-emerald-900 text-white rounded-2xl p-6 shadow-md">
+                    <h3 class="font-bold text-lg mb-2">Acesso Rápido</h3>
+                    <p class="text-green-100 text-xs mb-4">Ferramentas de divulgação oficial e QR Code do Guia.</p>
+                    <div class="flex flex-col gap-2">
+                        <a href="{% url 'catalogo' %}" target="_blank" class="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition flex items-center justify-between">
+                            <span>Visualizar Guia Público</span>
+                            <span>→</span>
+                        </a>
+                        <a href="{% url 'mapa_turistico' %}" target="_blank" class="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition flex items-center justify-between">
+                            <span>Mapa Interativo</span>
+                            <span>→</span>
+                        </a>
+                        <a href="{% url 'cadastrar_empreendimento' %}" target="_blank" class="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl border border-white/20 transition flex items-center justify-between">
+                            <span>Novo Formulário de Cadastro</span>
+                            <span>+</span>
+                        </a>
+                    </div>
+                </div>
+            </aside>
         </section>
 
-        <section class="mt-8 grid lg:grid-cols-2 gap-6">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 card-hover animate-fade-in" style="animation-delay: 400ms;">
+        <!-- GRÁFICOS INTERATIVOS -->
+        <section class="mt-8 grid lg:grid-cols-2 gap-6 reveal-on-scroll">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 card-hover animate-fade-in" style="animation-delay: 300ms;">
                 <div class="flex items-center justify-between mb-5">
-                    <h3 class="text-xl font-bold">Distribuição por categoria</h3>
-                    <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Gráfico</span>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Distribuição por categoria</h3>
+                        <p class="text-xs text-slate-500">Volume de negócios em cada segmento</p>
+                    </div>
+                    <span class="text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full font-bold">Bar Chart</span>
                 </div>
-                <div class="h-64">
+                <div class="h-64 relative" id="container-grafico-categorias">
                     <canvas id="graficoCategorias"></canvas>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 card-hover animate-fade-in" style="animation-delay: 500ms;">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 card-hover animate-fade-in" style="animation-delay: 400ms;">
                 <div class="flex items-center justify-between mb-5">
-                    <h3 class="text-xl font-bold">Distribuição por zona</h3>
-                    <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Gráfico</span>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Distribuição por zona</h3>
+                        <p class="text-xs text-slate-500">Proporção Zona Urbana vs Rural</p>
+                    </div>
+                    <span class="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold">Pie Chart</span>
                 </div>
-                <div class="h-64">
+                <div class="h-64 relative" id="container-grafico-zonas">
                     <canvas id="graficoZonas"></canvas>
                 </div>
             </div>
         </section>
 
-        <section class="mt-8 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 card-hover animate-fade-in" style="animation-delay: 600ms;">
+        <section class="mt-6 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 card-hover animate-fade-in reveal-on-scroll" style="animation-delay: 500ms;">
             <div class="flex items-center justify-between mb-5">
-                <h3 class="text-xl font-bold">Visão geral de status</h3>
-                <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">Doughnut</span>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Visão Geral de Status</h3>
+                    <p class="text-xs text-slate-500">Homologação dos cadastros recebidos</p>
+                </div>
+                <span class="text-xs bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-bold">Doughnut</span>
             </div>
-            <div class="h-64">
+            <div class="h-64 relative" id="container-grafico-status">
                 <canvas id="graficoStatus"></canvas>
             </div>
         </section>
+
     </main>
 
+    <footer class="bg-slate-800 text-white py-6 mt-12 text-center text-xs">
+        <p>Prefeitura Municipal de Picuí - Secretaria de Turismo e Meio Ambiente</p>
+        <p class="text-slate-400 mt-1">Painel Gerencial de Monitoramento Turístico</p>
+    </footer>
+
+    <script src="{% static 'cadastro/scroll-reveal.js' %}"></script>
     <script>
-        // Dados dos gráficos
-        const categoriasData = {
-            labels: [{% for categoria in categoria_summary %}"{{ categoria.nome }}"{% if not forloop.last %},{% endif %}{% empty %}[]{% endfor %}],
-            data: [{% for categoria in categoria_summary %}{{ categoria.total }}{% if not forloop.last %},{% endif %}{% empty %}[]{% endfor %}]
-        };
+        // Dados dos gráficos recebidos do Django
+        const categoriasLabels = [{% for c in categoria_summary %}"{{ c.nome }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+        const categoriasTotals = [{% for c in categoria_summary %}{{ c.total }}{% if not forloop.last %},{% endif %}{% endfor %}];
 
-        const zonasData = {
-            labels: [{% for zona in zona_summary %}"{{ zona.label }}"{% if not forloop.last %},{% endif %}{% empty %}[]{% endfor %}],
-            data: [{% for zona in zona_summary %}{{ zona.total }}{% if not forloop.last %},{% endif %}{% empty %}[]{% endfor %}]
-        };
+        const zonasLabels = [{% for z in zona_summary %}"{{ z.label }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+        const zonasTotals = [{% for z in zona_summary %}{{ z.total }}{% if not forloop.last %},{% endif %}{% endfor %}];
 
-        const statusData = {
-            labels: ['Aprovados', 'Pendentes', 'Reprovados'],
-            data: [{{ aprovados }}, {{ pendentes }}, {{ reprovados }}]
-        };
+        let statusChartInstance = null;
 
-        // Gráfico de Categorias (Bar)
+        // 1. Gráfico de Categorias (Bar)
         const ctxCategorias = document.getElementById('graficoCategorias');
-        if (ctxCategorias && categoriasData.labels.length > 0) {
-            new Chart(ctxCategorias, {
-                type: 'bar',
-                data: {
-                    labels: categoriasData.labels,
-                    datasets: [{
-                        label: 'Empreendimentos',
-                        data: categoriasData.data,
-                        backgroundColor: [
-                            'rgba(22, 101, 52, 0.8)',
-                            'rgba(34, 197, 94, 0.8)',
-                            'rgba(74, 222, 128, 0.8)',
-                            'rgba(134, 239, 172, 0.8)',
-                            'rgba(187, 247, 208, 0.8)',
-                            'rgba(220, 252, 231, 0.8)'
-                        ],
-                        borderColor: [
-                            'rgb(22, 101, 52)',
-                            'rgb(34, 197, 94)',
-                            'rgb(74, 222, 128)',
-                            'rgb(134, 239, 172)',
-                            'rgb(187, 247, 208)',
-                            'rgb(220, 252, 231)'
-                        ],
-                        borderWidth: 2,
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
+        if (ctxCategorias) {
+            if (categoriasLabels.length > 0) {
+                new Chart(ctxCategorias, {
+                    type: 'bar',
+                    data: {
+                        labels: categoriasLabels,
+                        datasets: [{
+                            label: 'Empreendimentos',
+                            data: categoriasTotals,
+                            backgroundColor: 'rgba(22, 101, 52, 0.85)',
+                            hoverBackgroundColor: 'rgba(22, 101, 52, 1)',
+                            borderColor: 'rgb(22, 101, 52)',
+                            borderWidth: 1,
+                            borderRadius: 8
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                padding: 10,
+                                cornerRadius: 8
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, precision: 0 }
                             }
                         }
                     }
-                }
-            });
+                });
+            } else {
+                document.getElementById('container-grafico-categorias').innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-slate-400 text-xs">
+                        <svg class="w-8 h-8 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        Nenhuma categoria com empreendimentos cadastrados ainda.
+                    </div>`;
+            }
         }
 
-        // Gráfico de Zonas (Pie)
+        // 2. Gráfico de Zonas (Pie)
         const ctxZonas = document.getElementById('graficoZonas');
-        if (ctxZonas && zonasData.labels.length > 0) {
-            new Chart(ctxZonas, {
-                type: 'pie',
-                data: {
-                    labels: zonasData.labels,
-                    datasets: [{
-                        data: zonasData.data,
-                        backgroundColor: [
-                            'rgba(22, 101, 52, 0.8)',
-                            'rgba(59, 130, 246, 0.8)'
-                        ],
-                        borderColor: [
-                            'rgb(22, 101, 52)',
-                            'rgb(59, 130, 246)'
-                        ],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
+        if (ctxZonas) {
+            if (zonasLabels.length > 0) {
+                new Chart(ctxZonas, {
+                    type: 'pie',
+                    data: {
+                        labels: zonasLabels,
+                        datasets: [{
+                            data: zonasTotals,
+                            backgroundColor: [
+                                'rgba(22, 101, 52, 0.85)',
+                                'rgba(37, 99, 235, 0.85)'
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
                         }
                     }
-                }
-            });
+                });
+            } else {
+                document.getElementById('container-grafico-zonas').innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-slate-400 text-xs">
+                        <svg class="w-8 h-8 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path></svg>
+                        Nenhum dado por zona registrado ainda.
+                    </div>`;
+            }
         }
 
-        // Gráfico de Status (Doughnut)
+        // 3. Gráfico de Status (Doughnut)
         const ctxStatus = document.getElementById('graficoStatus');
         if (ctxStatus) {
-            new Chart(ctxStatus, {
+            statusChartInstance = new Chart(ctxStatus, {
                 type: 'doughnut',
                 data: {
-                    labels: statusData.labels,
+                    labels: ['Aprovados', 'Pendentes', 'Reprovados'],
                     datasets: [{
-                        data: statusData.data,
+                        data: [{{ aprovados }}, {{ pendentes }}, {{ reprovados }}],
                         backgroundColor: [
-                            'rgba(34, 197, 94, 0.8)',
-                            'rgba(251, 191, 36, 0.8)',
-                            'rgba(244, 63, 94, 0.8)'
+                            'rgba(16, 185, 129, 0.85)',
+                            'rgba(245, 158, 11, 0.85)',
+                            'rgba(239, 68, 68, 0.85)'
                         ],
-                        borderColor: [
-                            'rgb(34, 197, 94)',
-                            'rgb(251, 191, 36)',
-                            'rgb(244, 63, 94)'
-                        ],
+                        borderColor: '#ffffff',
                         borderWidth: 2
                     }]
                 },
@@ -387,33 +536,197 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
+                        legend: { position: 'bottom' }
                     }
                 }
             });
         }
 
-        // Filtro em tempo real dos cadastros recentes
+        // Sistema de Notificações Toast
+        function showToast(mensagem, tipo = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast-item p-4 rounded-2xl flex items-center gap-3 border ${
+                tipo === 'success' 
+                    ? 'bg-emerald-800 text-white border-emerald-600' 
+                    : 'bg-rose-800 text-white border-rose-600'
+            }`;
+            
+            const icon = tipo === 'success' 
+                ? '<svg class="w-5 h-5 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>'
+                : '<svg class="w-5 h-5 text-rose-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+            
+            toast.innerHTML = `
+                ${icon}
+                <div class="flex-1 text-xs font-semibold leading-relaxed">${mensagem}</div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 350);
+            }, 3500);
+        }
+
+        // Execução Rápida via AJAX (Aprovar / Reprovar sem reload)
+        async function executarAcaoRapida(url, pk, tipoAcao) {
+            const confirmMsg = tipoAcao === 'aprovar' 
+                ? 'Deseja realmente aprovar e publicar este empreendimento no Guia Oficial?' 
+                : 'Deseja marcar este empreendimento como reprovado?';
+            
+            if (!confirm(confirmMsg)) return;
+
+            const item = document.getElementById(`item-${pk}`);
+            const acoesContainer = document.getElementById(`acoes-${pk}`);
+            
+            if (acoesContainer) {
+                acoesContainer.style.opacity = '0.5';
+                acoesContainer.style.pointerEvents = 'none';
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Falha na requisição');
+
+                const data = await response.json();
+
+                // Atualizar dados na interface
+                if (data.status === 'success') {
+                    showToast(data.message, data.novo_status === 'aprovado' ? 'success' : 'danger');
+
+                    // Atualizar atributos e badges do item
+                    if (item) {
+                        item.dataset.status = data.novo_status;
+                    }
+
+                    // Atualizar botões de ação do item
+                    if (acoesContainer) {
+                        acoesContainer.style.opacity = '1';
+                        acoesContainer.style.pointerEvents = 'auto';
+
+                        if (data.novo_status === 'aprovado') {
+                            acoesContainer.innerHTML = `
+                                <span class="status-badge bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aprovado
+                                </span>
+                                <a href="/empreendimento/${pk}/selo-display/" target="_blank" class="text-xs bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold px-2.5 py-1 rounded-lg hover:bg-emerald-100 transition shadow-sm">
+                                    Placa / Selo
+                                </a>
+                                <button onclick="executarAcaoRapida('/dashboard-gerente/reprovar/${pk}/', ${pk}, 'reprovar')" class="text-xs text-rose-600 hover:text-rose-800 hover:bg-rose-50 px-2 py-1 rounded transition">
+                                    Reprovar
+                                </button>
+                                <a href="/admin/cadastro/empreendimento/${pk}/change/" target="_blank" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold px-2.5 py-1 rounded-lg transition">
+                                    Editar
+                                </a>
+                            `;
+                        } else {
+                            acoesContainer.innerHTML = `
+                                <span class="status-badge bg-rose-100 text-rose-800 border border-rose-300 px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Reprovado
+                                </span>
+                                <button onclick="executarAcaoRapida('/dashboard-gerente/aprovar/${pk}/', ${pk}, 'aprovar')" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1 rounded-lg shadow-sm transition">
+                                    ✓ Reaprovar
+                                </button>
+                                <a href="/admin/cadastro/empreendimento/${pk}/change/" target="_blank" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold px-2.5 py-1 rounded-lg transition">
+                                    Editar
+                                </a>
+                            `;
+                        }
+                    }
+
+                    // Atualizar contadores
+                    document.getElementById('stat-aprovados').textContent = data.aprovados;
+                    document.getElementById('stat-pendentes').textContent = data.pendentes;
+                    document.getElementById('stat-reprovados').textContent = data.reprovados;
+                    document.getElementById('tab-pendentes-badge').textContent = data.pendentes;
+                    
+                    const headerPillCount = document.getElementById('header-pendentes-count');
+                    if (headerPillCount) headerPillCount.textContent = data.pendentes;
+
+                    const asideCount = document.getElementById('aside-pendentes-count');
+                    if (asideCount) asideCount.textContent = data.pendentes;
+
+                    // Banner de pendências
+                    const banner = document.getElementById('banner-pendencias');
+                    const bannerCount = document.getElementById('banner-count');
+                    if (banner && bannerCount) {
+                        bannerCount.textContent = data.pendentes;
+                        if (data.pendentes === 0) {
+                            banner.classList.add('hidden');
+                        } else {
+                            banner.classList.remove('hidden');
+                        }
+                    }
+
+                    // Eficiência
+                    document.getElementById('taxa-porcentagem').textContent = `${data.taxa_aprovacao}%`;
+                    document.getElementById('taxa-barra').style.width = `${data.taxa_aprovacao}%`;
+                    document.getElementById('taxa-texto-aprovados').textContent = data.aprovados;
+
+                    // Atualizar gráfico de status se existir
+                    if (statusChartInstance) {
+                        statusChartInstance.data.datasets[0].data = [data.aprovados, data.pendentes, data.reprovados];
+                        statusChartInstance.update();
+                    }
+                }
+            } catch (err) {
+                // Se o fetch falhar, redireciona normalmente
+                window.location.href = url;
+            }
+        }
+
+        // Filtro por abas (Todos / Pendentes / Aprovados / Reprovados)
         function filterRegistros(status) {
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if (btn.dataset.target === status) {
-                    btn.classList.remove('bg-slate-100', 'text-slate-600');
-                    btn.classList.add('bg-slate-800', 'text-white');
+                    btn.className = 'px-3 py-1.5 rounded-lg bg-slate-800 text-white filter-btn transition';
                 } else {
-                    btn.classList.remove('bg-slate-800', 'text-white');
-                    btn.classList.add('bg-slate-100', 'text-slate-600');
+                    btn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 filter-btn transition';
                 }
             });
 
+            const query = (document.getElementById('filtro-busca-rapida').value || '').toLowerCase().trim();
+
             document.querySelectorAll('.registro-item').forEach(item => {
-                if (status === 'todos' || item.dataset.status === status) {
+                const matchStatus = (status === 'todos' || item.dataset.status === status);
+                const matchQuery = !query || item.dataset.nome.includes(query) || item.dataset.resp.includes(query) || item.dataset.tel.includes(query);
+                
+                if (matchStatus && matchQuery) {
                     item.style.display = 'flex';
                 } else {
                     item.style.display = 'none';
                 }
             });
+        }
+
+        // Busca ao vivo no input
+        function buscarRegistrosAoVivo(valor) {
+            const query = (valor || '').toLowerCase().trim();
+            const activeBtn = document.querySelector('.filter-btn.bg-slate-800');
+            const currentStatus = activeBtn ? activeBtn.dataset.target : 'todos';
+
+            document.querySelectorAll('.registro-item').forEach(item => {
+                const matchStatus = (currentStatus === 'todos' || item.dataset.status === currentStatus);
+                const matchQuery = !query || item.dataset.nome.includes(query) || item.dataset.resp.includes(query) || item.dataset.tel.includes(query);
+
+                if (matchStatus && matchQuery) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function scrollToCadastros() {
+            const el = document.getElementById('secao-cadastros');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>

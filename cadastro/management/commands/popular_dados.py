@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from cadastro.models import Categoria, Empreendimento
+from cadastro.models import Categoria, Empreendimento, Depoimento
 
 
 class Command(BaseCommand):
@@ -150,6 +150,38 @@ class Command(BaseCommand):
                 "status": "pendente",
                 "categorias": ["gastronomia", "artesanato"],
             },
+            {
+                "nome": "Serra do Pedro e Sítio Arqueológico Cachoeira do Pedro",
+                "responsavel": "Preservação Comunitária e Geoturismo",
+                "cpf_responsavel": "333.444.555-11",
+                "zona": "rural",
+                "endereco": "Sítio Cachoeira do Pedro, acesso pela PB-151 a 5 km da sede municipal",
+                "bairro_comunidade": "Sítio Cachoeira do Pedro",
+                "telefone": "(83) 99811-2233",
+                "whatsapp": "83998112233",
+                "dias_funcionamento": "Terça a Domingo (com agendamento)",
+                "horario_funcionamento": "06:00 às 17:30",
+                "descricao": "Geossítio de singular relevância arqueológica e geológica catalogado pela UEPB. Trilha ecológica na Formação Seridó com rochas metamórficas (micaxistos e granada micaxistose), gravuras rupestres ancestrais e mirante natural com ampla vista do semiárido.",
+                "historia": "Identificado como patrimônio geomorfológico e arqueológico fundamental no V Simpósio de Geografia Física do Nordeste (Santos, Costa e Xavier, UEPB, 2024).",
+                "status": "aprovado",
+                "categorias": ["atrativo-natural", "atrativo-cultural", "turismo-de-aventura", "turismo-rural"],
+            },
+            {
+                "nome": "Geossítio Plug Vulcânico Saco do Inferninho",
+                "responsavel": "Ecoturismo e Geoconservação de Picuí",
+                "cpf_responsavel": "555.666.777-22",
+                "zona": "rural",
+                "endereco": "Sítio Barra do Cipó, rota ecológica norte",
+                "bairro_comunidade": "Sítio Barra do Cipó",
+                "telefone": "(83) 99622-4455",
+                "whatsapp": "83996224455",
+                "dias_funcionamento": "Sexta a Domingo (expedições guiadas)",
+                "horario_funcionamento": "05:30 às 16:30",
+                "descricao": "Monumento geológico singular no Nordeste: plug vulcânico semicircular de 150 metros de altura e 430 m² de área, composto integralmente por fragmentos de basalto negro resultantes do antigo Magmatismo Macau (explosão vulcânica pré-histórica). Ponto de destaque para geoturismo e turismo de aventura.",
+                "historia": "Formação vulcânica rara e espetacular no semiárido paraibano, documentada academicamente pela UEPB e CPRM, revelando a presença de rochas magmáticas em Picuí.",
+                "status": "aprovado",
+                "categorias": ["atrativo-natural", "turismo-de-aventura", "turismo-rural"],
+            },
         ]
 
         for item in dados_empreendimentos:
@@ -164,5 +196,45 @@ class Command(BaseCommand):
 
             action = "Criado" if created else "Atualizado"
             self.stdout.write(f"  [OK] {action}: {emp.nome} ({emp.status})")
+
+        # 3. Depoimentos de Empreendedores Locais
+        self.stdout.write("Populando depoimentos de empreendedores...")
+        depoimentos_dados = [
+            {
+                "nome": "João Silva",
+                "ramo_atividade": "Restaurante e Gastronomia",
+                "depoimento": "O guia turístico transformou meu negócio. Agora turistas e viajantes de várias cidades nos encontram facilmente e elogiam nossa carne de sol!",
+                "avatar_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80",
+                "estrelas": 5,
+                "ativo": True,
+                "ordem": 1,
+            },
+            {
+                "nome": "Maria Alves",
+                "ramo_atividade": "Artesanato e Renda Renascença",
+                "depoimento": "Finalmente temos um espaço profissional e acolhedor para divulgar nossa arte para todo o estado. A Prefeitura de Picuí está de parabéns pela iniciativa!",
+                "avatar_url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80",
+                "estrelas": 5,
+                "ativo": True,
+                "ordem": 2,
+            },
+            {
+                "nome": "Pedro Costa",
+                "ramo_atividade": "Pousada e Ecoturismo",
+                "depoimento": "A plataforma é muito prática e rápida. Em poucos minutos o nosso estabelecimento já estava cadastrado e recebendo reservas pelo WhatsApp.",
+                "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80",
+                "estrelas": 5,
+                "ativo": True,
+                "ordem": 3,
+            },
+        ]
+
+        for dep in depoimentos_dados:
+            obj, created = Depoimento.objects.update_or_create(
+                nome=dep["nome"],
+                defaults=dep,
+            )
+            action = "Criado" if created else "Atualizado"
+            self.stdout.write(f"  [OK] Depoimento {action}: {obj.nome}")
 
         self.stdout.write(self.style.SUCCESS("Banco de dados populado com sucesso com dados oficiais de Picui!"))
