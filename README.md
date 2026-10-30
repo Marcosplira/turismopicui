@@ -228,6 +228,12 @@ CSRF_TRUSTED_ORIGINS=https://seu-dominio.com
 - [x] Galeria de fotos interativa
 - [x] Animações e micro-interações
 - [x] Página institucional "Sobre"
+- [x] Hero Section premium com gradiente
+- [x] Mapa interativo de todos os empreendimentos
+- [x] Contadores de estatísticas na Home
+- [x] Seção de depoimentos de empresários
+- [x] Botão de acesso da equipe em destaque
+- [x] Interface otimizada para apresentação ao gerente
 
 ---
 
