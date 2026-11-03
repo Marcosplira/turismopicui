@@ -1,4 +1,5 @@
 import logging
+import smtplib
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +17,24 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import Empreendimento, FotoEmpreendimento, Categoria, Depoimento
 from .forms import EmpreendimentoForm
+
+
+def _enviar_email_cadastro(request, subject, message, recipient):
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[recipient],
+            fail_silently=False,
+        )
+    except (OSError, smtplib.SMTPException):
+        logger.exception("Falha ao enviar notificação de cadastro.")
+        messages.warning(
+            request,
+            "Cadastro salvo, mas uma notificação por e-mail não foi enviada. "
+            "A equipe deverá conferir o cadastro no painel.",
+        )
 
 
 @require_GET
@@ -61,12 +80,11 @@ def _enviar_notificacoes_cadastro(request, empreendimento):
         f"Acesse a área administrativa: {admin_url}"
     )
 
-    send_mail(
-        subject="Novo cadastro de empreendimento — Turismo de Picuí",
-        message=admin_body,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[admin_email],
-        fail_silently=True,
+    _enviar_email_cadastro(
+        request,
+        "Novo cadastro de empreendimento — Turismo de Picuí",
+        admin_body,
+        admin_email,
     )
 
     if empreendimento.email:
@@ -79,12 +97,11 @@ def _enviar_notificacoes_cadastro(request, empreendimento):
             f"Status: {empreendimento.get_status_display()}\n"
             f"Acesse sua área: {request.build_absolute_uri('/cadastro/minha-area/')}"
         )
-        send_mail(
-            subject="Cadastro recebido — Turismo de Picuí",
-            message=fornecedor_body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[empreendimento.email],
-            fail_silently=True,
+        _enviar_email_cadastro(
+            request,
+            "Cadastro recebido — Turismo de Picuí",
+            fornecedor_body,
+            empreendimento.email,
         )
 
 

@@ -1,4 +1,5 @@
 import os
+import smtplib
 from unittest.mock import patch
 
 from django.contrib import admin
@@ -133,6 +134,31 @@ class CadastroPublicoTests(TestCase):
 
         self.assertContains(resposta, "Dashboard do gerente")
 
+    def test_mapa_publico_usa_leaflet_e_serializa_dados_com_seguranca(self):
+        empreendimento = Empreendimento.objects.create(
+            nome='<img src=x onerror="alert(1)">',
+            responsavel="Pessoa",
+            cpf_responsavel="000.000.000-00",
+            zona="urbana",
+            endereco="Rua Principal",
+            bairro_comunidade="Centro",
+            telefone="83999999999",
+            descricao="<script>alert(1)</script>",
+            status="aprovado",
+        )
+
+        resposta = self.client.get(reverse("mapa_turistico"))
+        dados = resposta.context["empreendimentos_json"]
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertContains(resposta, "leaflet@1.9.4")
+        self.assertContains(resposta, "openstreetmap.org")
+        self.assertNotContains(resposta, "maps.googleapis.com")
+        self.assertContains(resposta, "Mirante dos Brandões")
+        self.assertEqual(dados[0]["id"], empreendimento.pk)
+        self.assertContains(resposta, r"\u003Cimg")
+        self.assertNotContains(resposta, '<img src=x onerror="alert(1)">')
+
     def test_formulario_nao_exibe_tags_template_como_texto(self):
         resposta = self.client.get(reverse("cadastrar_empreendimento"))
 
@@ -221,6 +247,31 @@ class CadastroPublicoTests(TestCase):
         self.assertIn("Novo cadastro de empreendimento", mail.outbox[0].subject)
         self.assertIn("admin@prefeiturapicui.gov.br", mail.outbox[0].to)
         self.assertIn("ana@example.com", [dest for msg in mail.outbox for dest in msg.to])
+
+    @patch("cadastro.views.send_mail", side_effect=smtplib.SMTPException("SMTP indisponível"))
+    def test_falha_de_email_nao_perde_cadastro_e_avisa_usuario(self, send_mail_mock):
+        resposta = self.client.post(
+            reverse("cadastrar_empreendimento"),
+            {
+                "nome": "Pousada do Sol",
+                "responsavel": "Ana Souza",
+                "cpf_responsavel": "111.222.333-44",
+                "zona": "urbana",
+                "endereco": "Rua das Flores",
+                "bairro_comunidade": "Centro",
+                "telefone": "83988887777",
+                "email": "ana@example.com",
+                "descricao": "Pousada familiar com café.",
+                "consentimento": "on",
+                "autoriza_divulgacao": "True",
+            },
+            follow=True,
+        )
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(Empreendimento.objects.count(), 1)
+        self.assertContains(resposta, "uma notificação por e-mail não foi enviada")
+        self.assertEqual(send_mail_mock.call_count, 2)
 
     def test_guia_exibe_apenas_aprovados(self):
         Empreendimento.objects.create(
@@ -422,3 +473,29 @@ class CadastroPublicoTests(TestCase):
         self.assertEqual(empreendimento.status, "aprovado")
         self.assertIn("Documentação revisada com sucesso.", empreendimento.observacoes)
         self.assertTrue(any("Aprovado" in msg.subject for msg in mail.outbox))
+
+    @patch("cadastro.admin.send_mail", side_effect=smtplib.SMTPException("SMTP indisponível"))
+    def test_falha_email_admin_nao_reverte_aprovacao(self, send_mail_mock):
+        usuario = User.objects.create_user("gerente", "gerente@example.com", "123456")
+        empreendimento = Empreendimento.objects.create(
+            nome="Pousada em análise",
+            responsavel="Maria Almeida",
+            cpf_responsavel="777.888.999-00",
+            zona="urbana",
+            endereco="Rua da Praia",
+            bairro_comunidade="Centro",
+            telefone="83955556666",
+            email="maria@example.com",
+            descricao="Pousada em análise",
+            status="pendente",
+        )
+        request = RequestFactory().post("/admin/cadastro/empreendimento/")
+        request.user = usuario
+
+        EmpreendimentoAdmin(Empreendimento, admin.site).marcar_aprovados(
+            request, Empreendimento.objects.filter(pk=empreendimento.pk)
+        )
+
+        empreendimento.refresh_from_db()
+        self.assertEqual(empreendimento.status, "aprovado")
+        send_mail_mock.assert_called_once()

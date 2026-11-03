@@ -8,6 +8,7 @@
     <title>Mapa Turístico Interativo - Turismo de Picuí</title>
     <link rel="icon" type="image/png" href="{% static 'cadastro/imagem/app-icon-192.png' %}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         body { font-family: Arial, Helvetica, sans-serif; }
         #map {
@@ -15,6 +16,7 @@
             width: 100%;
             border-radius: 1.25rem;
             z-index: 10;
+            background: #e2e8f0;
         }
         .card-item {
             transition: all 0.25s ease;
@@ -76,6 +78,7 @@
             <!-- CONTAINER DO MAPA -->
             <div class="bg-white rounded-3xl shadow-lg border border-slate-200 p-3 relative overflow-hidden">
                 <div id="map"></div>
+                <div id="map-status" role="status" class="hidden absolute top-6 left-6 right-6 bg-white/95 rounded-xl p-4 shadow-lg border border-amber-200 z-[1000] text-sm text-slate-700"></div>
 
                 <!-- LEGENDA FLUTUANTE SOBRE O MAPA -->
                 <div class="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-slate-200 z-[1000] text-xs">
@@ -152,7 +155,7 @@
                         </div>
                         <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
                             <span class="text-[10px] text-amber-700 font-mono font-bold">6°30'30" S, 36°30'30" O</span>
-                            <button onclick="focarNoPontoPorNome('Brandões')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
+                            <button onclick="focarNoPontoPorNome('Mirante dos Brandões')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
                         </div>
                     </div>
                 </div>
@@ -185,9 +188,12 @@
         </div>
     </footer>
 
+    {{ empreendimentos_json|json_script:"empreendimentos-data" }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Dados dos empreendimentos injetados pelo Django
-        const empreendimentos = {{ empreendimentos_json|safe }};
+        const empreendimentos = JSON.parse(
+            document.getElementById('empreendimentos-data').textContent
+        );
 
         // Coordenadas centrais de Picuí-PB
         const centroPicui = { lat: -6.5115, lng: -36.3475 };
@@ -229,123 +235,106 @@
             }
         ];
 
-        // Inicializar mapa com Google Maps
+        // Inicializar mapa com OpenStreetMap
         function initMap() {
-            const mapOptions = {
-                center: centroPicui,
-                zoom: 13,
-                mapTypeId: 'roadmap',
-                disableDefaultUI: false,
-                zoomControl: true,
-                mapTypeControl: true,
-                streetViewControl: false,
-                fullscreenControl: true
-            };
-
-            const map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-            const infoWindow = new google.maps.InfoWindow();
-
-            // Criar marcadores customizados
-            function createMarker(position, title, icon, tipo, emp = null) {
-                const marker = new google.maps.Marker({
-                    position: position,
-                    map: map,
-                    title: title,
-                    icon: icon,
-                    animation: google.maps.Animation.DROP
-                });
-
-                const content = emp ? `
-                    <div style="padding: 12px; min-width: 200px; font-family: Arial, sans-serif;">
-                        <h3 style="margin: 0 0 8px 0; color: #166534; font-size: 16px;">${emp.nome}</h3>
-                        <p style="margin: 0 0 4px 0; color: #666; font-size: 12px;">${emp.descricao || ''}</p>
-                        <p style="margin: 0 0 4px 0; color: #666; font-size: 12px;">📍 ${emp.endereco}, ${emp.bairro}</p>
-                        ${emp.telefone ? `<p style="margin: 0 0 8px 0; color: #666; font-size: 12px;">📞 ${emp.telefone}</p>` : ''}
-                        <div style="margin-top: 8px;">
-                            <a href="/empreendimento/${emp.id}/" target="_blank" style="display: inline-block; background: #166534; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; margin-right: 4px;">Ver Detalhes</a>
-                            ${emp.whatsapp ? `<a href="${emp.whatsapp}" target="_blank" style="display: inline-block; background: #16a34a; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px;">WhatsApp</a>` : ''}
-                        </div>
-                    </div>
-                ` : `
-                    <div style="padding: 12px; min-width: 200px; font-family: Arial, sans-serif;">
-                        <h3 style="margin: 0 0 8px 0; color: #d97706; font-size: 16px;">${title}</h3>
-                        <p style="margin: 0; color: #666; font-size: 12px;">${tipo === 'geo' ? 'Geossítio • Estudo UEPB' : ''}</p>
-                    </div>
-                `;
-
-                marker.addListener('click', () => {
-                    infoWindow.setContent(content);
-                    infoWindow.open(map, marker);
-                });
-
-                return marker;
+            const mapStatus = document.getElementById('map-status');
+            if (!window.L) {
+                mapStatus.textContent = 'Não foi possível carregar a biblioteca do mapa. Verifique sua conexão e atualize a página.';
+                mapStatus.classList.remove('hidden');
+                return;
             }
 
-            // Ícones customizados
-            const greenIcon = {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 10,
-                fillColor: '#059669',
-                fillOpacity: 1,
-                strokeColor: '#ffffff',
-                strokeWeight: 2
-            };
-
-            const blueIcon = {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 10,
-                fillColor: '#2563eb',
-                fillOpacity: 1,
-                strokeColor: '#ffffff',
-                strokeWeight: 2
-            };
-
-            const amberIcon = {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 12,
-                fillColor: '#d97706',
-                fillOpacity: 1,
-                strokeColor: '#ffffff',
-                strokeWeight: 2
-            };
+            const map = L.map('map').setView([centroPicui.lat, centroPicui.lng], 13);
+            const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                maxZoom: 19
+            }).addTo(map);
+            tiles.on('tileerror', () => {
+                mapStatus.textContent = 'Não foi possível carregar o mapa base. Os pontos continuam disponíveis nos cartões abaixo.';
+                mapStatus.classList.remove('hidden');
+            });
+            tiles.on('load', () => mapStatus.classList.add('hidden'));
 
             const markers = [];
-            const markerGroup = [];
+            const markerGroup = L.featureGroup();
+
+            function createPopupContent(item, tipo) {
+                const content = document.createElement('div');
+                content.className = 'min-w-48';
+
+                const title = document.createElement('h3');
+                title.className = 'font-bold text-base mb-2';
+                title.textContent = item.nome;
+                content.appendChild(title);
+
+                const description = document.createElement('p');
+                description.className = 'text-sm text-slate-600 mb-2';
+                description.textContent = item.descricao || item.geologia_info || '';
+                content.appendChild(description);
+
+                if (tipo === 'empreendimento') {
+                    const address = document.createElement('p');
+                    address.className = 'text-sm text-slate-600 mb-2';
+                    address.textContent = `📍 ${item.endereco}, ${item.bairro}`;
+                    content.appendChild(address);
+
+                    const details = document.createElement('a');
+                    details.href = `/empreendimento/${item.id}/`;
+                    details.target = '_blank';
+                    details.rel = 'noopener noreferrer';
+                    details.className = 'text-sm font-bold text-green-700';
+                    details.textContent = 'Ver detalhes';
+                    content.appendChild(details);
+
+                    if (item.whatsapp) {
+                        const whatsapp = document.createElement('a');
+                        whatsapp.href = item.whatsapp;
+                        whatsapp.target = '_blank';
+                        whatsapp.rel = 'noopener noreferrer';
+                        whatsapp.className = 'ml-3 text-sm font-bold text-green-700';
+                        whatsapp.textContent = 'WhatsApp';
+                        content.appendChild(whatsapp);
+                    }
+                } else {
+                    const label = document.createElement('p');
+                    label.className = 'text-sm text-amber-700';
+                    label.textContent = 'Geossítio • Estudo UEPB';
+                    content.appendChild(label);
+                }
+
+                return content;
+            }
 
             // Adicionar empreendimentos
             empreendimentos.forEach(emp => {
                 const isRural = (emp.zona_raw === 'rural' || emp.zona === 'Comunidade Rural');
-                const icon = isRural ? blueIcon : greenIcon;
-                const marker = createMarker(
-                    { lat: emp.lat, lng: emp.lng },
-                    emp.nome,
-                    icon,
-                    'empreendimento',
-                    emp
-                );
+                const marker = L.circleMarker([emp.lat, emp.lng], {
+                    radius: 9,
+                    color: '#ffffff',
+                    weight: 2,
+                    fillColor: isRural ? '#2563eb' : '#059669',
+                    fillOpacity: 1
+                }).bindPopup(createPopupContent(emp, 'empreendimento'));
+                marker.addTo(markerGroup);
                 markers.push({ marker, data: emp, tipo: 'empreendimento' });
-                markerGroup.push(marker);
             });
 
             // Adicionar geossítios
             geossitios.forEach(geo => {
-                const marker = createMarker(
-                    { lat: geo.lat, lng: geo.lng },
-                    geo.nome,
-                    amberIcon,
-                    'geo',
-                    { nome: geo.nome, descricao: geo.descricao }
-                );
+                const marker = L.circleMarker([geo.lat, geo.lng], {
+                    radius: 11,
+                    color: '#ffffff',
+                    weight: 2,
+                    fillColor: '#d97706',
+                    fillOpacity: 1
+                }).bindPopup(createPopupContent(geo, 'geo'));
+                marker.addTo(markerGroup);
                 markers.push({ marker, data: geo, tipo: 'geo' });
-                markerGroup.push(marker);
             });
 
             // Ajustar zoom para incluir todos os pontos
-            if (markerGroup.length > 0) {
-                const bounds = new google.maps.LatLngBounds();
-                markerGroup.forEach(marker => bounds.extend(marker.getPosition()));
-                map.fitBounds(bounds);
+            if (markers.length > 0) {
+                map.fitBounds(markerGroup.getBounds().pad(0.15), { maxZoom: 13 });
             }
 
             // Funções de filtro
@@ -376,11 +365,8 @@
                         mostrar = true;
                     }
 
-                    if (mostrar) {
-                        marker.setVisible(true);
-                    } else {
-                        marker.setVisible(false);
-                    }
+                    if (mostrar && !map.hasLayer(marker)) marker.addTo(map);
+                    if (!mostrar && map.hasLayer(marker)) map.removeLayer(marker);
                 });
 
                 // Atualizar label
@@ -409,37 +395,63 @@
                 }
 
                 if (listaFiltrada.length === 0) {
-                    container.innerHTML = `
-                        <div class="col-span-full bg-white rounded-2xl p-8 text-center text-slate-500 border border-slate-200">
-                            Nenhum ponto encontrado nesta categoria.
-                        </div>`;
+                    const emptyMessage = document.createElement('div');
+                    emptyMessage.className = 'col-span-full bg-white rounded-2xl p-8 text-center text-slate-500 border border-slate-200';
+                    emptyMessage.textContent = 'Nenhum ponto encontrado nesta categoria.';
+                    container.replaceChildren(emptyMessage);
                     return;
                 }
 
-                container.innerHTML = listaFiltrada.map(item => {
+                const cards = listaFiltrada.map(item => {
                     const isGeo = geossitios.includes(item);
-                    const zonaColor = isGeo ? 'amber' : 
-                                   (item.zona_raw === 'rural' || item.zona === 'Comunidade Rural') ? 'blue' : 'green';
-                    
-                    return `
-                        <div class="bg-white rounded-2xl p-4 border border-slate-200 card-item cursor-pointer flex flex-col justify-between" onclick="focarNoPontoPorNome('${item.nome.replace(/'/g, "\\'")}')')">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-${zonaColor}-100 text-${zonaColor}-800">
-                                        ${isGeo ? '🌋 Geossítio' : item.zona}
-                                    </span>
-                                    ${item.categoria ? `<span class="text-[10px] text-slate-500">${item.categoria}</span>` : ''}
-                                </div>
-                                <h4 class="font-bold text-slate-900 text-sm mb-1 hover:text-green-700 transition">${item.nome}</h4>
-                                <p class="text-xs text-slate-500 line-clamp-2">${item.descricao || ''}</p>
-                            </div>
-                            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                                <span class="text-slate-400">📍 ${item.bairro || 'Picuí-PB'}</span>
-                                <span class="font-bold text-green-700 hover:underline">Ver no mapa →</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+                    const rural = item.zona_raw === 'rural' || item.zona === 'Comunidade Rural';
+                    const card = document.createElement('article');
+                    card.className = 'bg-white rounded-2xl p-4 border border-slate-200 card-item flex flex-col justify-between';
+
+                    const heading = document.createElement('div');
+                    heading.className = 'flex items-center justify-between gap-2 mb-2';
+
+                    const badge = document.createElement('span');
+                    badge.className = `text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        isGeo ? 'bg-amber-100 text-amber-800' :
+                        rural ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                    }`;
+                    badge.textContent = isGeo ? '🌋 Geossítio' : item.zona;
+                    heading.appendChild(badge);
+
+                    if (item.categoria) {
+                        const category = document.createElement('span');
+                        category.className = 'text-[10px] text-slate-500';
+                        category.textContent = item.categoria;
+                        heading.appendChild(category);
+                    }
+
+                    const title = document.createElement('h4');
+                    title.className = 'font-bold text-slate-900 text-sm mb-1';
+                    title.textContent = item.nome;
+
+                    const description = document.createElement('p');
+                    description.className = 'text-xs text-slate-500 line-clamp-2';
+                    description.textContent = item.descricao || '';
+
+                    const footer = document.createElement('div');
+                    footer.className = 'mt-3 pt-3 border-t border-slate-100 flex items-center justify-between gap-2 text-xs';
+
+                    const location = document.createElement('span');
+                    location.className = 'text-slate-400';
+                    location.textContent = `📍 ${item.bairro || 'Picuí-PB'}`;
+
+                    const focusButton = document.createElement('button');
+                    focusButton.type = 'button';
+                    focusButton.className = 'font-bold text-green-700 hover:underline whitespace-nowrap';
+                    focusButton.textContent = 'Ver no mapa →';
+                    focusButton.addEventListener('click', () => focarNoPontoPorNome(item.nome));
+
+                    footer.append(location, focusButton);
+                    card.append(heading, title, description, footer);
+                    return card;
+                });
+                container.replaceChildren(...cards);
             }
 
             // Focar no ponto pelo nome
@@ -447,14 +459,13 @@
                 const item = [...empreendimentos, ...geossitios].find(e => e.nome === nome);
                 if (item) {
                     const { lat, lng } = item;
-                    map.setCenter({ lat, lng });
-                    map.setZoom(16);
+                    map.setView([lat, lng], 16);
                     
                     // Encontrar e abrir o marker correspondente
                     const markerObj = markers.find(m => m.data.nome === nome);
                     if (markerObj) {
-                        markerObj.marker.setVisible(true);
-                        google.maps.event.trigger(markerObj.marker, 'click');
+                        markerObj.marker.addTo(map);
+                        markerObj.marker.openPopup();
                     }
                 }
             };
@@ -469,17 +480,7 @@
             renderCards('all');
         }
 
-        // Carregar API do Google Maps
-        function loadGoogleMapsScript() {
-            const script = document.createElement('script');
-            script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBFZ0v_jWZVYFm0YQ0X7uR5aV8W9X6Y3Z9A8C&callback=initMap';
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
-        }
-
-        // Iniciar
-        loadGoogleMapsScript();
+        initMap();
     </script>
 </body>
 </html>

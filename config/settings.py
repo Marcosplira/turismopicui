@@ -171,24 +171,15 @@ MEDIA_ROOT = BASE_DIR / "media"
 # CONFIGURAÇÃO DE E-MAIL
 # ==========================================================
 if DEBUG:
-    MAILERS = {
-        "default": {
-            "BACKEND": "django.core.mail.backends.console.EmailBackend",
-        },
-    }
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
-    MAILERS = {
-        "default": {
-            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
-            "OPTIONS": {
-                "host": os.environ.get("EMAIL_HOST", "smtp.gmail.com"),
-                "port": int(os.environ.get("EMAIL_PORT", "587")),
-                "username": os.environ.get("EMAIL_HOST_USER", ""),
-                "password": os.environ.get("EMAIL_HOST_PASSWORD", ""),
-                "use_tls": os.environ.get("EMAIL_USE_TLS", "True").lower() == "true",
-            },
-        },
-    }
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+    EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True").lower() == "true"
+    EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", "10"))
 
 DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL",

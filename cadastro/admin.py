@@ -1,10 +1,16 @@
+import logging
+import smtplib
+
 from django.conf import settings
 from django.contrib import admin
+from django.contrib import messages
 from django.contrib.messages.api import MessageFailure
 from django.core.mail import send_mail
 from django.utils.html import format_html
 
 from .models import Empreendimento, FotoEmpreendimento, Categoria, Depoimento
+
+logger = logging.getLogger(__name__)
 
 admin.site.site_header = "Gestão do Turismo de Picuí"
 admin.site.site_title = "Painel Turismo de Picuí"
@@ -159,6 +165,7 @@ class EmpreendimentoAdmin(admin.ModelAdmin):
     def _atualizar_status(self, request, queryset, novo_status, texto_status):
         observacao = (request.POST.get("observacoes") or "").strip()
         count = 0
+        falhas_email = 0
 
         for empreendimento in queryset:
             if observacao:
@@ -172,23 +179,37 @@ class EmpreendimentoAdmin(admin.ModelAdmin):
             count += 1
 
             if empreendimento.email:
-                send_mail(
-                    subject=f"Empreendimento {texto_status} — Turismo de Picuí",
-                    message=(
-                        f"Olá {empreendimento.responsavel},\n\n"
-                        f"Seu empreendimento '{empreendimento.nome}' foi {texto_status.lower()} no sistema.\n"
-                        f"Observações: {observacao or 'Nenhuma observação adicional.'}\n\n"
-                        f"Acesse sua área para acompanhar: {request.build_absolute_uri('/cadastro/minha-area/')}"
-                    ),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[empreendimento.email],
-                    fail_silently=True,
-                )
+                try:
+                    enviado = send_mail(
+                        subject=f"Empreendimento {texto_status} — Turismo de Picuí",
+                        message=(
+                            f"Olá {empreendimento.responsavel},\n\n"
+                            f"Seu empreendimento '{empreendimento.nome}' foi {texto_status.lower()} no sistema.\n"
+                            f"Observações: {observacao or 'Nenhuma observação adicional.'}\n\n"
+                            f"Acesse sua área para acompanhar: {request.build_absolute_uri('/cadastro/minha-area/')}"
+                        ),
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[empreendimento.email],
+                        fail_silently=False,
+                    )
+                except (OSError, smtplib.SMTPException):
+                    enviado = 0
+                    logger.exception("Falha ao enviar atualização de status por e-mail.")
+
+                if enviado != 1:
+                    falhas_email += 1
 
         try:
+            nivel = messages.WARNING if falhas_email else messages.SUCCESS
+            aviso_email = (
+                f" Não foi possível enviar {falhas_email} notificação(ões) por e-mail."
+                if falhas_email
+                else ""
+            )
             self.message_user(
                 request,
-                f"{count} empreendimentos {texto_status.lower()} com sucesso.",
+                f"{count} empreendimentos {texto_status.lower()} com sucesso.{aviso_email}",
+                level=nivel,
             )
         except MessageFailure:
             pass

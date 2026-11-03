@@ -63,6 +63,8 @@ O sistema possui recursos de acesso rápido através de QR Code, facilitando o a
 
 Os empreendimentos podem disponibilizar sua localização para facilitar a chegada dos visitantes.
 
+O mapa interativo do guia usa OpenStreetMap e não precisa de uma chave de API. Os links de localização dos empreendimentos podem abrir o Google Maps.
+
 ### 💬 WhatsApp
 
 O visitante pode utilizar o WhatsApp para entrar em contato diretamente com o empreendimento quando o número estiver cadastrado.
@@ -203,6 +205,12 @@ DEBUG=False
 DJANGO_SECRET_KEY=sua-chave-secreta
 ALLOWED_HOSTS=seu-dominio.com,localhost,127.0.0.1
 CSRF_TRUSTED_ORIGINS=https://seu-dominio.com
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=seu-email
+EMAIL_HOST_PASSWORD=sua-senha-de-aplicativo
+EMAIL_USE_TLS=True
+ADMIN_EMAIL=seu-email-administrativo
 ```
 
 **Não coloque chaves, senhas ou outras credenciais diretamente no código ou no GitHub.**
@@ -229,7 +237,7 @@ CSRF_TRUSTED_ORIGINS=https://seu-dominio.com
 - [x] Animações e micro-interações
 - [x] Página institucional "Sobre"
 - [x] Hero Section premium com gradiente
-- [x] Mapa interativo com Google Maps
+- [x] Mapa interativo com OpenStreetMap, sem chave de API
 - [x] Contadores de estatísticas na Home
 - [x] Seção de depoimentos de empresários
 - [x] Botão de acesso da equipe em destaque

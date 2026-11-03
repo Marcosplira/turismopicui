@@ -4,7 +4,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     DJANGO_SETTINGS_MODULE=config.settings \
     DEBUG=False \
-    DJANGO_SECRET_KEY=build-only-key-change-at-runtime \
     ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
 
 WORKDIR /app
@@ -14,7 +13,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . .
 
-RUN python manage.py collectstatic --noinput
+RUN DJANGO_SECRET_KEY=build-only-key python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
