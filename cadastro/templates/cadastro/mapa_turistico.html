@@ -71,6 +71,9 @@
                     <button id="btn-filtro-geo" onclick="filterByZona('geo')" class="filter-zona-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200">
                         🌋 Geossítios & Ecoturismo (<span id="count-geo">3</span>)
                     </button>
+                    <button id="btn-reset-map" type="button" onclick="filterByZona('all')" class="hidden px-4 py-2 rounded-xl text-xs font-bold text-green-800 bg-green-50 hover:bg-green-100 border border-green-200 transition">
+                        Mostrar todos os pontos
+                    </button>
                 </div>
                 <span class="text-xs text-slate-400">Clique em um ponto no mapa para ver dados de geodiversidade</span>
             </div>
@@ -112,7 +115,7 @@
                         </div>
                         <h3 class="text-xl md:text-2xl font-bold text-slate-900 mt-1">Patrimônio Geológico e Arqueológico de Picuí</h3>
                     </div>
-                    <button onclick="filterByZona('geo')" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition inline-flex items-center gap-1.5 flex-shrink-0">
+                    <button id="btn-destacar-geo" onclick="filterByZona('geo')" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition inline-flex items-center gap-1.5 flex-shrink-0">
                         🌋 Destacar Geossítios no Mapa
                     </button>
                 </div>
@@ -129,7 +132,7 @@
                         </div>
                         <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
                             <span class="text-[10px] text-amber-700 font-mono font-bold">6°32'32.72" S, 36°23'47.33" O</span>
-                            <button onclick="focarNoPontoPorNome('Serra do Pedro')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
+                            <button data-map-point="Serra do Pedro" onclick="focarNoPontoPorNome('Serra do Pedro')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
                         </div>
                     </div>
 
@@ -142,7 +145,7 @@
                         </div>
                         <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
                             <span class="text-[10px] text-amber-700 font-mono font-bold">6°21'42.11" S, 36°18'40.34" O</span>
-                            <button onclick="focarNoPontoPorNome('Saco do Inferninho')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
+                            <button data-map-point="Saco do Inferninho" onclick="focarNoPontoPorNome('Saco do Inferninho')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
                         </div>
                     </div>
 
@@ -155,7 +158,7 @@
                         </div>
                         <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
                             <span class="text-[10px] text-amber-700 font-mono font-bold">6°30'30" S, 36°30'30" O</span>
-                            <button onclick="focarNoPontoPorNome('Mirante dos Brandões')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
+                            <button data-map-point="Mirante dos Brandões" onclick="focarNoPontoPorNome('Mirante dos Brandões')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
                         </div>
                     </div>
                 </div>
@@ -260,6 +263,8 @@
 
             const markers = [];
             const markerGroup = L.featureGroup();
+            let zonaAtiva = 'all';
+            let pontoEmFoco = null;
 
             function createPopupContent(item, tipo) {
                 const content = document.createElement('div');
@@ -340,8 +345,37 @@
                 map.fitBounds(markerGroup.getBounds().pad(0.15), { maxZoom: 13 });
             }
 
+            function atualizarControlesDoMapa() {
+                const resetButton = document.getElementById('btn-reset-map');
+                resetButton.classList.toggle(
+                    'hidden',
+                    zonaAtiva === 'all' && pontoEmFoco === null
+                );
+
+                const highlightButton = document.getElementById('btn-destacar-geo');
+                highlightButton.textContent = zonaAtiva === 'geo'
+                    ? 'Mostrar todos os pontos'
+                    : '🌋 Destacar Geossítios no Mapa';
+
+                document.querySelectorAll('[data-map-point]').forEach(button => {
+                    const emFoco = button.dataset.mapPoint === pontoEmFoco;
+                    button.textContent = emFoco
+                        ? 'Voltar ao mapa completo'
+                        : button.dataset.mapPoint
+                            ? (button.closest('#cards-container') ? 'Ver no mapa →' : 'Ver ponto →')
+                            : 'Ver no mapa →';
+                });
+            }
+
             // Funções de filtro
             window.filterByZona = function(zona) {
+                if (zona !== 'all' && zona === zonaAtiva) {
+                    zona = 'all';
+                }
+                zonaAtiva = zona;
+                pontoEmFoco = null;
+                map.closePopup();
+
                 // Atualizar botões
                 document.querySelectorAll('.filter-zona-btn').forEach(btn => {
                     btn.classList.remove('bg-green-700', 'text-white', 'ring-2', 'ring-green-600');
@@ -380,6 +414,7 @@
 
                 // Renderizar cards correspondentes
                 renderCards(zona);
+                atualizarControlesDoMapa();
             };
 
             // Renderizar cards
@@ -446,6 +481,7 @@
 
                     const focusButton = document.createElement('button');
                     focusButton.type = 'button';
+                    focusButton.dataset.mapPoint = item.nome;
                     focusButton.className = 'font-bold text-green-700 hover:underline whitespace-nowrap';
                     focusButton.textContent = 'Ver no mapa →';
                     focusButton.addEventListener('click', () => focarNoPontoPorNome(item.nome));
@@ -461,6 +497,12 @@
             window.focarNoPontoPorNome = function(nome) {
                 const item = [...empreendimentos, ...geossitios].find(e => e.nome === nome);
                 if (item) {
+                    if (pontoEmFoco === nome) {
+                        window.filterByZona('all');
+                        return;
+                    }
+
+                    pontoEmFoco = nome;
                     const { lat, lng } = item;
                     map.setView([lat, lng], 16);
                     
@@ -470,6 +512,9 @@
                         markerObj.marker.addTo(map);
                         markerObj.marker.openPopup();
                     }
+                    document.getElementById('label-exibindo').textContent =
+                        `Ponto em destaque: ${nome}`;
+                    atualizarControlesDoMapa();
                 }
             };
 
@@ -481,6 +526,7 @@
 
             // Renderizar cards iniciais
             renderCards('all');
+            atualizarControlesDoMapa();
         }
 
         initMap();
