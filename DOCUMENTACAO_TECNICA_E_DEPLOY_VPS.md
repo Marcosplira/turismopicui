@@ -145,14 +145,12 @@ Cuidados:
 
 ## 7. Configuração de HTTPS necessária antes do uso real
 
-O Nginx deste manual termina o TLS e encaminha tráfego para Gunicorn. **A configuração Django atual não liga automaticamente o redirecionamento HTTPS, cookies seguros, HSTS ou a confiança no proxy.** Antes de disponibilizar dados pessoais em produção, ajuste `config/settings.py`, dentro do bloco de configurações de segurança, para aplicar os controles após confirmar que o proxy não é acessível diretamente pela internet:
+O Nginx deste manual termina o TLS e encaminha tráfego para Gunicorn. Com `DEBUG=False`, o projeto marca automaticamente os cookies de sessão e CSRF como seguros. **A configuração Django não liga automaticamente o redirecionamento HTTPS nem HSTS e não confia automaticamente no proxy.** Antes de disponibilizar dados pessoais em produção, ajuste `config/settings.py`, dentro do bloco de configurações de segurança, para aplicar os controles após confirmar que o proxy não é acessível diretamente pela internet:
 
 ```python
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", "0"))
 ```
 
@@ -190,7 +188,7 @@ Defina essa função uma vez no terminal administrativo e execute os comandos ap
 
 ### Resultado de `check --deploy`
 
-Este comando é uma revisão de configuração, não um teste de tráfego. Com as configurações atuais sem o ajuste de HTTPS acima, são esperados avisos de segurança sobre HSTS, redirecionamento SSL e cookies seguros. Corrija os avisos antes de considerar o ambiente pronto para dados pessoais. Warnings devem ser analisados, não silenciados.
+Este comando é uma revisão de configuração, não um teste de tráfego. Com as configurações atuais sem o ajuste de HTTPS acima, são esperados avisos de segurança sobre HSTS e redirecionamento SSL. Corrija os avisos aplicáveis antes de considerar o ambiente pronto para dados pessoais. Warnings devem ser analisados, não silenciados.
 
 ## 9. Configurar Gunicorn como serviço systemd
 

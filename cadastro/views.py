@@ -1,11 +1,15 @@
 import logging
 import smtplib
+import warnings
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 import qrcode
 import csv
 from io import BytesIO, StringIO
+from PIL import Image
+from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -17,6 +21,15 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import Empreendimento, FotoEmpreendimento, Categoria, Depoimento
 from .forms import EmpreendimentoForm
+
+MAX_FOTOS_CADASTRO = 4
+MAX_TAMANHO_FOTO = 5 * 1024 * 1024
+FORMATOS_FOTO = {
+    ".jpg": "JPEG",
+    ".jpeg": "JPEG",
+    ".png": "PNG",
+    ".webp": "WEBP",
+}
 
 
 def _enviar_email_cadastro(request, subject, message, recipient):
@@ -60,6 +73,45 @@ def android_assetlinks(request):
         ],
         safe=False,
     )
+
+
+def _validar_fotos(fotos):
+    if len(fotos) > MAX_FOTOS_CADASTRO:
+        return f"Envie no máximo {MAX_FOTOS_CADASTRO} fotos."
+
+    for foto in fotos:
+        formato_esperado = FORMATOS_FOTO.get(Path(foto.name).suffix.lower())
+        if not formato_esperado:
+            return f"Formato inválido em {foto.name}. Use JPG, PNG ou WEBP."
+
+        if foto.size > MAX_TAMANHO_FOTO:
+            return f"Foto {foto.name} muito grande (máx. 5 MB)."
+
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("error", Image.DecompressionBombWarning)
+                with Image.open(foto) as imagem:
+                    if imagem.format != formato_esperado:
+                        return (
+                            f"O conteúdo da foto {foto.name} não corresponde "
+                            "ao formato informado."
+                        )
+                    imagem.verify()
+        except (
+            Image.DecompressionBombError,
+            Image.DecompressionBombWarning,
+            OSError,
+            SyntaxError,
+            ValueError,
+        ):
+            return (
+                f"Não foi possível validar a imagem {foto.name}. "
+                "Envie uma imagem JPG, PNG ou WEBP válida."
+            )
+        finally:
+            foto.seek(0)
+
+    return None
 
 
 def _enviar_notificacoes_cadastro(request, empreendimento):
@@ -947,49 +999,30 @@ def cadastrar_empreendimento(request):
         form = EmpreendimentoForm(request.POST, request.FILES)
 
         if form.is_valid():
-            try:
+            fotos = request.FILES.getlist("fotos")
+            erro_fotos = _validar_fotos(fotos)
+            if erro_fotos:
+                form.add_error(None, erro_fotos)
+            else:
                 logger.info("CADASTRO: formulário validado com sucesso.")
-
                 empreendimento = form.save(commit=False)
 
                 if request.user.is_authenticated:
                     empreendimento.proprietario = request.user
 
-                logger.info("CADASTRO: salvando empreendimento no banco.")
-                empreendimento.save()
+                logger.info("CADASTRO: salvando empreendimento e fotos.")
+                with transaction.atomic():
+                    empreendimento.save()
+                    form.save_m2m()
 
-                logger.info("CADASTRO: salvando categorias.")
-                form.save_m2m()
+                    for foto in fotos:
+                        FotoEmpreendimento.objects.create(
+                            empreendimento=empreendimento,
+                            imagem=foto,
+                        )
 
                 logger.info("CADASTRO: enviando notificações.")
                 _enviar_notificacoes_cadastro(request, empreendimento)
-
-                logger.info("CADASTRO: processando fotos.")
-                fotos = request.FILES.getlist("fotos")
-
-                for foto in fotos:
-                    if foto.size > 5 * 1024 * 1024:
-                        messages.error(
-                            request,
-                            f"Foto {foto.name} muito grande (máx. 5 MB).",
-                        )
-                        continue
-
-                    if not foto.name.lower().endswith(
-                        (".jpg", ".jpeg", ".png", ".webp")
-                    ):
-                        messages.error(
-                            request,
-                            f"Formato inválido em {foto.name}. Use JPG ou PNG.",
-                        )
-                        continue
-
-                    FotoEmpreendimento.objects.create(
-                        empreendimento=empreendimento,
-                        imagem=foto,
-                    )
-
-                logger.info("CADASTRO: fotos processadas.")
 
                 request.session["ultimo_empreendimento_id"] = empreendimento.pk
 
@@ -1004,10 +1037,6 @@ def cadastrar_empreendimento(request):
                 )
 
                 return redirect("cadastro_sucesso")
-
-            except Exception:
-                logger.exception("ERRO AO PROCESSAR CADASTRO DE EMPREENDIMENTO.")
-                raise
 
         else:
             messages.error(

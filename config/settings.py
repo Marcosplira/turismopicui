@@ -18,6 +18,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = (
     os.environ.get("DEBUG", os.environ.get("DJANGO_DEBUG", "True")).lower() == "true"
 )
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 if not SECRET_KEY:

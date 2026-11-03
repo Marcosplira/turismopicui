@@ -134,6 +134,15 @@ class CadastroPublicoTests(TestCase):
 
         self.assertContains(resposta, "Dashboard do gerente")
 
+    def test_home_nao_exibe_depoimentos_de_exemplo_sem_depoimentos_cadastrados(self):
+        resposta = self.client.get(reverse("home"))
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertNotContains(resposta, "João Silva")
+        self.assertNotContains(resposta, "Maria Alves")
+        self.assertNotContains(resposta, "Pedro Costa")
+        self.assertNotContains(resposta, "DEPOIMENTOS")
+
     def test_mapa_publico_usa_leaflet_e_serializa_dados_com_seguranca(self):
         empreendimento = Empreendimento.objects.create(
             nome='<img src=x onerror="alert(1)">',
@@ -171,9 +180,18 @@ class CadastroPublicoTests(TestCase):
         self.assertContains(resposta, 'name="fotos" id="fotos" multiple')
 
     def test_cadastro_salva_multiplas_fotos(self):
-        imagem = BytesIO()
-        Image.new("RGB", (2, 2), color="white").save(imagem, format="JPEG")
-        conteudo_imagem = imagem.getvalue()
+        arquivos = []
+        for nome, formato, content_type in [
+            ("fachada.jpg", "JPEG", "image/jpeg"),
+            ("quarto.jpeg", "JPEG", "image/jpeg"),
+            ("area.png", "PNG", "image/png"),
+            ("cafe.webp", "WEBP", "image/webp"),
+        ]:
+            imagem = BytesIO()
+            Image.new("RGB", (2, 2), color="white").save(imagem, format=formato)
+            arquivos.append(
+                SimpleUploadedFile(nome, imagem.getvalue(), content_type=content_type)
+            )
 
         with TemporaryDirectory() as media_root:
             with override_settings(MEDIA_ROOT=media_root):
@@ -189,15 +207,96 @@ class CadastroPublicoTests(TestCase):
                         "telefone": "83999999999",
                         "descricao": "Hospedagem familiar.",
                         "consentimento": "on",
-                        "fotos": [
-                            SimpleUploadedFile("fachada.jpg", conteudo_imagem, content_type="image/jpeg"),
-                            SimpleUploadedFile("quarto.jpg", conteudo_imagem, content_type="image/jpeg"),
-                        ],
+                        "fotos": arquivos,
                     },
                 )
 
                 self.assertRedirects(resposta, reverse("cadastro_sucesso"))
-                self.assertEqual(FotoEmpreendimento.objects.count(), 2)
+                self.assertEqual(FotoEmpreendimento.objects.count(), 4)
+
+    def test_cadastro_rejeita_lote_de_fotos_invalido_sem_salvar_registro(self):
+        imagem = BytesIO()
+        Image.new("RGB", (2, 2), color="white").save(imagem, format="JPEG")
+        conteudo_jpeg = imagem.getvalue()
+        fotos_invalidas = [
+            (
+                "mais de quatro",
+                [
+                    SimpleUploadedFile(f"{indice}.jpg", conteudo_jpeg, content_type="image/jpeg")
+                    for indice in range(5)
+                ],
+                "no máximo 4 fotos",
+            ),
+            (
+                "arquivo acima do limite",
+                [
+                    SimpleUploadedFile(
+                        "grande.jpg",
+                        b"x" * (5 * 1024 * 1024 + 1),
+                        content_type="image/jpeg",
+                    )
+                ],
+                "máx. 5 MB",
+            ),
+            (
+                "extensão incompatível",
+                [
+                    SimpleUploadedFile(
+                        "imagem.png",
+                        conteudo_jpeg,
+                        content_type="image/png",
+                    )
+                ],
+                "não corresponde ao formato",
+            ),
+            (
+                "imagem corrompida",
+                [
+                    SimpleUploadedFile(
+                        "corrompida.jpg",
+                        b"not an image",
+                        content_type="image/jpeg",
+                    )
+                ],
+                "Não foi possível validar",
+            ),
+            (
+                "extensão não permitida",
+                [
+                    SimpleUploadedFile(
+                        "documento.pdf",
+                        conteudo_jpeg,
+                        content_type="application/pdf",
+                    )
+                ],
+                "Formato inválido",
+            ),
+        ]
+
+        with TemporaryDirectory() as media_root:
+            with override_settings(MEDIA_ROOT=media_root):
+                for descricao, fotos, mensagem in fotos_invalidas:
+                    with self.subTest(descricao=descricao):
+                        resposta = self.client.post(
+                            reverse("cadastrar_empreendimento"),
+                            {
+                                "nome": "Cadastro com foto inválida",
+                                "responsavel": "Maria Silva",
+                                "cpf_responsavel": "000.000.000-00",
+                                "zona": "urbana",
+                                "endereco": "Rua Principal",
+                                "bairro_comunidade": "Centro",
+                                "telefone": "83999999999",
+                                "descricao": "Hospedagem familiar.",
+                                "consentimento": "on",
+                                "fotos": fotos,
+                            },
+                        )
+
+                        self.assertEqual(resposta.status_code, 200)
+                        self.assertContains(resposta, mensagem)
+                        self.assertEqual(Empreendimento.objects.count(), 0)
+                        self.assertEqual(FotoEmpreendimento.objects.count(), 0)
 
     def test_cadastro_cria_conta_para_o_responsavel(self):
         resposta = self.client.post(
