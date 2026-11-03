@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command, CommandError
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import Client, RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from io import BytesIO
 from tempfile import TemporaryDirectory
@@ -353,6 +353,68 @@ class CadastroPublicoTests(TestCase):
         self.assertContains(resposta, "Aprovados")
         self.assertContains(resposta, "Pendentes")
         self.assertContains(resposta, "Reprovados")
+
+    def test_acoes_rapidas_exigem_post_e_atualizam_status(self):
+        gerente = User.objects.create_user("gerente", "gerente@example.com", "123456")
+        gerente.is_staff = True
+        gerente.save()
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(gerente)
+        dashboard = client.get(reverse("dashboard_gerente"))
+        csrf_token = dashboard.cookies["csrftoken"].value
+
+        empreendimento = Empreendimento.objects.create(
+            nome="Pousada para revisão",
+            responsavel="Pessoa",
+            cpf_responsavel="111.222.333-44",
+            zona="urbana",
+            endereco="Rua A",
+            bairro_comunidade="Centro",
+            telefone="83999999999",
+            descricao="Cadastro para teste.",
+        )
+
+        url_aprovar = reverse("aprovar_rapido", args=[empreendimento.pk])
+        resposta = client.get(url_aprovar)
+
+        self.assertEqual(resposta.status_code, 405)
+        empreendimento.refresh_from_db()
+        self.assertEqual(empreendimento.status, "pendente")
+
+        resposta = client.post(
+            url_aprovar,
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(resposta.status_code, 403)
+
+        resposta = client.post(
+            url_aprovar,
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            HTTP_X_CSRFTOKEN=csrf_token,
+        )
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.json()["novo_status"], "aprovado")
+        empreendimento.refresh_from_db()
+        self.assertEqual(empreendimento.status, "aprovado")
+
+        url_reprovar = reverse("reprovar_rapido", args=[empreendimento.pk])
+        resposta = client.get(url_reprovar)
+
+        self.assertEqual(resposta.status_code, 405)
+        empreendimento.refresh_from_db()
+        self.assertEqual(empreendimento.status, "aprovado")
+
+        resposta = client.post(
+            url_reprovar,
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            HTTP_X_CSRFTOKEN=csrf_token,
+        )
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.json()["novo_status"], "reprovado")
+        empreendimento.refresh_from_db()
+        self.assertEqual(empreendimento.status, "reprovado")
 
     def test_chatbot_exibe_ajuda_para_usuario(self):
         resposta = self.client.get(reverse("chatbot_assistente"))

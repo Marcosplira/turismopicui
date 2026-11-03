@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from django.db.models import Count, Q
 from django.core.mail import send_mail
 from django.conf import settings
@@ -881,6 +881,7 @@ def relatorio_executivo(request):
 
 
 @staff_member_required
+@require_POST
 def aprovar_empreendimento_rapido(request, pk):
     """Aprova diretamente um empreendimento a partir do Dashboard do Gerente."""
     emp = get_object_or_404(Empreendimento, pk=pk)
@@ -911,6 +912,7 @@ def aprovar_empreendimento_rapido(request, pk):
 
 
 @staff_member_required
+@require_POST
 def reprovar_empreendimento_rapido(request, pk):
     """Reprova diretamente um empreendimento a partir do Dashboard do Gerente."""
     emp = get_object_or_404(Empreendimento, pk=pk)
