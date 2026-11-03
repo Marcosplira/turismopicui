@@ -63,7 +63,7 @@ O sistema possui recursos de acesso rápido através de QR Code, facilitando o a
 
 Os empreendimentos podem disponibilizar sua localização para facilitar a chegada dos visitantes.
 
-O mapa interativo do guia usa OpenStreetMap e não precisa de uma chave de API. Os links de localização dos empreendimentos podem abrir o Google Maps.
+O mapa interativo do guia usa tiles do ArcGIS/Esri e não precisa de uma chave de API do Google. Os links de localização dos empreendimentos podem abrir o Google Maps.
 
 ### 💬 WhatsApp
 
@@ -145,6 +145,18 @@ python manage.py runserver 127.0.0.1:8001
 - **Guia público:** http://127.0.0.1:8001/guia/
 - **Admin:** http://127.0.0.1:8001/admin/
 - **Dashboard do gerente:** http://127.0.0.1:8001/cadastro/dashboard-gerente/
+
+---
+
+## 🧪 Teste de carga local
+
+Execute o teste automatizado no terminal:
+
+```powershell
+.\venv\Scripts\python.exe scripts\validar_carga_local.py
+```
+
+O script inicia um servidor temporário e simula 50 e 100 clientes anônimos acessando a Home, o Guia e o Mapa. Ele só aceita endereços locais (`localhost` ou `127.0.0.0/8`) e verifica se as migrações foram aplicadas, para evitar gerar carga acidental no site publicado ou medir uma base incompleta.
 
 ---
 
@@ -237,7 +249,7 @@ ADMIN_EMAIL=seu-email-administrativo
 - [x] Animações e micro-interações
 - [x] Página institucional "Sobre"
 - [x] Hero Section premium com gradiente
-- [x] Mapa interativo com OpenStreetMap, sem chave de API
+- [x] Mapa interativo com tiles do ArcGIS/Esri
 - [x] Contadores de estatísticas na Home
 - [x] Seção de depoimentos de empresários
 - [x] Botão de acesso da equipe em destaque

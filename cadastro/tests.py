@@ -152,7 +152,8 @@ class CadastroPublicoTests(TestCase):
 
         self.assertEqual(resposta.status_code, 200)
         self.assertContains(resposta, "leaflet@1.9.4")
-        self.assertContains(resposta, "openstreetmap.org")
+        self.assertContains(resposta, "server.arcgisonline.com")
+        self.assertContains(resposta, "OpenStreetMap contributors")
         self.assertNotContains(resposta, "maps.googleapis.com")
         self.assertContains(resposta, "Mirante dos Brandões")
         self.assertEqual(dados[0]["id"], empreendimento.pk)
@@ -250,23 +251,24 @@ class CadastroPublicoTests(TestCase):
 
     @patch("cadastro.views.send_mail", side_effect=smtplib.SMTPException("SMTP indisponível"))
     def test_falha_de_email_nao_perde_cadastro_e_avisa_usuario(self, send_mail_mock):
-        resposta = self.client.post(
-            reverse("cadastrar_empreendimento"),
-            {
-                "nome": "Pousada do Sol",
-                "responsavel": "Ana Souza",
-                "cpf_responsavel": "111.222.333-44",
-                "zona": "urbana",
-                "endereco": "Rua das Flores",
-                "bairro_comunidade": "Centro",
-                "telefone": "83988887777",
-                "email": "ana@example.com",
-                "descricao": "Pousada familiar com café.",
-                "consentimento": "on",
-                "autoriza_divulgacao": "True",
-            },
-            follow=True,
-        )
+        with self.assertLogs("cadastro.views", level="ERROR"):
+            resposta = self.client.post(
+                reverse("cadastrar_empreendimento"),
+                {
+                    "nome": "Pousada do Sol",
+                    "responsavel": "Ana Souza",
+                    "cpf_responsavel": "111.222.333-44",
+                    "zona": "urbana",
+                    "endereco": "Rua das Flores",
+                    "bairro_comunidade": "Centro",
+                    "telefone": "83988887777",
+                    "email": "ana@example.com",
+                    "descricao": "Pousada familiar com café.",
+                    "consentimento": "on",
+                    "autoriza_divulgacao": "True",
+                },
+                follow=True,
+            )
 
         self.assertEqual(resposta.status_code, 200)
         self.assertEqual(Empreendimento.objects.count(), 1)
@@ -492,9 +494,10 @@ class CadastroPublicoTests(TestCase):
         request = RequestFactory().post("/admin/cadastro/empreendimento/")
         request.user = usuario
 
-        EmpreendimentoAdmin(Empreendimento, admin.site).marcar_aprovados(
-            request, Empreendimento.objects.filter(pk=empreendimento.pk)
-        )
+        with self.assertLogs("cadastro.admin", level="ERROR"):
+            EmpreendimentoAdmin(Empreendimento, admin.site).marcar_aprovados(
+                request, Empreendimento.objects.filter(pk=empreendimento.pk)
+            )
 
         empreendimento.refresh_from_db()
         self.assertEqual(empreendimento.status, "aprovado")
