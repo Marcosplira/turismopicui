@@ -229,11 +229,17 @@ CSRF_TRUSTED_ORIGINS=https://seu-dominio.com
 - [x] Animações e micro-interações
 - [x] Página institucional "Sobre"
 - [x] Hero Section premium com gradiente
-- [x] Mapa interativo de todos os empreendimentos
+- [x] Mapa interativo com Google Maps
 - [x] Contadores de estatísticas na Home
 - [x] Seção de depoimentos de empresários
 - [x] Botão de acesso da equipe em destaque
 - [x] Interface otimizada para apresentação ao gerente
+- [x] Cards de categorias clicáveis com filtros
+- [x] Animações de scroll em todas as páginas
+- [x] Notificações visuais no dashboard
+- [x] Gráficos interativos melhorados
+- [x] Geossítios com coordenadas funcionais
+- [x] Botão "Destacar Geossítios" operacional
 
 ---
 

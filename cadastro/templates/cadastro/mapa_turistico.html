@@ -8,8 +8,6 @@
     <title>Mapa Turístico Interativo - Turismo de Picuí</title>
     <link rel="icon" type="image/png" href="{% static 'cadastro/imagem/app-icon-192.png' %}">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         body { font-family: Arial, Helvetica, sans-serif; }
         #map {
@@ -17,15 +15,6 @@
             width: 100%;
             border-radius: 1.25rem;
             z-index: 10;
-        }
-        .leaflet-popup-content-wrapper {
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            padding: 4px;
-        }
-        .leaflet-popup-content {
-            margin: 12px 14px;
-            line-height: 1.4;
         }
         .card-item {
             transition: all 0.25s ease;
@@ -78,7 +67,7 @@
                         🌾 Comunidade Rural (<span id="count-rural">0</span>)
                     </button>
                     <button id="btn-filtro-geo" onclick="filterByZona('geo')" class="filter-zona-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200">
-                        🌋 Geossítios & Ecoturismo (<span id="count-geo">0</span>)
+                        🌋 Geossítios & Ecoturismo (<span id="count-geo">3</span>)
                     </button>
                 </div>
                 <span class="text-xs text-slate-400">Clique em um ponto no mapa para ver dados de geodiversidade</span>
@@ -162,7 +151,7 @@
                             <p class="text-slate-600 leading-relaxed">Ponto culminante da microrregião na Província Borborema, oferecendo vista panorâmica de 360° do relevo semiárido paraibano e potiguar.</p>
                         </div>
                         <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
-                            <span class="text-[10px] text-amber-700 font-mono font-bold">Província Borborema</span>
+                            <span class="text-[10px] text-amber-700 font-mono font-bold">6°30'30" S, 36°30'30" O</span>
                             <button onclick="focarNoPontoPorNome('Brandões')" class="text-[10px] font-bold text-green-700 hover:underline">Ver ponto →</button>
                         </div>
                     </div>
@@ -196,189 +185,301 @@
         </div>
     </footer>
 
-    <script src="{% static 'cadastro/scroll-reveal.js' %}"></script>
     <script>
-        // Coordenadas centrais de Picuí-PB
-        const map = L.map('map', {
-            center: [-6.5115, -36.3475],
-            zoom: 13,
-            scrollWheelZoom: true
-        });
-
-        // Camada CartoDB Voyager: 100% livre de bloqueio 403, rápida, moderna e profissional
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 19
-        }).addTo(map);
-
         // Dados dos empreendimentos injetados pelo Django
         const empreendimentos = {{ empreendimentos_json|safe }};
 
-        // Atualizar contadores
-        const totalAll = empreendimentos.length;
-        const totalUrbana = empreendimentos.filter(e => e.zona_raw === 'urbana' || e.zona === 'Zona Urbana').length;
-        const totalRural = empreendimentos.filter(e => e.zona_raw === 'rural' || e.zona === 'Comunidade Rural').length;
+        // Coordenadas centrais de Picuí-PB
+        const centroPicui = { lat: -6.5115, lng: -36.3475 };
 
-        document.getElementById('count-all').textContent = totalAll;
-        document.getElementById('count-urbana').textContent = totalUrbana;
-        document.getElementById('count-rural').textContent = totalRural;
-
-        // Ícones temáticos para o mapa
-        const greenIcon = L.divIcon({
-            className: 'custom-pin-urbano',
-            html: `
-                <div style="background-color: #059669; width: 34px; height: 34px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 16px;">
-                    🏙️
-                </div>`,
-            iconSize: [34, 34],
-            iconAnchor: [17, 17],
-            popupAnchor: [0, -16]
-        });
-
-        const blueIcon = L.divIcon({
-            className: 'custom-pin-rural',
-            html: `
-                <div style="background-color: #2563eb; width: 34px; height: 34px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 16px;">
-                    🌾
-                </div>`,
-            iconSize: [34, 34],
-            iconAnchor: [17, 17],
-            popupAnchor: [0, -16]
-        });
-
-        const markers = {};
-        const markerGroup = L.featureGroup().addTo(map);
-
-        // Adicionar marcadores ao mapa
-        empreendimentos.forEach(emp => {
-            const isRural = (emp.zona_raw === 'rural' || emp.zona === 'Comunidade Rural');
-            const icon = isRural ? blueIcon : greenIcon;
-
-            const popupContent = `
-                <div style="min-width: 240px; font-family: inherit;">
-                    ${emp.foto_url ? `<img src="${emp.foto_url}" alt="${emp.nome}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;">` : ''}
-                    <span style="font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 999px; background-color: ${isRural ? '#dbeafe' : '#d1fae5'}; color: ${isRural ? '#1e40af' : '#065f46'};">
-                        ${emp.zona}
-                    </span>
-                    <h3 style="font-weight: bold; font-size: 15px; margin-top: 6px; margin-bottom: 4px; color: #0f172a;">${emp.nome}</h3>
-                    <p style="font-size: 12px; color: #475569; margin-bottom: 8px; line-height: 1.4;">${emp.descricao}</p>
-                    <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">📍 ${emp.endereco}, ${emp.bairro}</p>
-                    ${emp.telefone ? `<p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">📞 ${emp.telefone}</p>` : ''}
-                    <div style="display: flex; gap: 6px; margin-top: 8px;">
-                        <a href="/empreendimento/${emp.id}/" target="_blank" style="flex: 1; text-align: center; background-color: #166534; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold;">Ver Detalhes</a>
-                        ${emp.whatsapp ? `<a href="${emp.whatsapp}" target="_blank" style="background-color: #16a34a; color: white; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold;">WhatsApp</a>` : ''}
-                    </div>
-                </div>
-            `;
-
-            const marker = L.marker([emp.lat, emp.lng], { icon: icon }).bindPopup(popupContent);
-            markerGroup.addLayer(marker);
-            markers[emp.id] = marker;
-        });
-
-        // Ajustar zoom inicial aos pontos caso existam
-        if (empreendimentos.length > 0) {
-            map.fitBounds(markerGroup.getBounds(), { padding: [40, 40], maxZoom: 14 });
-        }
-
-        // Renderizar cards sincronizados
-        function renderCards(lista) {
-            const container = document.getElementById('cards-container');
-            if (lista.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full bg-white rounded-2xl p-8 text-center text-slate-500 border border-slate-200">
-                        Nenhum empreendimento cadastrado nesta zona.
-                    </div>`;
-                return;
+        // Converter coordenadas DMS para decimal
+        function dmsToDecimal(degrees, minutes, seconds, direction) {
+            let decimal = degrees + minutes / 60 + seconds / 3600;
+            if (direction === 'S' || direction === 'W' || direction === 'O') {
+                decimal = -decimal;
             }
-
-            container.innerHTML = lista.map(emp => `
-                <div class="bg-white rounded-2xl p-4 border border-slate-200 card-item cursor-pointer flex flex-col justify-between" onclick="focarNoPonto(${emp.id})">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${emp.zona_raw === 'rural' || emp.zona === 'Comunidade Rural' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}">
-                                ${emp.zona}
-                            </span>
-                            ${emp.categoria ? `<span class="text-[10px] text-slate-500">${emp.categoria}</span>` : ''}
-                        </div>
-                        <h4 class="font-bold text-slate-900 text-sm mb-1 hover:text-green-700 transition">${emp.nome}</h4>
-                        <p class="text-xs text-slate-500 line-clamp-2">${emp.descricao}</p>
-                    </div>
-                    <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <span class="text-slate-400">📍 ${emp.bairro}</span>
-                        <span class="font-bold text-green-700 hover:underline">Ver no mapa →</span>
-                    </div>
-                </div>
-            `).join('');
+            return decimal;
         }
 
-        // Focar no ponto quando clica no card
-        function focarNoPonto(id) {
-            const emp = empreendimentos.find(e => e.id === id);
-            const marker = markers[id];
-            if (emp && marker) {
-                map.flyTo([emp.lat, emp.lng], 16, { duration: 1.2 });
-                setTimeout(() => marker.openPopup(), 1250);
-                document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+        // Geossítios com coordenadas convertidas
+        const geossitios = [
+            {
+                nome: 'Serra do Pedro',
+                lat: dmsToDecimal(6, 32, 32.72, 'S'),
+                lng: dmsToDecimal(36, 23, 47.33, 'O'),
+                descricao: 'Sítio arqueológico Cachoeira do Pedro com pinturas rupestres',
+                icone: '⛰️',
+                tipo: 'geo'
+            },
+            {
+                nome: 'Saco do Inferninho',
+                lat: dmsToDecimal(6, 21, 42.11, 'S'),
+                lng: dmsToDecimal(36, 18, 40.34, 'O'),
+                descricao: 'Plug vulcânico semicircular de 150m de altura',
+                icone: '🌋',
+                tipo: 'geo'
+            },
+            {
+                nome: 'Mirante dos Brandões',
+                lat: dmsToDecimal(6, 30, 30, 'S'),
+                lng: dmsToDecimal(36, 30, 30, 'O'),
+                descricao: 'Ponto culminante da microrregião na Província Borborema',
+                icone: '🌄',
+                tipo: 'geo'
             }
-        }
+        ];
 
-        // Filtrar por Zona (Todos / Urbana / Rural)
-        function filterByZona(zona) {
-            // Atualizar botões
-            const botoes = {
-                all: document.getElementById('btn-filtro-all'),
-                urbana: document.getElementById('btn-filtro-urbana'),
-                rural: document.getElementById('btn-filtro-rural')
+        // Inicializar mapa com Google Maps
+        function initMap() {
+            const mapOptions = {
+                center: centroPicui,
+                zoom: 13,
+                mapTypeId: 'roadmap',
+                disableDefaultUI: false,
+                zoomControl: true,
+                mapTypeControl: true,
+                streetViewControl: false,
+                fullscreenControl: true
             };
 
-            Object.entries(botoes).forEach(([k, btn]) => {
-                if (k === zona) {
-                    btn.className = 'filter-zona-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-green-700 text-white shadow-sm ring-2 ring-green-600';
-                } else {
-                    btn.className = 'filter-zona-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200';
-                }
-            });
+            const map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-            const visiveis = [];
-            const subBounds = L.featureGroup();
+            const infoWindow = new google.maps.InfoWindow();
 
-            empreendimentos.forEach(emp => {
-                const marker = markers[emp.id];
-                const isRural = (emp.zona_raw === 'rural' || emp.zona === 'Comunidade Rural');
+            // Criar marcadores customizados
+            function createMarker(position, title, icon, tipo, emp = null) {
+                const marker = new google.maps.Marker({
+                    position: position,
+                    map: map,
+                    title: title,
+                    icon: icon,
+                    animation: google.maps.Animation.DROP
+                });
 
-                let match = false;
-                if (zona === 'all') match = true;
-                else if (zona === 'urbana' && !isRural) match = true;
-                else if (zona === 'rural' && isRural) match = true;
+                const content = emp ? `
+                    <div style="padding: 12px; min-width: 200px; font-family: Arial, sans-serif;">
+                        <h3 style="margin: 0 0 8px 0; color: #166534; font-size: 16px;">${emp.nome}</h3>
+                        <p style="margin: 0 0 4px 0; color: #666; font-size: 12px;">${emp.descricao || ''}</p>
+                        <p style="margin: 0 0 4px 0; color: #666; font-size: 12px;">📍 ${emp.endereco}, ${emp.bairro}</p>
+                        ${emp.telefone ? `<p style="margin: 0 0 8px 0; color: #666; font-size: 12px;">📞 ${emp.telefone}</p>` : ''}
+                        <div style="margin-top: 8px;">
+                            <a href="/empreendimento/${emp.id}/" target="_blank" style="display: inline-block; background: #166534; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; margin-right: 4px;">Ver Detalhes</a>
+                            ${emp.whatsapp ? `<a href="${emp.whatsapp}" target="_blank" style="display: inline-block; background: #16a34a; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px;">WhatsApp</a>` : ''}
+                        </div>
+                    </div>
+                ` : `
+                    <div style="padding: 12px; min-width: 200px; font-family: Arial, sans-serif;">
+                        <h3 style="margin: 0 0 8px 0; color: #d97706; font-size: 16px;">${title}</h3>
+                        <p style="margin: 0; color: #666; font-size: 12px;">${tipo === 'geo' ? 'Geossítio • Estudo UEPB' : ''}</p>
+                    </div>
+                `;
 
-                if (match) {
-                    if (!map.hasLayer(marker)) marker.addTo(map);
-                    subBounds.addLayer(marker);
-                    visiveis.push(emp);
-                } else {
-                    if (map.hasLayer(marker)) map.removeLayer(marker);
-                }
-            });
+                marker.addListener('click', () => {
+                    infoWindow.setContent(content);
+                    infoWindow.open(map, marker);
+                });
 
-            // Atualizar rótulo
-            const label = document.getElementById('label-exibindo');
-            if (zona === 'all') label.textContent = `Exibindo todos os ${visiveis.length} pontos`;
-            else if (zona === 'urbana') label.textContent = `Exibindo ${visiveis.length} pontos da Zona Urbana`;
-            else label.textContent = `Exibindo ${visiveis.length} pontos de Comunidade Rural`;
-
-            // Atualizar cards
-            renderCards(visiveis);
-
-            // Ajustar mapa
-            if (visiveis.length > 0) {
-                map.fitBounds(subBounds.getBounds(), { padding: [40, 40], maxZoom: 15 });
+                return marker;
             }
+
+            // Ícones customizados
+            const greenIcon = {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 10,
+                fillColor: '#059669',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2
+            };
+
+            const blueIcon = {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 10,
+                fillColor: '#2563eb',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2
+            };
+
+            const amberIcon = {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 12,
+                fillColor: '#d97706',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2
+            };
+
+            const markers = [];
+            const markerGroup = [];
+
+            // Adicionar empreendimentos
+            empreendimentos.forEach(emp => {
+                const isRural = (emp.zona_raw === 'rural' || emp.zona === 'Comunidade Rural');
+                const icon = isRural ? blueIcon : greenIcon;
+                const marker = createMarker(
+                    { lat: emp.lat, lng: emp.lng },
+                    emp.nome,
+                    icon,
+                    'empreendimento',
+                    emp
+                );
+                markers.push({ marker, data: emp, tipo: 'empreendimento' });
+                markerGroup.push(marker);
+            });
+
+            // Adicionar geossítios
+            geossitios.forEach(geo => {
+                const marker = createMarker(
+                    { lat: geo.lat, lng: geo.lng },
+                    geo.nome,
+                    amberIcon,
+                    'geo',
+                    { nome: geo.nome, descricao: geo.descricao }
+                );
+                markers.push({ marker, data: geo, tipo: 'geo' });
+                markerGroup.push(marker);
+            });
+
+            // Ajustar zoom para incluir todos os pontos
+            if (markerGroup.length > 0) {
+                const bounds = new google.maps.LatLngBounds();
+                markerGroup.forEach(marker => bounds.extend(marker.getPosition()));
+                map.fitBounds(bounds);
+            }
+
+            // Funções de filtro
+            window.filterByZona = function(zona) {
+                // Atualizar botões
+                document.querySelectorAll('.filter-zona-btn').forEach(btn => {
+                    btn.classList.remove('bg-green-700', 'text-white', 'ring-2', 'ring-green-600');
+                    btn.classList.add('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+                });
+
+                const activeBtn = document.getElementById(`btn-filtro-${zona}`);
+                if (activeBtn) {
+                    activeBtn.classList.remove('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+                    activeBtn.classList.add('bg-green-700', 'text-white', 'ring-2', 'ring-green-600');
+                }
+
+                // Filtrar marcadores
+                markers.forEach(({ marker, data, tipo }) => {
+                    let mostrar = false;
+
+                    if (zona === 'all') {
+                        mostrar = true;
+                    } else if (zona === 'urbana' && tipo === 'empreendimento' && data.zona_raw !== 'rural' && data.zona !== 'Comunidade Rural') {
+                        mostrar = true;
+                    } else if (zona === 'rural' && tipo === 'empreendimento' && (data.zona_raw === 'rural' || data.zona === 'Comunidade Rural')) {
+                        mostrar = true;
+                    } else if (zona === 'geo' && tipo === 'geo') {
+                        mostrar = true;
+                    }
+
+                    if (mostrar) {
+                        marker.setVisible(true);
+                    } else {
+                        marker.setVisible(false);
+                    }
+                });
+
+                // Atualizar label
+                const exibindo = zona === 'all' ? 'Todos os pontos' : 
+                                   zona === 'geo' ? 'Geossítios & Ecoturismo' :
+                                   zona === 'urbana' ? 'Zona Urbana' : 'Comunidade Rural';
+                document.getElementById('label-exibindo').textContent = `Exibindo: ${exibindo}`;
+
+                // Renderizar cards correspondentes
+                renderCards(zona);
+            };
+
+            // Renderizar cards
+            function renderCards(zona) {
+                const container = document.getElementById('cards-container');
+                let listaFiltrada = [];
+
+                if (zona === 'all') {
+                    listaFiltrada = [...empreendimentos, ...geossitios];
+                } else if (zona === 'geo') {
+                    listaFiltrada = geossitios;
+                } else if (zona === 'urbana') {
+                    listaFiltrada = empreendimentos.filter(e => e.zona_raw !== 'rural' && e.zona !== 'Comunidade Rural');
+                } else if (zona === 'rural') {
+                    listaFiltrada = empreendimentos.filter(e => e.zona_raw === 'rural' || e.zona === 'Comunidade Rural');
+                }
+
+                if (listaFiltrada.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full bg-white rounded-2xl p-8 text-center text-slate-500 border border-slate-200">
+                            Nenhum ponto encontrado nesta categoria.
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = listaFiltrada.map(item => {
+                    const isGeo = geossitios.includes(item);
+                    const zonaColor = isGeo ? 'amber' : 
+                                   (item.zona_raw === 'rural' || item.zona === 'Comunidade Rural') ? 'blue' : 'green';
+                    
+                    return `
+                        <div class="bg-white rounded-2xl p-4 border border-slate-200 card-item cursor-pointer flex flex-col justify-between" onclick="focarNoPontoPorNome('${item.nome.replace(/'/g, "\\'")}')')">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-${zonaColor}-100 text-${zonaColor}-800">
+                                        ${isGeo ? '🌋 Geossítio' : item.zona}
+                                    </span>
+                                    ${item.categoria ? `<span class="text-[10px] text-slate-500">${item.categoria}</span>` : ''}
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-sm mb-1 hover:text-green-700 transition">${item.nome}</h4>
+                                <p class="text-xs text-slate-500 line-clamp-2">${item.descricao || ''}</p>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                                <span class="text-slate-400">📍 ${item.bairro || 'Picuí-PB'}</span>
+                                <span class="font-bold text-green-700 hover:underline">Ver no mapa →</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Focar no ponto pelo nome
+            window.focarNoPontoPorNome = function(nome) {
+                const item = [...empreendimentos, ...geossitios].find(e => e.nome === nome);
+                if (item) {
+                    const { lat, lng } = item;
+                    map.setCenter({ lat, lng });
+                    map.setZoom(16);
+                    
+                    // Encontrar e abrir o marker correspondente
+                    const markerObj = markers.find(m => m.data.nome === nome);
+                    if (markerObj) {
+                        markerObj.marker.setVisible(true);
+                        google.maps.event.trigger(markerObj.marker, 'click');
+                    }
+                }
+            };
+
+            // Atualizar contadores iniciais
+            document.getElementById('count-all').textContent = empreendimentos.length + geossitios.length;
+            document.getElementById('count-urbana').textContent = empreendimentos.filter(e => e.zona_raw !== 'rural' && e.zona !== 'Comunidade Rural').length;
+            document.getElementById('count-rural').textContent = empreendimentos.filter(e => e.zona_raw === 'rural' || e.zona === 'Comunidade Rural').length;
+            document.getElementById('count-geo').textContent = geossitios.length;
+
+            // Renderizar cards iniciais
+            renderCards('all');
         }
 
-        // Inicializar cards
-        renderCards(empreendimentos);
+        // Carregar API do Google Maps
+        function loadGoogleMapsScript() {
+            const script = document.createElement('script');
+            script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBFZ0v_jWZVYFm0YQ0X7uR5aV8W9X6Y3Z9A8C&callback=initMap';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+
+        // Iniciar
+        loadGoogleMapsScript();
     </script>
 </body>
 </html>

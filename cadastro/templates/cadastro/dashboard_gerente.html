@@ -20,7 +20,18 @@
         .btn-hover { transition: all 0.2s ease; }
         .btn-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
         .btn-hover:active { transform: translateY(0); }
-        
+
+        /* Scroll Reveal Animations */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+        .reveal-on-scroll.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* Toast notification animations */
         #toast-container {
             position: fixed;
@@ -202,20 +213,52 @@
         </section>
 
         {% if alertas %}
-        <section class="mb-8">
+        <section class="mb-8 animate-fade-in" style="animation-delay: 250ms;">
             <h2 class="text-lg font-bold mb-3 text-slate-800 flex items-center gap-2">
                 <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Alertas gerenciais
+                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded-full">{{ alertas|length }}</span>
             </h2>
             <div class="grid md:grid-cols-3 gap-4">
                 {% for alerta in alertas %}
-                    <div class="rounded-2xl border p-4 shadow-sm {% if alerta.tipo == 'warning' %}bg-amber-50 border-amber-200 text-amber-900{% elif alerta.tipo == 'danger' %}bg-rose-50 border-rose-200 text-rose-900{% else %}bg-sky-50 border-sky-200 text-sky-900{% endif %}">
-                        <p class="font-bold text-sm">{{ alerta.titulo }}</p>
-                        <p class="mt-1 text-xs opacity-90">{{ alerta.descricao }}</p>
+                    <div class="rounded-2xl border p-4 shadow-sm card-hover {% if alerta.tipo == 'warning' %}bg-amber-50 border-amber-200 text-amber-900{% elif alerta.tipo == 'danger' %}bg-rose-50 border-rose-200 text-rose-900{% else %}bg-sky-50 border-sky-200 text-sky-900{% endif %}">
+                        <div class="flex items-start gap-3">
+                            {% if alerta.tipo == 'warning' %}
+                                <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            {% elif alerta.tipo == 'danger' %}
+                                <svg class="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            {% else %}
+                                <svg class="w-5 h-5 text-sky-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            {% endif %}
+                            <div>
+                                <p class="font-bold text-sm">{{ alerta.titulo }}</p>
+                                <p class="mt-1 text-xs opacity-90">{{ alerta.descricao }}</p>
+                            </div>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
         </section>
+        {% endif %}
+
+        <!-- NOTIFICAÇÃO VISUAL DE NOVOS CADASTROS -->
+        {% if pendentes > 0 %}
+        <div class="bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-2xl p-4 mb-6 shadow-lg animate-fade-in" style="animation-delay: 300ms;">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white/20 rounded-full p-2 animate-pulse">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 10v4.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    </div>
+                    <div>
+                        <p class="font-bold">🎉 {{ pendentes }} novo(s) cadastro(s) aguardando aprovação!</p>
+                        <p class="text-sm text-green-100 mt-1">Aprove ou analise para publicar no guia turístico</p>
+                    </div>
+                </div>
+                <a href="#secao-cadastros" class="bg-white text-green-700 font-bold px-4 py-2 rounded-lg hover:bg-green-50 transition shadow-md text-sm">
+                    Ver agora →
+                </a>
+            </div>
+        </div>
         {% endif %}
 
         <!-- SEÇÃO PRINCIPAL DE GESTÃO E EFICIÊNCIA -->
@@ -425,12 +468,38 @@
 
     <script src="{% static 'cadastro/scroll-reveal.js' %}"></script>
     <script>
+        // Scroll Reveal Animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const reveals = document.querySelectorAll('.reveal-on-scroll');
+
+            const revealOnScroll = function() {
+                const windowHeight = window.innerHeight;
+                const elementVisible = 150;
+
+                reveals.forEach((reveal) => {
+                    const elementTop = reveal.getBoundingClientRect().top;
+                    if (elementTop < windowHeight - elementVisible) {
+                        reveal.classList.add('revealed');
+                    }
+                });
+            };
+
+            window.addEventListener('scroll', revealOnScroll);
+            revealOnScroll(); // Check on load
+        });
+    </script>
+    <script>
         // Dados dos gráficos recebidos do Django
         const categoriasLabels = [{% for c in categoria_summary %}"{{ c.nome }}"{% if not forloop.last %},{% endif %}{% endfor %}];
         const categoriasTotals = [{% for c in categoria_summary %}{{ c.total }}{% if not forloop.last %},{% endif %}{% endfor %}];
 
         const zonasLabels = [{% for z in zona_summary %}"{{ z.label }}"{% if not forloop.last %},{% endif %}{% endfor %}];
         const zonasTotals = [{% for z in zona_summary %}{{ z.total }}{% if not forloop.last %},{% endif %}{% endfor %}];
+
+        // Variáveis de status do Django
+        const totalAprovados = {{ aprovados }};
+        const totalPendentes = {{ pendentes }};
+        const totalReprovados = {{ reprovados }};
 
         let statusChartInstance = null;
 
@@ -517,27 +586,64 @@
         // 3. Gráfico de Status (Doughnut)
         const ctxStatus = document.getElementById('graficoStatus');
         if (ctxStatus) {
+            // Usar variáveis já definidas no topo
+            const statusAprovados = totalAprovados;
+            const statusPendentes = totalPendentes;
+            const statusReprovados = totalReprovados;
+
             statusChartInstance = new Chart(ctxStatus, {
                 type: 'doughnut',
                 data: {
                     labels: ['Aprovados', 'Pendentes', 'Reprovados'],
                     datasets: [{
-                        data: [{{ aprovados }}, {{ pendentes }}, {{ reprovados }}],
+                        data: [statusAprovados, statusPendentes, statusReprovados],
                         backgroundColor: [
                             'rgba(16, 185, 129, 0.85)',
                             'rgba(245, 158, 11, 0.85)',
                             'rgba(239, 68, 68, 0.85)'
                         ],
                         borderColor: '#ffffff',
-                        borderWidth: 2
+                        borderWidth: 3,
+                        hoverOffset: 10
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    },
                     plugins: {
-                        legend: { position: 'bottom' }
-                    }
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 13, weight: 'bold' },
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 13 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
                 }
             });
         }
