@@ -1,5 +1,10 @@
 # Documentação de entrega e funcionamento do sistema - Turismo de Picuí
 
+## Documentos complementares
+
+- [GUIA_DO_USUARIO.md](./GUIA_DO_USUARIO.md) — uso para visitantes, empreendedores e equipe/gerente.
+- [DOCUMENTACAO_TECNICA_E_DEPLOY_VPS.md](./DOCUMENTACAO_TECNICA_E_DEPLOY_VPS.md) — instalação, segurança, deploy e manutenção de uma VPS.
+
 ## 1. Visão geral do software
 
 O sistema foi desenvolvido para centralizar o processo de cadastro, análise e divulgação de empreendimentos turísticos do município de Picuí. Ele conecta três partes principais:
@@ -90,13 +95,16 @@ Com isso, a prefeitura consegue administrar melhor a divulgação turística do 
 - Cadastro: http://127.0.0.1:8001/cadastro/
 - Guia público: http://127.0.0.1:8001/guia/
 - Administração: http://127.0.0.1:8001/admin/
-- Dashboard do gerente: http://127.0.0.1:8001/cadastro/dashboard-gerente/
+- Dashboard do gerente: http://127.0.0.1:8001/dashboard-gerente/
 
 ### Produção
 
-- Site: https://turismo-picui.onrender.com/
-- Administração: https://turismo-picui.onrender.com/admin/
-- Dashboard do gerente: https://turismo-picui.onrender.com/cadastro/dashboard-gerente/
+- Site atualmente documentado: https://turismopicui.pythonanywhere.com/
+- Guia público: https://turismopicui.pythonanywhere.com/guia/
+- Administração: https://turismopicui.pythonanywhere.com/admin/
+- Dashboard do gerente: https://turismopicui.pythonanywhere.com/dashboard-gerente/
+
+> A configuração `render.yaml` é uma alternativa de hospedagem separada; ela não representa automaticamente o site PythonAnywhere nem uma VPS. Uma publicação em VPS também exige configuração de domínio/DNS e não altera esses endereços por si só. Consulte a documentação técnica antes de trocar a hospedagem.
 
 ## 8. Usuário administrativo
 
@@ -106,16 +114,11 @@ O painel e o dashboard são restritos a usuários da equipe com permissão de ac
 python manage.py createsuperuser
 ```
 
-O banco local e o banco PostgreSQL do Render são separados. Usuários e senhas criados localmente não são copiados para produção. Para provisionar ou redefinir a conta administrativa do Render sem expor uma senha no código:
+O banco local e o banco de produção são separados; usuários e senhas criados localmente não são copiados para a hospedagem. A conta de gerente deve ser criada pelo responsável técnico no ambiente correto, com senha individual e acesso autorizado.
 
-1. No painel do Render, abra o serviço `turismo-picui` e adicione estas variáveis de ambiente:
-	- `DJANGO_BOOTSTRAP_ADMIN_PASSWORD`: senha forte e exclusiva (obrigatória);
-	- `DJANGO_BOOTSTRAP_ADMIN_USERNAME`: opcional; usa `adminturismo` quando omitida;
-	- `DJANGO_BOOTSTRAP_ADMIN_EMAIL`: e-mail institucional (opcional).
-2. Salve as variáveis para iniciar um novo deploy. O `build.sh` executa o comando de bootstrap depois das migrações: cria um superusuário se não existir ou redefine a senha se já for superusuário.
-3. Após o deploy, remova as variáveis `DJANGO_BOOTSTRAP_ADMIN_*` do Render e faça outro deploy. A conta permanece no banco; as credenciais deixam de estar nas variáveis do serviço.
+Para a instalação em VPS documentada neste projeto, use `createsuperuser` no terminal interativo da VPS, conforme o manual técnico. Para PythonAnywhere, use o console/ambiente virtual associado ao site e siga o procedimento de administração autorizado pelo titular da conta. Não redefina a senha de produção a partir do banco local nem compartilhe credenciais pelo GitHub ou por mensagens.
 
-O comando não promove contas comuns a administradoras e não faz nada quando as variáveis não estão configuradas. Não use a senha padrão `admin`, nem envie senhas pelo GitHub ou por mensagens. Depois do login, acesse o Dashboard do gerente pelo link de produção acima.
+**Atenção ao fluxo alternativo do Render:** o `build.sh` atualmente executa `bootstrap_admin` e `popular_dados`. Este último comando insere/atualiza registros de demonstração. Não use esse fluxo em uma base com dados oficiais sem revisar e alterar o processo de deploy primeiro. Não deixe variáveis `DJANGO_BOOTSTRAP_ADMIN_*` ativas continuamente.
 
 ## 9. E-mail e alertas
 

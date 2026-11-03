@@ -74,6 +74,8 @@ O visitante pode utilizar o WhatsApp para entrar em contato diretamente com o em
 ## 📚 Documentação de entrega
 
 - [DOCUMENTACAO-ENTREGA.md](https://github.com/Marcosplira/turismopicui/blob/main/DOCUMENTACAO-ENTREGA.md) — instruções de uso local, celular, painel administrativo, backups e publicação.
+- [GUIA_DO_USUARIO.md](./GUIA_DO_USUARIO.md) — instruções para visitantes, empreendedores e equipe/gerente.
+- [DOCUMENTACAO_TECNICA_E_DEPLOY_VPS.md](./DOCUMENTACAO_TECNICA_E_DEPLOY_VPS.md) — preparação, segurança, deploy, atualização e backup em VPS.
 - [SLIDES-APRESENTACAO.md](https://github.com/Marcosplira/turismopicui/blob/main/SLIDES-APRESENTACAO.md) — roteiro para apresentação do sistema ao cliente.
 - [ROADMAP-MELHORIAS.md](https://github.com/Marcosplira/turismopicui/blob/main/ROADMAP-MELHORIAS.md) — planejamento de melhorias e evolução do sistema.
 
@@ -144,7 +146,7 @@ python manage.py runserver 127.0.0.1:8001
 - **Cadastro:** http://127.0.0.1:8001/cadastro/
 - **Guia público:** http://127.0.0.1:8001/guia/
 - **Admin:** http://127.0.0.1:8001/admin/
-- **Dashboard do gerente:** http://127.0.0.1:8001/cadastro/dashboard-gerente/
+- **Dashboard do gerente:** http://127.0.0.1:8001/dashboard-gerente/
 
 ---
 
@@ -176,7 +178,7 @@ https://turismopicui.pythonanywhere.com/admin/
 
 ### Dashboard do gerente
 
-https://turismopicui.pythonanywhere.com/cadastro/dashboard-gerente/
+https://turismopicui.pythonanywhere.com/dashboard-gerente/
 
 > O acesso ao painel administrativo e ao dashboard exige um usuário administrativo configurado no ambiente de produção.
 
@@ -216,7 +218,6 @@ Exemplo:
 DEBUG=False
 DJANGO_SECRET_KEY=sua-chave-secreta
 ALLOWED_HOSTS=seu-dominio.com,localhost,127.0.0.1
-CSRF_TRUSTED_ORIGINS=https://seu-dominio.com
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_HOST_USER=seu-email
@@ -226,6 +227,8 @@ ADMIN_EMAIL=seu-email-administrativo
 ```
 
 **Não coloque chaves, senhas ou outras credenciais diretamente no código ou no GitHub.**
+
+Neste projeto, as origens HTTPS confiáveis são derivadas de `ALLOWED_HOSTS`; a configuração não lê `CSRF_TRUSTED_ORIGINS` como variável de ambiente.
 
 ---
 
